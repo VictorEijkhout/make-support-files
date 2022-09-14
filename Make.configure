@@ -1,0 +1,49 @@
+# -*- makefile -*-
+info ::
+	@echo "================ autotools configure:"
+	@echo "make configure config-help"
+	@echo "    [ CONFIGUREFLAGS=... ]"
+	@echo "    [ ECHO=0/1 ]"
+.PHONY: configure config-help
+configure :: modules
+	@( \
+	    source ${MAKEINCLUDES}/names.sh \
+	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	     && export varfile=$${scriptdir}/vars-$$installext.sh \
+	     && if [ "${ECHO}" = "1" ] ; then set -x ; fi \
+	     && source ${MAKEINCLUDES}/compilers.sh && setmpicompilers \
+	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
+	     && cd $$srcdir \
+	     && if [ ! -z "${CFLAGS}" ] ; then \
+	            export CFLAGS="${CFLAGS}" ; fi \
+	     && if [ ! -z "${CXXFLAGS}" ] ; then \
+	            export CXXFLAGS="${CXXFLAGS}" ; fi \
+	     && if [ ! -z "${BLAS_LIBS}" ] ; then \
+	            export BLAS_LIBS="${BLAS_LIBS}" ; fi \
+	     && if [ ! -z "${CONFIGURE_SOURCE_THIS}" ] ; then \
+	            echo "Sourcing: ${CONFIGURE_SOURCE_THIS}" \
+	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
+	     && configureline="./configure --prefix=$$installdir ${CONFIGURE_FLAGS}" \
+	     && echo "Configuring as:" && echo $$configureline && eval $$configureline \
+	     && ( \
+	            echo "export TACC_${PACKAGE}_DIR=$$installdir" \
+	             && echo "export TACC_${PACKAGE}_BIN=$$installdir/bin" \
+	             && echo "export TACC_${PACKAGE}_LIB=$$installdir/lib" \
+	             && echo "export TACC_${PACKAGE}_INC=$$installdir/include" \
+	             && echo "export PATH=\$${PATH}:$$installdir/bin" \
+	             && echo "export LD_LIBRARY_PATH=\$${LD_LIBRARY_PATH}:$$installdir/lib" \
+	        ) \
+	        >$$varfile \
+	    ) 2>&1 | tee configure.log \
+	 && echo && echo "See configure.log" \
+	 && echo "Variable settinging in vars-${TACC_SYSTEM}.sh"
+
+config-help :
+	@( \
+	source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && set -x \
+	 && cd $$srcdir \
+	 && ./configure --help \
+	) 
+

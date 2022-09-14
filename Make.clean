@@ -1,0 +1,19 @@
+# -*- makefile -*-
+info ::
+	@echo "================ clean rules:"
+	@echo "make clean totalclean"
+.PHONY: clean totalclean
+clean ::
+	@( \
+	source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && set -x \
+	 && rm -rf $$builddir \
+	) 
+totalclean :: clean
+	@( \
+	source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && set -x \
+	 && rm -rf $$installdir \
+	) 

@@ -1,0 +1,46 @@
+# -*- makefile -*-
+info ::
+	@echo "================ tar file download:"
+	@echo "make download untar [ TGZURL=... ]"
+.PHONY: download untar
+download :: homedir
+	@( \
+	source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	 && echo "Dowload starting for $${package}-${PACKAGEVERSION}" \
+	 && cd $$homedir \
+	 && if [ ! -z "${TGZRENAME}" ] ; then \
+	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
+	    ; else \
+	        tgz=${TGZURL} && tgz=$${tgz##*/} \
+	    ; fi \
+	 && rm -rf $$tgz $${package}-${PACKAGEVERSION} \
+	 && wget ${TGZURL} \
+	 && if [ ! -z "${TGZRENAME}" ] ; then \
+	        echo " .. rename: ${TGZRENAME}" \
+	         && eval ${TGZRENAME}  ; fi \
+	)
+untar :: 
+	@( \
+	source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	 && echo "Unpacking tar file for $${package}-${PACKAGEVERSION}" \
+	 && cd $$homedir \
+	 && if [ ! -z "${TGZRENAME}" ] ; then \
+	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
+	    ; else \
+	        tgz=${TGZURL} && tgz=$${tgz##*/} \
+	    ; fi \
+	 && set -x \
+	 && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
+	 && echo " .. tar file <<$$tgz>> contains: $$unpackdir, unpacking" \
+	 && rm -rf $$unpackdir \
+	 && tar fxz $$tgz \
+	 && if [ ! "$${unpackdir}" = "$${packagebasename}-${PACKAGEVERSION}" ] ; then \
+	        echo " .. move to $${packagebasename}-${PACKAGEVERSION}" \
+	         && rm -rf $${packagebasename}-${PACKAGEVERSION} \
+	         && mv $${unpackdir} $${packagebasename}-${PACKAGEVERSION} \
+	        ; \
+	    fi \
+	 && ls \
+	)

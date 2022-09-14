@@ -1,0 +1,85 @@
+# -*- makefile -*-
+
+info ::
+	@echo "================ Repository rules"
+
+info ::
+	@echo "make clone GITREPO=.... [ GITPACKAGE=... for nonstandard unpack ]"
+	@echo "make newclone : delete and reclone"
+.PHONY: clone oneclone
+clone oneclone ::
+	@if [ -z "${GITREPO}" ] ; then \
+	    echo "Set variable GITREPO" && exit 1 ; fi
+	@source ${MAKEINCLUDES}/names.sh \
+	 && if [ ! -z "${PACKAGEBASENAME}" ] ; then \
+	        packagebasename=${PACKAGEBASENAME} \
+	    ; else packagebasename=${PACKAGE} ; fi \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	        "" $${packagebasename} \
+	 && package=$${package}-git \
+	 && if [ ! -z "${GITPACKAGE}" ] ; then package=${GITPACKAGE} ; fi \
+	 && echo "Clone of package=${PACKAGE} version=${PACKAGEVERSION} into $${package}" \
+	 && if [ ! -d $${homedir} ] ; then mkdir -p $${homedir} ; fi \
+	 && if [ -d $${homedir}/$${package} ] ; then \
+	    echo ".. repo; already in place" \
+	    ; \
+	else \
+	    echo ".. cloning repo" \
+	     && cd $${homedir} \
+	     && git clone ${GITREPO} $${package} \
+	     && if [ ! -z "${BRANCH}" ] ; then \
+	            echo ".. switching to branch ${BRANCH}" \
+	             && ( cd $${package} && git checkout ${BRANCH} ) \
+	        ; fi \
+	     && if [ ! -z "${SUBMODULE}" ] ; then \
+	            echo ".. loading submodules" \
+	             && ( cd $${package} \
+	                   &&  git submodule init && git submodule update \
+	                ) \
+	        ; fi \
+	     && if [ ! -z "${BOOTSTRAP}" ] ; then \
+	            echo ".. bootstrapping" \
+	             && ( cd $${package} && eval ${BOOTSTRAP} ) \
+	        ; fi \
+	    ; \
+	fi
+
+newclone ::
+	@if [ -z "${GITREPO}" ] ; then \
+	    echo "Set variable GITREPO" && exit 1 ; fi
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && rm -rf $${homedir}/$${package}-git \
+	 && echo "recloning...." \
+	 && make --no-print-directory clone \
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} 
+
+info :: 
+	@echo "make pull : git pull on repo"
+	@echo "    [ PULLAFTERACTIONS= (mods inside the repo) ]"
+.PHONY: pull 
+pull :: clone
+	@if [ -z "${GITREPO}" ] ; then \
+	    echo "Set variable GITREPO" && exit 1 ; fi
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && echo "Updating repo in $${homedir}" \
+	 && cd $${homedir}/$${package}-git \
+	 && git pull \
+	 && if [ ! -z "${BRANCH}" ] ; then \
+	        git checkout ${BRANCH} \
+	        ; \
+	    fi \
+	 && if [ ! -z "${PULLAFTERACTIONS}" ] ; then \
+	        echo ".. also doing: ${PULLAFTERACTIONS}" \
+	         && cd $$srcdir \
+	         && eval ${PULLAFTERACTIONS} \
+	    ; fi
+
+clone pull ::
+	@if [ "${CHMODR}" = "1" ] ; then \
+	    echo "setting permissions open" \
+	     && source ${MAKEINCLUDES}/names.sh \
+	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	     && chmod -R g+rX,o+rX $${homedir}/$${package}-git \
+	 ; fi

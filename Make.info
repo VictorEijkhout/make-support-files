@@ -1,0 +1,39 @@
+# -*- makefile -*-
+
+.PHONY: info
+info :: modules
+	@echo && echo "****************" && echo
+	@echo "make targets for ${PACKAGE}"
+	@if [ -z "${MAKEINCLUDES}" ] ; then \
+	    echo "Set MAKEINCLUDES to location of Make.stuff files" \
+	     && return 1 \
+	 ; fi
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${PACKAGEEXT} ${PACKAGEBASENAME} \
+	 && echo "  source : $$srcdir" \
+	 && echo "  install: $$installdir"
+	@echo && echo "****************" && echo
+
+.PHONY: homedir
+homedir :
+	@if [ -z "${MAKEINCLUDES}" ] ; then \
+	    echo "Set MAKEINCLUDES to location of Make.stuff files" \
+	     && return 1 \
+	 ; fi
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && if [ ! -d "$$homedir" ] ; then \
+	    echo "First creating home dir for ${PACKAGE}" \
+	     && mkdir -p "$$homedir" \
+	    ; \
+	fi
+
+.PHONY: modules
+modules ::
+	@for m in ${MODULES} ; do \
+	    M=`echo $$m | tr a-z A-Z` && tmd=TACC_$${M}_DIR \
+	     && v=`env | grep $${tmd} | cut -d = -f 2` \
+	     && if [ -z "$${v}" ] ; then \
+	            echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
+	        ; fi \
+	 ; done
