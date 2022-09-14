@@ -4,16 +4,25 @@ info ::
 	@echo "make configure config-help"
 	@echo "    [ CONFIGUREFLAGS=... ]"
 	@echo "    [ ECHO=0/1 ]"
+	@echo "    [ PREFIXOVERRIDE=... for non-standard prefix ]"
+	@echo "    [ PREFIXEXTRA=... for attaching to prefix ]"
 .PHONY: configure config-help
 configure :: modules
 	@( \
 	    source ${MAKEINCLUDES}/names.sh \
 	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
 	     && export varfile=$${scriptdir}/vars-$$installext.sh \
+	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
+	            installdir=${PREFIXOVERRIDE} ; fi \
+	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
+	            installdir=$${installdir}-${PREFIXEXTRA} ; fi \
 	     && if [ "${ECHO}" = "1" ] ; then set -x ; fi \
 	     && source ${MAKEINCLUDES}/compilers.sh && setmpicompilers \
 	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
 	     && cd $$srcdir \
+	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
+	            echo "First autogen" \
+	             && ./autogen.sh ; fi \
 	     && if [ ! -z "${CFLAGS}" ] ; then \
 	            export CFLAGS="${CFLAGS}" ; fi \
 	     && if [ ! -z "${CXXFLAGS}" ] ; then \

@@ -2,12 +2,30 @@
 info ::
 	@echo "================ make; compile and install:"
 	@echo "make install"
+	@echo "    [ SUDO=sudo or not ]"
 .PHONY: install
-install :
-	@( \
-	source ${MAKEINCLUDES}/names.sh \
+install ::
+	@if [ -z "${NOINSTALL}" ] ; then \
+	    ( \
+	    source ${MAKEINCLUDES}/names.sh \
+	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	     && set -x \
+	     && cd $$srcdir \
+	     && make \
+	     && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
+	        ; else echo "Installing...." ; fi \
+	     && ${SUDO} make install \
+	    ) 2>&1 | tee install.log \
+	; fi
+
+info ::
+	@echo "make public : install dir"
+	@echo "    [ PREFIXOVERRIDE=... for non-standard prefix ]"
+.PHONY: public
+public :
+	@source ${MAKEINCLUDES}/names.sh \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
-	 && set -x \
-	 && cd $$srcdir \
-	 && make && make install \
-	) 2>&1 | tee install.log
+	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
+	        installdir=${PREFIXOVERRIDE} ; fi \
+	 && echo "opening $$installdir" \
+	 && ${SUDO} chmod -R g+rX,o+rX $$installdir

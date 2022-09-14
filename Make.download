@@ -31,8 +31,8 @@ untar ::
 	    ; else \
 	        tgz=${TGZURL} && tgz=$${tgz##*/} \
 	    ; fi \
-	 && set -x \
 	 && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
+	 && unpackdir=$${unpackdir%%/} \
 	 && echo " .. tar file <<$$tgz>> contains: $$unpackdir, unpacking" \
 	 && rm -rf $$unpackdir \
 	 && tar fxz $$tgz \
