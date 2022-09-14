@@ -1,0 +1,13 @@
+# -*- makefile -*-
+info ::
+	@echo "================ make; compile and install:"
+	@echo "make install"
+.PHONY: install
+install :
+	@( \
+	source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && set -x \
+	 && cd $$srcdir \
+	 && make && make install \
+	) 2>&1 | tee install.log

@@ -1,0 +1,14 @@
+# -*- makefile -*-
+info ::
+	@echo "================ cmake compile and install:"
+	@echo "make build"
+.PHONY: build
+build :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
+	 && ( \
+	    set -x \
+	     && cd $$builddir \
+	     && make VERBOSE=1 && make install \
+	    ) 2>&1 | tee install.log \
+	 && echo && echo "Installation in: $$installdir" && echo
