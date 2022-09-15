@@ -34,6 +34,7 @@ configure : cmakeopts
 	        ; else \
 	            ( cd $$builddir \
 	             && cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
+	                    $$srcdir \
 	            ) \
 	        ; fi \
 	     && ( \
