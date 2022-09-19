@@ -2,7 +2,7 @@
 
 .PHONY: info
 info :: modules
-	@echo && echo "****************" && echo
+	@echo && echo "================ General info" && echo
 	@echo "make targets for ${PACKAGE}"
 	@if [ -z "${MAKEINCLUDES}" ] ; then \
 	    echo "Set MAKEINCLUDES to location of Make.stuff files" \
@@ -13,8 +13,10 @@ info :: modules
 	 && echo "  source : $$srcdir" \
 	 && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	        installdir=$${installdir}-${PREFIXEXTRA} ; fi \
-	 && echo "  install: $$installdir"
-	@echo && echo "****************" && echo
+	 && echo "  install: $$installdir" \
+	 && echo "  current installations:" \
+	 && ls -d $${homedir}/installation* \
+	 && echo
 
 .PHONY: homedir
 homedir :
