@@ -2,7 +2,7 @@
 info ::
 	@echo "================ cmake compile and install:"
 	@echo "make build"
-.PHONY: build
+.PHONY: build install
 build :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
@@ -12,3 +12,5 @@ build :
 	     && make VERBOSE=1 && make install \
 	    ) 2>&1 | tee install.log \
 	 && echo && echo "Installation in: $$installdir" && echo
+install :
+	@echo && echo ">>>> Error: no install rule, use build instead <<<<" && echo
