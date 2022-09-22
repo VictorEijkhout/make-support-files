@@ -5,6 +5,7 @@ info ::
 .PHONY: build install
 build :
 	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 && ( \
 	    set -x \

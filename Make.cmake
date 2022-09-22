@@ -11,6 +11,7 @@ cmakeopts ::
 configure : cmakeopts
 	@( \
 	    source ${MAKEINCLUDES}/names.sh \
+	     && export MODE=${MODE} \
 	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	     && export varfile=$${scriptdir}/vars-$$installext.sh \
 	     && set -x \

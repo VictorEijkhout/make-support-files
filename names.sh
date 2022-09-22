@@ -11,7 +11,13 @@ function setnames () {
 	        export packagebasename=$package \
 	    ; fi \
 	&& export srcdir=$homedir/${packagebasename}-$3 \
-	&& export installext=$3-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER}-${TACC_FAMILY_MPI} \
+	&& if [ "${MODE}" = "seq" ] ; then \
+	        export installext=$3-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER} \
+	        ; \
+	   else \
+	        export installext=$3-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER}-${TACC_FAMILY_MPI} \
+	        ; \
+	   fi \
 	&& if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export installext=${installext}-$4 ; fi \
 	&& export builddir=$homedir/build-${installext} \
