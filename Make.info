@@ -15,7 +15,7 @@ info :: modules
 	        installdir=$${installdir}-${PREFIXEXTRA} ; fi \
 	 && echo "  install: $$installdir" \
 	 && echo "  current installations:" \
-	 && ls -d $${homedir}/installation* \
+	 && ls -d $${homedir}/installation* 2>/dev/null || echo >/dev/null \
 	 && echo
 
 .PHONY: homedir
