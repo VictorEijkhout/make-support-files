@@ -9,7 +9,7 @@ info :: modules
 	     && return 1 \
 	 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
 	 && echo "  source : $$srcdir" \
 	 && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	        installdir=$${installdir}-${PREFIXEXTRA} ; fi \
