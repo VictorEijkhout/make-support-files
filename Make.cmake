@@ -3,6 +3,7 @@ info ::
 	@echo "================ cmake configure:"
 	@echo "make configure"
 	@echo "    [ CMAKEFLAGS=... ] [ INSTALLEXT=... (extra extension ) ] "
+	@echo "    [ PKGCONFIG non-blank causes lib/pkgconfig to be used ]"
 	@echo "    [ PKG_CONFIG_PATHS / PKG_CONFIG_ADDS = .... ]"
 	@echo "    [ CMAKE_PREFIX_PATH / CMAKE_PREFIX_ADDS = ... ]"
 	@echo "    [ INSTALLROOT=... (alternative install root) ]"
@@ -18,7 +19,14 @@ configure : cmakeopts
 	     && set -x \
 	     && rm -rf $$builddir && mkdir -p $$builddir \
 	     && find $$builddir -name CMakeCache.txt -exec rm {} \; \
-	     && export PKG_CONFIG_PATH=${PKG_CONFIG_ADDS}${PKG_CONFIG_PATH} \
+	     \
+	     && export PKGCONFIGPATH=${PKG_CONFIG_PATH} \
+	     && if [ ! -z "${PKGCONFIG}" ] ; then \
+	            export PKGCONFIGPATH=$${installdir}/lib/pkgconfig:$${PKGCONFIGPATH} \
+	        ; fi \
+	     && export PKGCONFIGPATH=${PKG_CONFIG_ADDS}$${PKGCONFIGPATH} \
+	     && export PKG_CONFIG_PATH=$${PKGCONFIGPATH} \
+	     \
 	     && export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_ADDS}${CMAKE_PREFIX_PATH} \
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
 	     && if [ "${TACC_FAMILY_COMPILER}" = "intel" ] ; then \
@@ -48,6 +56,10 @@ configure : cmakeopts
 	         ) \
 	        ${VARSPROCESS} \
 	        >$$varfile \
+	     && if [ ! -z "${PKGCONFIG}" ] ; then \
+	            echo "export PKG_CONFIG_PATH=$${PKGCONFIGPATH}" \
+	                >$$varfile \
+	        ; fi \
 	     && echo "Variable settings in $$varfile" \
 	    ) 2>&1 | tee configure.log
 
