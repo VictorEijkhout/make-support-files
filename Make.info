@@ -9,6 +9,7 @@ info :: modules
 	     && return 1 \
 	 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
 	 && echo "  source : $$srcdir" \
 	 && if [ ! -z "${PREFIXEXTRA}" ] ; then \
