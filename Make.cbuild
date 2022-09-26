@@ -2,6 +2,7 @@
 info ::
 	@echo "================ cmake compile and install:"
 	@echo "make build"
+	@echo "    [ SUDO= blank or sudo ]"
 .PHONY: build install
 build :
 	@source ${MAKEINCLUDES}/names.sh \
@@ -10,7 +11,8 @@ build :
 	 && ( \
 	    set -x \
 	     && cd $$builddir \
-	     && make VERBOSE=1 && make install \
+	     && make VERBOSE=1 \
+	     && ${SUDO} make install \
 	    ) 2>&1 | tee install.log \
 	 && echo && echo "Installation in: $$installdir" && echo
 install :

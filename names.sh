@@ -21,5 +21,9 @@ function setnames () {
 	&& if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export installext=${installext}-$4 ; fi \
 	&& export builddir=$homedir/build-${installext} \
-        && export installdir=$homedir/installation-${installext}
+        && if [ -z "${INSTALLROOT}" ] ; then \
+	    export installdir=$homedir/installation-${installext} \
+	   ; else \
+	    export installdir=${INSTALLROOT}/$package/installation-${installext} \
+	   ; fi
 }

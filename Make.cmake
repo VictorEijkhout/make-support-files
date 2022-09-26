@@ -5,13 +5,14 @@ info ::
 	@echo "    [ CMAKEFLAGS=... ] [ INSTALLEXT=... (extra extension ) ] "
 	@echo "    [ PKG_CONFIG_PATHS / PKG_CONFIG_ADDS = .... ]"
 	@echo "    [ CMAKE_PREFIX_PATH / CMAKE_PREFIX_ADDS = ... ]"
+	@echo "    [ INSTALLROOT=... (alternative install root) ]"
 .PHONY: configure cmakeopts
 cmakeopts ::
 	@touch cmakeopts
 configure : cmakeopts
 	@( \
 	    source ${MAKEINCLUDES}/names.sh \
-	     && export MODE=${MODE} \
+	     && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	     && export varfile=$${scriptdir}/vars-$$installext.sh \
 	     && set -x \
