@@ -62,9 +62,10 @@ pull :: clone
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
-	 && echo "Updating repo in $${homedir}" \
-	 && cd $${homedir}/$${package}-git \
+	 && export MODE=${MODE} \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	 && echo "Updating repo: $${srcdir}" \
+	 && cd $${srcdir} \
 	 && git pull \
 	 && if [ ! -z "${BRANCH}" ] ; then \
 	        git checkout ${BRANCH} \
