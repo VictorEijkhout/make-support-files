@@ -5,7 +5,8 @@ info ::
 
 info ::
 	@echo "make clone GITREPO=.... [ GITPACKAGE=... for nonstandard unpack ]"
-	@echo "make newclone : delete and reclone"
+	@echo "     oneclone : non-recursive rule"
+	@echo "     newclone : delete and reclone"
 .PHONY: clone oneclone
 clone oneclone ::
 	@if [ -z "${GITREPO}" ] ; then \
@@ -18,13 +19,15 @@ clone oneclone ::
 	        "" $${packagebasename} \
 	 && package=$${package}-git \
 	 && if [ ! -z "${GITPACKAGE}" ] ; then package=${GITPACKAGE} ; fi \
-	 && echo "Clone of package=${PACKAGE} version=${PACKAGEVERSION} into $${package}" \
-	 && if [ ! -d $${homedir} ] ; then mkdir -p $${homedir} ; fi \
+	 && echo "Clone of package=${PACKAGE}, version=${PACKAGEVERSION} into $${package}" \
+	 && if [ ! -d $${homedir} ] ; then \
+	        echo " .. first creating homedir=$${homedir}" \
+	         && mkdir -p $${homedir} ; fi \
 	 && if [ -d $${homedir}/$${package} ] ; then \
-	    echo ".. repo; already in place" \
+	    echo ".. repo already in place: $${homedir}/$${package}" \
 	    ; \
 	else \
-	    echo ".. cloning repo" \
+	    echo ".. cloning repo ${GITREPO} into $${homedir}/$${package}" \
 	     && cd $${homedir} \
 	     && git clone ${GITREPO} $${package} \
 	     && if [ ! -z "${BRANCH}" ] ; then \
