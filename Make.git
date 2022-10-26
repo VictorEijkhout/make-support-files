@@ -5,6 +5,11 @@ info ::
 
 info ::
 	@echo "make clone GITREPO=.... [ GITPACKAGE=... for nonstandard unpack ]"
+	@if [ -z "${GITREPO}" ] ; then \
+	    echo "    WARNING: variable GITREPO not set" \
+	 ; else \
+	    echo "    ( currently using GITREPO=${GITREPO} )" \
+	 ; fi
 	@echo "     oneclone : non-recursive rule"
 	@echo "     newclone : delete and reclone"
 .PHONY: clone oneclone
