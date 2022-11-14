@@ -3,7 +3,7 @@ info ::
 	@echo "================ cmake configure:"
 	@echo "make configure"
 	@echo "    [ CMAKEFLAGS=... ] [ INSTALLEXT=... (extra extension ) ] "
-	@echo "    [ PKGCONFIG non-blank causes lib/pkgconfig to be used ]"
+	@echo "    [ PKGCONFIGSET :  non-blank is added to vars file ]"
 	@echo "    [ PKG_CONFIG_PATHS / PKG_CONFIG_ADDS = .... ]"
 	@echo "    [ CMAKE_PREFIX_PATH / CMAKE_PREFIX_ADDS = ... ]"
 	@echo "    [ INSTALLROOT=... (alternative install root) ]"
@@ -16,14 +16,10 @@ configure : cmakeopts
 	     && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	     && export varfile=$${scriptdir}/vars-$$installext.sh \
-	     && set -x \
 	     && rm -rf $$builddir && mkdir -p $$builddir \
 	     && find $$builddir -name CMakeCache.txt -exec rm {} \; \
 	     \
 	     && export PKGCONFIGPATH=${PKG_CONFIG_PATH} \
-	     && if [ ! -z "${PKGCONFIG}" ] ; then \
-	            export PKGCONFIGPATH=$${installdir}/lib/pkgconfig:$${PKGCONFIGPATH} \
-	        ; fi \
 	     && export PKGCONFIGPATH=${PKG_CONFIG_ADDS}$${PKGCONFIGPATH} \
 	     && export PKG_CONFIG_PATH=$${PKGCONFIGPATH} \
 	     \
@@ -56,10 +52,9 @@ configure : cmakeopts
 	         ) \
 	        ${VARSPROCESS} \
 	        >$$varfile \
-	     && if [ ! -z "${PKGCONFIG}" ] ; then \
-	            echo "export PKG_CONFIG_PATH=$${PKGCONFIGPATH}" \
-	                >$$varfile \
+	     && if [ ! -z "${PKGCONFIGSET}" ] ; then \
+	            echo "export PKG_CONFIG_PATH=\$${PKG_CONFIG_PATH}:\$${TACC_${PACKAGE}_DIR}}/${PKGCONFIGSET}" \
+	                >>$$varfile \
 	        ; fi \
 	     && echo "Variable settings in $$varfile" \
 	    ) 2>&1 | tee configure.log
-

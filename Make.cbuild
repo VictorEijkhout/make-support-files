@@ -17,3 +17,13 @@ build :
 	 && echo && echo "Installation in: $$installdir" && echo
 install :
 	@echo && echo ">>>> Error: no install rule, use build instead <<<<" && echo
+
+info ::
+	@echo "make public : install dir"
+	@echo "    [ INSTALLEXT as for cmake configure ]"
+.PHONY: public
+public :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
+	 && echo "opening $$installdir" \
+	 && ${SUDO} chmod -R g+rX,o+rX $$installdir
