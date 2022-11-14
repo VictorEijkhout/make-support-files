@@ -53,7 +53,7 @@ configure : cmakeopts
 	        ${VARSPROCESS} \
 	        >$$varfile \
 	     && if [ ! -z "${PKGCONFIGSET}" ] ; then \
-	            echo "export PKG_CONFIG_PATH=\$${PKG_CONFIG_PATH}:\$${TACC_${PACKAGE}_DIR}}/${PKGCONFIGSET}" \
+	            echo "export PKG_CONFIG_PATH=\$${PKG_CONFIG_PATH}:\$${TACC_${PACKAGE}_DIR}/${PKGCONFIGSET}" \
 	                >>$$varfile \
 	        ; fi \
 	     && echo "Variable settings in $$varfile" \
