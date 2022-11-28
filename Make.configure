@@ -45,7 +45,7 @@ configure :: modules
 	        >$$varfile \
 	    ) 2>&1 | tee configure.log \
 	 && echo && echo "See configure.log" \
-	 && echo "Variable settinging in vars-${TACC_SYSTEM}.sh"
+	 && echo "Variable settings in $${varfile}
 
 config-help :
 	@( \
