@@ -5,6 +5,7 @@ info ::
 
 info ::
 	@echo "make clone GITREPO=.... [ GITPACKAGE=... for nonstandard unpack ]"
+	@echo "    [ BRANCH=... (nonzero switches) ]"
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "    WARNING: variable GITREPO not set" \
 	 ; else \
