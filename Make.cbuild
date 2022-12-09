@@ -6,7 +6,7 @@ info ::
 .PHONY: build install
 build :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
+	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 && ( \
 	    set -x \
@@ -24,6 +24,7 @@ info ::
 .PHONY: public
 public :
 	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 && echo "opening $$installdir" \
 	 && ${SUDO} chmod -R g+rX,o+rX $$installdir
