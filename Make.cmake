@@ -43,18 +43,11 @@ configure : cmakeopts
 	                    $$srcdir \
 	            ) \
 	        ; fi \
-	     && ( \
-	            echo "# Installation variables for ${PACKAGE}" \
-	             && echo "# Using CC=$$CC CXX=$$CXX FC=$$FC" \
-	             && echo "export TACC_${PACKAGE}_DIR=$${installdir}" \
-	             && echo "export TACC_${PACKAGE}_LIB=$${installdir}/lib" \
-	             && echo "export TACC_${PACKAGE}_INC=$${installdir}/include" \
-	         ) \
-	        ${VARSPROCESS} \
-	        >$$varfile \
-	     && if [ ! -z "${PKGCONFIGSET}" ] ; then \
-	            echo "export PKG_CONFIG_PATH=\$${PKG_CONFIG_PATH}:\$${TACC_${PACKAGE}_DIR}/${PKGCONFIGSET}" \
-	                >>$$varfile \
-	        ; fi \
-	     && echo "Variable settings in $$varfile" \
+	     && make --no-print-directory varsfile VARFILE=$$varfile \
+	            PACKAGE=${PACKAGE} \
+	            INSTALLDIR="$${installdir}" \
+	            LIBDIR="$${installdir}/lib" \
+	            INCDIR="$${installdir}/include" \
+	            PKGCONFIGSET="${PKGCONFIGSET}" \
 	    ) 2>&1 | tee configure.log
+include ${MAKEINCLUDES}/Make.vars
