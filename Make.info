@@ -43,3 +43,17 @@ modules ::
 	        ; fi \
 	 ; done
 
+.PHONY: findfile findstring
+info ::
+	@echo "    make findfile   FILE=..."
+	@echo "    make findstring STRING=..."
+findfile :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	 && find $$homedir -name \*${FILE}\*
+findstring :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	 && find $$homedir -type f -exec grep ${STRING} {} \;
