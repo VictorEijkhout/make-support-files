@@ -23,6 +23,9 @@ configure :: modules
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
 	            echo "First autogen" \
 	             && ./autogen.sh ; fi \
+	     && if [ ! -f "configure" -a -f configure.ac ] ; then \
+	            echo "First autoreconf" \
+	             && autoreconf -i ; fi \
 	     && if [ ! -z "${CFLAGS}" ] ; then \
 	            export CFLAGS="${CFLAGS}" ; fi \
 	     && if [ ! -z "${CXXFLAGS}" ] ; then \
