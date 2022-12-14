@@ -10,6 +10,7 @@ function setnames () {
 	&& export scriptdir=`pwd` \
 	&& PACKAGE=$2 \
 	&& package=$( echo ${PACKAGE} | tr A-Z a-z ) \
+	&& PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
 	&& export homedir=$1/$package \
 	&& if [ ! -z "$5" ] ; then \
 	        export packagebasename=$5 \
