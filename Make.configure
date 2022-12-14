@@ -17,7 +17,9 @@ configure :: modules
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	            installdir=$${installdir}-${PREFIXEXTRA} ; fi \
 	     && if [ "${ECHO}" = "1" ] ; then set -x ; fi \
-	     && source ${MAKEINCLUDES}/compilers.sh && setmpicompilers \
+	     && source ${MAKEINCLUDES}/compilers.sh \
+	     && if [ "${MODE}" = "mpi" ] ; then \
+	            setmpicompilers ; else setcompilers ; fi \
 	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
 	     && cd $$srcdir \
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
