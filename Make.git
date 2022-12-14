@@ -6,6 +6,7 @@ info ::
 info ::
 	@echo "make clone GITREPO=.... [ GITPACKAGE=... for nonstandard unpack ]"
 	@echo "    [ BRANCH=... (nonzero switches) ]"
+	@echo "    [ SUBMODULE=... (nonzero for init and update) ]"
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "    WARNING: variable GITREPO not set" \
 	 ; else \
@@ -61,7 +62,8 @@ newclone ::
 	 && rm -rf $${homedir}/$${package}-git \
 	 && echo "recloning...." \
 	 && make --no-print-directory clone \
-	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} 
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        BRANCH=${BRANCH} SUBMODULE=${SUBMODULE} BOOTSTRAP="${BOOTSTRAP}"
 
 info :: 
 	@echo "make pull : git pull on repo"
