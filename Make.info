@@ -11,7 +11,7 @@ info :: modules
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
-	 && if [ ! "$$srcdir" ] ; then \
+	 && if [ ! -d "$$srcdir" ] ; then \
 	        echo "  source : $$srcdir (missing)" \
 	    ; else \
 	        echo "  source : $$srcdir" \
