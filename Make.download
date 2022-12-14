@@ -45,4 +45,4 @@ untar ::
 	    fi \
 	 && echo "unpacked: `pwd`/$${unpackdir}" \
 	 && ls \
-	)
+	) 2>&1 | tee untar.log
