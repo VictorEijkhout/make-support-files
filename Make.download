@@ -37,12 +37,17 @@ untar ::
 	 && echo " .. tar file <<$$tgz>> contains: $$unpackdir, unpacking" \
 	 && rm -rf $$unpackdir \
 	 && tar fxz $$tgz \
-	 && if [ ! "$${unpackdir}" = "$${packagebasename}-${PACKAGEVERSION}" ] ; then \
-	        echo " .. move to $${packagebasename}-${PACKAGEVERSION}" \
-	         && rm -rf $${packagebasename}-${PACKAGEVERSION} \
-	         && mv $${unpackdir} $${packagebasename}-${PACKAGEVERSION} \
+	 && packagedir=$${packagebasename}-${PACKAGEVERSION} \
+	 && if [ ! "$${unpackdir}" = "$${packagedir}" ] ; then \
+	        echo " .. move to $${packagedir}" \
+	         && rm -rf $${packagedir} \
+	         && mv $${unpackdir} $${packagedir} \
 	        ; \
 	    fi \
-	 && echo "unpacked: `pwd`/$${unpackdir}" \
+	 && if [ ! -z "${BOOTSTRAP}" ] ; then \
+	        echo ".. bootstrapping" \
+	         && ( cd $${packagedir} && eval ${BOOTSTRAP} ) \
+	    ; fi \
+	 && echo "unpacked: $${packagedir}" \
 	 && ls \
 	) 2>&1 | tee untar.log
