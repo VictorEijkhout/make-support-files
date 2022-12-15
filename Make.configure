@@ -27,7 +27,7 @@ configure :: modules
 	             && ./autogen.sh ; fi \
 	     && if [ ! -f "configure" -a -f configure.ac ] ; then \
 	            echo "First autoreconf" \
-	             && autoreconf -i ; fi \
+	             && aclocal && autoconf ; fi \
 	     && if [ ! -z "${CFLAGS}" ] ; then \
 	            export CFLAGS="${CFLAGS}" ; fi \
 	     && if [ ! -z "${CXXFLAGS}" ] ; then \
@@ -38,7 +38,11 @@ configure :: modules
 	            echo "Sourcing: ${CONFIGURE_SOURCE_THIS}" \
 	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
 	     && configureline="./configure --prefix=$$installdir ${CONFIGURE_FLAGS}" \
-	     && echo "Configuring as:" && echo $$configureline && eval $$configureline \
+	     && echo "Configuring as:" && echo $$configureline \
+	     && echo " .. with CC=$${CC} CXX=$${CXX} FC=$${FC}" \
+	     && if [ ! -z "$${CFLAGS}$${CXXFLAGS}$${FFLAGS}" ] ; then \
+	            echo " .. and CFLAGS=$${CFLAGS}" ; fi \
+	     && eval $$configureline \
 	     && ( \
 	            echo "export TACC_${PACKAGE}_DIR=$$installdir" \
 	             && echo "export TACC_${PACKAGE}_BIN=$$installdir/bin" \
