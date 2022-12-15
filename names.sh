@@ -34,5 +34,5 @@ function setnames () {
 	   ; else \
 	    export installdir=${INSTALLROOT}/$package/installation-${installext} \
 	   ; fi \
-        && export varfile=$${scriptdir}/vars-$$installext.sh
+        && export varfile=${scriptdir}/vars-${installext}.sh
 }
