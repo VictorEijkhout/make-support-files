@@ -15,7 +15,6 @@ configure : cmakeopts
 	    source ${MAKEINCLUDES}/names.sh \
 	     && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	     && export varfile=$${scriptdir}/vars-$$installext.sh \
 	     && rm -rf $$builddir && mkdir -p $$builddir \
 	     && find $$builddir -name CMakeCache.txt -exec rm {} \; \
 	     \
