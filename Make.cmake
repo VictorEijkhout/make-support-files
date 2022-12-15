@@ -9,7 +9,7 @@ info ::
 	@echo "    [ INSTALLROOT=... (alternative install root) ]"
 .PHONY: configure cmakeopts
 cmakeopts ::
-	@touch cmakeopts
+	@touch .cmakeopts
 configure : cmakeopts
 	@( \
 	    source ${MAKEINCLUDES}/names.sh \
