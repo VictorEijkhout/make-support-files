@@ -9,20 +9,21 @@ function setnames () {
     echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=%5" >/dev/null \
 	&& export scriptdir=`pwd` \
 	&& PACKAGE=$2 \
-	&& package=$( echo ${PACKAGE} | tr A-Z a-z ) \
-	&& PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
+	&& export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
+	&& export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
+	&& export packageversion=$3 \
 	&& export homedir=$1/$package \
 	&& if [ ! -z "$5" ] ; then \
-	        export packagebasename=$5 \
+	      export packagebasename=$5 \
 	    ; else \
-	        export packagebasename=$package \
+	      export packagebasename=$package \
 	    ; fi \
-	&& export srcdir=$homedir/${packagebasename}-$3 \
+	&& export srcdir=$homedir/${packagebasename}-${packageversion} \
 	&& if [ "${MODE}" = "seq" ] ; then \
-	        export installext=$3-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER} \
+	      export installext=${packageversion}-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER} \
 	        ; \
 	   else \
-	        export installext=$3-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER}-${TACC_FAMILY_MPI} \
+	      export installext=${packageversion}-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER}-${TACC_FAMILY_MPI} \
 	        ; \
 	   fi \
 	&& if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
