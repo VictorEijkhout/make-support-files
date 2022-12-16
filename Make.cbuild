@@ -11,8 +11,8 @@ build :
 	 && ( \
 	    set -x \
 	     && cd $$builddir \
-	     && make VERBOSE=1 \
-	     && ${SUDO} make install \
+	     && make --no-print-directory VERBOSE=1 \
+	     && ${SUDO} make --no-print-directory install \
 	    ) 2>&1 | tee install.log \
 	 && echo && echo "Installation in: $$installdir" && echo
 install :

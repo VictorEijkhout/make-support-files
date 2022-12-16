@@ -11,10 +11,10 @@ install ::
 	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
 	     && set -x \
 	     && cd $$srcdir \
-	     && make \
+	     && make --no-print-directory \
 	     && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
 	        ; else echo "Installing...." ; fi \
-	     && ${SUDO} make install \
+	     && ${SUDO} make --no-print-directory install \
 	    ) 2>&1 | tee install.log \
 	; fi
 
