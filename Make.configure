@@ -43,17 +43,18 @@ configure :: modules
 	            echo " .. and CFLAGS=$${CFLAGS}" ; fi \
 	     && eval $$configureline \
 	     && ( \
-	            echo "export TACC_${PACKAGE}_DIR=$$installdir" \
-	             && echo "export TACC_${PACKAGE}_BIN=$$installdir/bin" \
-	             && echo "export TACC_${PACKAGE}_LIB=$$installdir/lib" \
-	             && echo "export TACC_${PACKAGE}_INC=$$installdir/include" \
-	             && echo "export PATH=\$${PATH}:$$installdir/bin" \
-	             && echo "export LD_LIBRARY_PATH=\$${LD_LIBRARY_PATH}:$$installdir/lib" \
+	        cd $$scriptdir \
+	         && make --no-print-directory varsfile VARSFILE=$$varfile \
+	            PACKAGE=${PACKAGE} \
+	            INSTALLDIR="$${installdir}" \
+	            LIBDIR="$${installdir}/lib" \
+	            INCDIR="$${installdir}/include" \
+	            PKGCONFIGSET="${PKGCONFIGSET}" \
 	        ) \
-	        >$$varfile \
 	    ) 2>&1 | tee configure.log \
 	 && echo && echo "See configure.log" \
 	 && echo "Variable settings in $${varfile}"
+include ${MAKEINCLUDES}/Make.vars
 
 config-help :
 	@( \
