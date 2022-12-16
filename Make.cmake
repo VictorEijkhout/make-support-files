@@ -43,7 +43,7 @@ configure : cmakeopts
 	                    $$srcdir \
 	            ) \
 	        ; fi \
-	     && make --no-print-directory varsfile VARFILE=$$varfile \
+	     && make --no-print-directory varsfile VARSFILE=$$varfile \
 	            PACKAGE=${PACKAGE} \
 	            INSTALLDIR="$${installdir}" \
 	            LIBDIR="$${installdir}/lib" \
