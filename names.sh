@@ -19,18 +19,21 @@ function setnames () {
 	      export packagebasename=$package \
 	    ; fi \
 	&& export srcdir=$homedir/${packagebasename}-${packageversion} \
+	&& export moduledir=${MODULEROOT}/${TACC_FAMILY_COMPILER} \
 	&& if [ "${MODE}" = "seq" ] ; then \
 	      export installext=${packageversion}-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER} \
 	        ; \
 	   else \
 	      export installext=${packageversion}-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER}-${TACC_FAMILY_MPI} \
+	       && export moduledir=$${moduledir}/${TACC_FAMILY_MPI} \
 	        ; \
 	   fi \
+	&& export moduledir=${moduledir}/${package} \
 	&& if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export installext=${installext}-$4 ; fi \
-	&& export builddir=$homedir/build-${installext} \
+	&& export builddir=${homedir}/build-${installext} \
         && if [ -z "${INSTALLROOT}" ] ; then \
-	    export installdir=$homedir/installation-${installext} \
+	    export installdir=${homedir}/installation-${installext} \
 	   ; else \
 	    export installdir=${INSTALLROOT}/$package/installation-${installext} \
 	   ; fi \

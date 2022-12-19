@@ -49,5 +49,6 @@ configure : cmakeopts
 	            LIBDIR="$${installdir}/lib" \
 	            INCDIR="$${installdir}/include" \
 	            PKGCONFIGSET="${PKGCONFIGSET}" \
+	     && make --no-print-directory varsmodule \
 	    ) 2>&1 | tee configure.log
 include ${MAKEINCLUDES}/Make.vars
