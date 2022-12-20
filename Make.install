@@ -18,6 +18,19 @@ install ::
 	    ) 2>&1 | tee install.log \
 	    ; fi \
 	 && ( cd $$scriptdir && make --no-print-directory varsmodule )
+old_vars_file_stuff :
+	foo \
+	     && ( \
+	        cd $$scriptdir \
+	         && make --no-print-directory varsfile VARSFILE=$$varfile \
+	            PACKAGE=${PACKAGE} \
+	            INSTALLDIR="$${installdir}" \
+	            LIBDIR="$${installdir}/lib" \
+	            INCDIR="$${installdir}/include" \
+	            PKGCONFIGSET="${PKGCONFIGSET}" \
+	 && echo "Variable settings in $${varfile}"
+	        ) \
+	foo
 
 include ${MAKEINCLUDES}/Make.vars
 

@@ -42,19 +42,8 @@ configure :: modules
 	     && if [ ! -z "$${CFLAGS}$${CXXFLAGS}$${FFLAGS}" ] ; then \
 	            echo " .. and CFLAGS=$${CFLAGS}" ; fi \
 	     && eval $$configureline \
-	     && ( \
-	        cd $$scriptdir \
-	         && make --no-print-directory varsfile VARSFILE=$$varfile \
-	            PACKAGE=${PACKAGE} \
-	            INSTALLDIR="$${installdir}" \
-	            LIBDIR="$${installdir}/lib" \
-	            INCDIR="$${installdir}/include" \
-	            PKGCONFIGSET="${PKGCONFIGSET}" \
-	        ) \
 	    ) 2>&1 | tee configure.log \
 	 && echo && echo "See configure.log" \
-	 && echo "Variable settings in $${varfile}"
-include ${MAKEINCLUDES}/Make.vars
 
 config-help :
 	@( \
