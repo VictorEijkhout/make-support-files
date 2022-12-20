@@ -9,12 +9,13 @@ build :
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 && ( \
-	    set -x \
-	     && cd $$builddir \
+	    cd $$builddir \
 	     && make --no-print-directory VERBOSE=1 \
 	     && ${SUDO} make --no-print-directory install \
 	    ) 2>&1 | tee install.log \
+	 && ( cd $$scriptdir && make --no-print-directory varsmodule ) \
 	 && echo && echo "Installation in: $$installdir" && echo
+include ${MAKEINCLUDES}/Make.vars
 install :
 	@echo && echo ">>>> Error: no install rule, use build instead <<<<" && echo
 
