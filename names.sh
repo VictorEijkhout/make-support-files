@@ -25,7 +25,7 @@ function setnames () {
 	        ; \
 	   else \
 	      export installext=${packageversion}-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER}-${TACC_FAMILY_MPI} \
-	       && export moduledir=$${moduledir}/${TACC_FAMILY_MPI} \
+	       && export moduledir=${moduledir}/${TACC_FAMILY_MPI} \
 	        ; \
 	   fi \
 	&& export moduledir=${moduledir}/${package} \
