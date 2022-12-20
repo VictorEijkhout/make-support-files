@@ -44,7 +44,7 @@ info ::
 	@echo "make public : install dir"
 	@echo "    [ PREFIXOVERRIDE=... for non-standard prefix ]"
 .PHONY: public
-public :
+public ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
 	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
