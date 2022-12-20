@@ -1,4 +1,10 @@
 # -*- makefile -*-
+################################################################
+####
+#### Make.install : make & install rules for connfigure-based packages
+####
+################################################################
+
 info ::
 	@echo "================ make; compile and install:"
 	@echo "make install"
@@ -10,7 +16,7 @@ install ::
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
 	 && if [ -z "${NOINSTALL}" ] ; then \
 	    ( \
-	     && cd $$srcdir \
+	    cd $$srcdir \
 	     && make --no-print-directory \
 	     && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
 	        ; else echo "Installing...." ; fi \
