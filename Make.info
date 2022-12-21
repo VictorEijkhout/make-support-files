@@ -19,8 +19,9 @@ info :: modules
 	 && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	        installdir=$${installdir}-${PREFIXEXTRA} ; fi \
 	 && echo "  install: $$installdir" \
-	 && echo "  current installations:" \
+	 && echo && echo "Already available installations:" \
 	 && ls -d $${homedir}/installation* 2>/dev/null || echo >/dev/null \
+	 && make --no-print-directory moduleprint \
 	 && echo
 
 .PHONY: homedir
@@ -37,7 +38,7 @@ homedir :
 	    ; \
 	fi
 
-.PHONY: modules
+.PHONY: modules moduleprint
 modules ::
 	@for m in ${MODULES} ; do \
 	    M=`echo $$m | tr a-z A-Z` && tmd=TACC_$${M}_DIR \
@@ -46,6 +47,14 @@ modules ::
 	            echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
 	        ; fi \
 	 ; done
+moduleprint ::
+	@if [ ! -z "${MODULES}" ] ; then \
+	    echo && echo "Loaded prereq modules:" \
+	     && for m in ${MODULES} ; do \
+	            module list $$m 2>&1 \
+	            | grep -v Matching | awk 'NF>0 {print}' \
+	         ; done \
+	 ; fi
 
 .PHONY: ls findfile findstring installext
 info ::
