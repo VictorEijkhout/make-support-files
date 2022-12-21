@@ -19,7 +19,7 @@ install ::
 	 && if [ -z "${NOINSTALL}" ] ; then \
 	    ( \
 	    cd $$srcdir \
-	     && make --no-print-directory -j VERBOSE=1 ${JCOUNT} \
+	     && make --no-print-directory -j VERBOSE=1 -j ${JCOUNT} \
 	     && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
 	        ; else echo "Installing...." ; fi \
 	     && ${SUDO} make --no-print-directory install \
