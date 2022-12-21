@@ -20,6 +20,7 @@ function setnames () {
 	    ; fi \
 	&& export srcdir=$homedir/${packagebasename}-${packageversion} \
 	&& export moduledir=${MODULEROOT}/${TACC_FAMILY_COMPILER} \
+	&& export moduleversion=${packageversion} \
 	&& if [ "${MODE}" = "seq" ] ; then \
 	      export installext=${packageversion}-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER} \
 	        ; \
@@ -30,7 +31,9 @@ function setnames () {
 	   fi \
 	&& export moduledir=${moduledir}/${package} \
 	&& if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
-	       export installext=${installext}-$4 ; fi \
+	       export installext=${installext}-$4 \
+	        && export moduleversion=${moduleversion}-$4 \
+	   ; fi \
 	&& export builddir=${homedir}/build-${installext} \
 	&& if [ ! -z "${INSTALLPATH}" ] ; then \
 	     export installdir=${INSTALLPATH} \
