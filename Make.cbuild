@@ -3,14 +3,16 @@ info ::
 	@echo "================ cmake compile and install:"
 	@echo "make build"
 	@echo "    [ SUDO= blank or sudo ]"
+	@echo "    [ JCOUNT=123 (default ${JCOUNT}) ]"
 .PHONY: build install
+JCOUNT = 2
 build :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 && ( \
 	    cd $$builddir \
-	     && make --no-print-directory VERBOSE=1 \
+	     && make --no-print-directory VERBOSE=1 -j ${JCOUNT} \
 	     && ${SUDO} make --no-print-directory install \
 	    ) 2>&1 | tee install.log \
 	 && ( cd $$scriptdir && make --no-print-directory varsmodule ) \

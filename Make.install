@@ -9,7 +9,9 @@ info ::
 	@echo "================ make; compile and install:"
 	@echo "make install"
 	@echo "    [ SUDO=sudo or not ]"
+	@echo "    [ JCOUNT=123 (default ${JCOUNT}) ]"
 .PHONY: install
+JCOUNT = 2
 install ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
@@ -17,7 +19,7 @@ install ::
 	 && if [ -z "${NOINSTALL}" ] ; then \
 	    ( \
 	    cd $$srcdir \
-	     && make --no-print-directory \
+	     && make --no-print-directory -j VERBOSE=1 ${JCOUNT} \
 	     && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
 	        ; else echo "Installing...." ; fi \
 	     && ${SUDO} make --no-print-directory install \
