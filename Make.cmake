@@ -34,6 +34,7 @@ configure : cmakeopts
 	            export CC=gcc && export CXX="g++ -std=c++17" \
 	        ; fi \
 	     && echo "Cmake src=$$srcdir build=$$builddir" \
+	     && echo "using compilers: CXX=$${CXX}, CC=$${CC}, FC=$${FC}" \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
