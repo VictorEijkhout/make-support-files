@@ -26,6 +26,8 @@ configure : cmakeopts
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
 	     && if [ "${TACC_FAMILY_COMPILER}" = "intel" ] ; then \
 	            export CC=icc && export CXX="icpc -std=c++17" \
+	        ; elif [ "${TACC_FAMILY_COMPILER}" = "oneapi" ] ; then \
+	            export CC=icc && export CXX="icpc -std=c++17" \
 	        ; elif [ "${TACC_FAMILY_COMPILER}" = "intelx" ] ; then \
 	            export CC=icx && export CXX=icpx \
 	        ; elif [ "${TACC_FAMILY_COMPILER}" = "clang" ] ; then \
@@ -37,10 +39,12 @@ configure : cmakeopts
 	     && echo "using compilers: CXX=$${CXX}, CC=$${CC}, FC=$${FC}" \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
+	                -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
 	             && cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
+	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    $$srcdir \
 	            ) \
 	        ; fi \
