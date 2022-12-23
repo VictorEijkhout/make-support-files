@@ -19,6 +19,7 @@ build ::
 	 && if [ -z "${NOINSTALL}" ] ; then \
 	    ( \
 	    cd $$srcdir \
+	     && echo "building in $${srcdir} with ${JCOUNT} threads" \
 	     && make --no-print-directory -j V=1 VERBOSE=1 -j ${JCOUNT} \
 	     && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
 	        ; else echo "Installing...." ; fi \

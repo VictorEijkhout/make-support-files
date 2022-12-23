@@ -12,6 +12,7 @@ build :
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 && ( \
 	    cd $$builddir \
+	     && echo "building in $${builddir} with ${JCOUNT} threads" \
 	     && make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} \
 	     && ${SUDO} make --no-print-directory install \
 	    ) 2>&1 | tee install.log \
