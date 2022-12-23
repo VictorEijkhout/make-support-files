@@ -7,12 +7,12 @@
 
 info ::
 	@echo "================ make; compile and install:"
-	@echo "make install"
+	@echo "make build"
 	@echo "    [ SUDO=sudo or not ]"
 	@echo "    [ JCOUNT=123 (default ${JCOUNT}) ]"
-.PHONY: install
+.PHONY: build
 JCOUNT = 2
-install ::
+build ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
