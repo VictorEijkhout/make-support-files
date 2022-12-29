@@ -20,6 +20,9 @@ build ::
 	    ( \
 	    cd $$srcdir \
 	     && make --no-print-directory -j V=1 VERBOSE=1 -j ${JCOUNT} \
+	     && if [ ! -z "${EXTRABUILDTARGETS}" ] ; then \
+	          make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
+	        ; fi \
 	     && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
 	        ; else echo "Installing...." ; fi \
 	     && ${SUDO} make --no-print-directory install \
