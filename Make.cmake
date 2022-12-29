@@ -54,4 +54,4 @@ configure : cmakeopts
 	            LIBDIR="$${installdir}/lib" \
 	            INCDIR="$${installdir}/include" \
 	            PKGCONFIGSET="${PKGCONFIGSET}" \
-	    ) 2>&1 | tee configure.log
+	    ) 2>&1 | tee $$configurelog

@@ -15,8 +15,8 @@ build :
 	     && echo "building in $${builddir} with ${JCOUNT} threads" \
 	     && make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} \
 	     && ${SUDO} make --no-print-directory install \
-	    ) 2>&1 | tee install.log \
-	 && ( cd $$scriptdir && make --no-print-directory varsmodule ) \
+	     && ( cd $$scriptdir && make --no-print-directory varsmodule ) \
+	    ) 2>&1 | tee $$installlog \
 	 && echo && echo "Installation in: $$installdir" && echo
 include ${MAKEINCLUDES}/Make.vars
 install :

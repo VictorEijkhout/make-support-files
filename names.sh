@@ -34,6 +34,8 @@ function setnames () {
 	       export installext=${installext}-$4 \
 	        && export moduleversion=${moduleversion}-$4 \
 	   ; fi \
+	&& export configurelog=configure-${installext}.log \
+	&& export installlog=install-${installext}.log \
 	&& export builddir=${homedir}/build-${installext} \
 	&& if [ ! -z "${INSTALLPATH}" ] ; then \
 	     export installdir=${INSTALLPATH} \
