@@ -28,7 +28,6 @@ configure : cmakeopts
 	     && export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_ADDS}${CMAKE_PREFIX_PATH} \
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
 	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
-	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
 	     && reportcompilers \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \

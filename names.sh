@@ -47,3 +47,12 @@ function setnames () {
 	   ; fi ; fi \
         && export varfile=${scriptdir}/vars-${installext}.sh
 }
+
+function reportnames () {
+	echo "Installing package=${PACKAGE} version=${packageversion}" \
+	&& echo "using directories:" \
+	&& echo "srcdir=${srcdir}" \
+	&& echo "builddir=${builddir}" \
+	&& echo "installdir=${installdir}" \
+	&& echo "logfiles: ${configurelog} ${installlog}"
+}
