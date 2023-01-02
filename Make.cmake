@@ -11,11 +11,14 @@ info ::
 cmakeopts ::
 	@touch .cmakeopts
 configure : cmakeopts
-	@( \
-	    source ${MAKEINCLUDES}/names.sh \
-	     && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
-	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	     && rm -rf $$builddir && mkdir -p $$builddir \
+	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
+	 && source ${MAKEINCLUDES}/compilers.sh \
+	 && if [ "${MODE}" = "mpi" ] ; then \
+	      setmpicompilers ; else setcompilers ; fi \
+	 && ( \
+	    rm -rf $$builddir && mkdir -p $$builddir \
 	     && find $$builddir -name CMakeCache.txt -exec rm {} \; \
 	     \
 	     && export PKGCONFIGPATH=${PKG_CONFIG_PATH} \
@@ -24,28 +27,21 @@ configure : cmakeopts
 	     \
 	     && export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_ADDS}${CMAKE_PREFIX_PATH} \
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
-	     && if [ "${TACC_FAMILY_COMPILER}" = "intel" ] ; then \
-	            export CC=icc && export CXX="icpc -std=c++17" \
-	        ; elif [ "${TACC_FAMILY_COMPILER}" = "oneapi" ] ; then \
-	            export CC=icc && export CXX="icpc -std=c++17" \
-	        ; elif [ "${TACC_FAMILY_COMPILER}" = "intelx" ] ; then \
-	            export CC=icx && export CXX=icpx \
-	        ; elif [ "${TACC_FAMILY_COMPILER}" = "clang" ] ; then \
-	            export CC=clang && export CXX=clang++ \
-	        ; else \
-	            export CC=gcc && export CXX="g++ -std=c++17" \
-	        ; fi \
-	     && echo "Cmake src=$$srcdir build=$$builddir" \
-	     && echo "using compilers: CXX=$${CXX}, CC=$${CC}, FC=$${FC}" \
+	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
+	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
+	     && reportcompilers \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
-	             && cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
+	             && cmdline="cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
-	                    $$srcdir \
+	                    $$srcdir" \
+	             && if [ "${ECHO}" = "1" ] ; then \
+	                    echo "cmdline=$$cmdline" ; fi \
+	             && eval $$cmdline \
 	            ) \
 	        ; fi \
 	     && make --no-print-directory varsfile VARSFILE=$$varfile \

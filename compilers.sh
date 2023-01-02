@@ -22,3 +22,12 @@ function setmpicompilers () {
     echo "Setting MPI compilers for ${TACC_FAMILY_COMPILER}" >/dev/null \
      && export cc=mpicc && export cxx=mpicxx && export fc=mpif90
 }
+
+function reportcompilers () {
+    echo "Using compilers:" \
+     && echo "  CC=${CC}, CXX=${CXX}, FC=${FC}" \
+     && if [ "${MODE}" = "mpi" ] ; then \
+	    echo "  where:" \
+	     && echo "  mpicc=$( mpicc -show )" \
+        ; fi
+}
