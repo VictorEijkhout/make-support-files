@@ -2,11 +2,11 @@
 function setnames () {
     if [ -z "${TACC_SYSTEM}" ] ; then \
 	echo "WARNING: variable TACC_SYSTEM not set" ; \
-	fi 
-    if [ -z "${TACC_FAMILY_COMPILER}" ] ; then \
+	fi \
+    && if [ -z "${TACC_FAMILY_COMPILER}" ] ; then \
 	echo "WARNING: variable TACC_FAMILY_COMPILER not set" ; \
-	fi 
-    echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=%5" >/dev/null \
+	fi \
+     && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
 	&& export scriptdir=`pwd` \
 	&& PACKAGE=$2 \
 	&& export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
