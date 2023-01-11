@@ -3,8 +3,8 @@ function setnames () {
     if [ -z "${TACC_SYSTEM}" ] ; then \
 	echo "WARNING: variable TACC_SYSTEM not set" ; \
 	fi \
-    && if [ -z "${TACC_FAMILY_COMPILER}" ] ; then \
-	echo "WARNING: variable TACC_FAMILY_COMPILER not set" ; \
+    && if [ -z "${LMOD_FAMILY_COMPILER}" ] ; then \
+	echo "WARNING: variable LMOD_FAMILY_COMPILER not set" ; \
 	fi \
      && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
 	&& export scriptdir=`pwd` \
@@ -27,11 +27,11 @@ function setnames () {
 	   ; fi \
 	&& export moduleversion=${packageversion} \
 	&& if [ "${MODE}" = "seq" ] ; then \
-	      export installext=${packageversion}-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER} \
+	      export installext=${packageversion}-${TACC_SYSTEM}-${LMOD_FAMILY_COMPILER} \
 	        ; \
 	   else \
-	      export installext=${packageversion}-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER}-${TACC_FAMILY_MPI} \
-	       && export moduledir=${moduledir}/${TACC_FAMILY_MPI} \
+	      export installext=${packageversion}-${TACC_SYSTEM}-${LMOD_FAMILY_COMPILER}-${LMOD_FAMILY_MPI} \
+	       && export moduledir=${moduledir}/${LMOD_FAMILY_MPI} \
 	        ; \
 	   fi \
 	&& export moduledir=${moduledir}/${package} \
