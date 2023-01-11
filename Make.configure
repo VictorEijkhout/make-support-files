@@ -10,7 +10,8 @@ info ::
 configure :: modules
 	@( \
 	    source ${MAKEINCLUDES}/names.sh \
-	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	     && export MODE=${MODE} \
+	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
 	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
 	            installdir=${PREFIXOVERRIDE} ; fi \
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
