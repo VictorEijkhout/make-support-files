@@ -19,7 +19,12 @@ function setnames () {
 	      export packagebasename=$package \
 	    ; fi \
 	&& export srcdir=$homedir/${packagebasename}-${packageversion} \
-	&& export moduledir=${MODULEROOT}/${TACC_FAMILY_COMPILER} \
+	&& export moduledir=${MODULEROOT} \
+	&& if [ "${MODE}" = "mpi" ] ; then \
+	    export moduledir=${moduledir}/MPI \
+	   ; else \
+	    export moduledir=${moduledir}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
+	   ; fi \
 	&& export moduleversion=${packageversion} \
 	&& if [ "${MODE}" = "seq" ] ; then \
 	      export installext=${packageversion}-${TACC_SYSTEM}-${TACC_FAMILY_COMPILER} \

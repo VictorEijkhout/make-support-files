@@ -11,9 +11,9 @@ download :: homedir
 	 && echo "Dowload starting for $${package}-${PACKAGEVERSION} in `pwd`" \
 	 && cd $$homedir \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
+	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
 	    ; else \
-	        tgz=${TGZURL} && tgz=$${tgz##*/} \
+	        export tgz="${TGZURL}" && export tgz="$${tgz##*/}" \
 	    ; fi \
 	 && rm -rf $$tgz $${package}-${PACKAGEVERSION} \
 	 && wget ${TGZURL} \
