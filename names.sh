@@ -1,4 +1,16 @@
 # -*- makefile -*-
+function systemcode () {
+	if [ "${TACC_SYSTEM}" = "stampede2" ] ; then \
+	  export taccsystemcode=skx \
+	; elif [ "${TACC_SYSTEM}" = "frontera" ] ; then \
+	  export taccsystemcode=clx \
+	; elif [ "${TACC_SYSTEM}" = "ls6" ] ; then \
+	  export taccsystemcode=milan \
+	; else \
+	  export taccsystemcode=${TACC_SYSTEM} \
+	; fi
+}
+
 function setnames () {
     if [ -z "${TACC_SYSTEM}" ] ; then \
 	echo "WARNING: variable TACC_SYSTEM not set" ; \
@@ -7,6 +19,7 @@ function setnames () {
 	echo "WARNING: variable LMOD_FAMILY_COMPILER not set" ; \
 	fi \
      && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
+	&& systemcode \
 	&& export scriptdir=`pwd` \
 	&& PACKAGE=$2 \
 	&& export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
@@ -21,19 +34,16 @@ function setnames () {
 	&& export srcdir=$homedir/${packagebasename}-${packageversion} \
 	&& export moduledir=${MODULEROOT} \
 	&& if [ "${MODE}" = "mpi" ] ; then \
-	    export moduledir=${moduledir}/MPI \
+	    export moduledir=${moduledir}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
 	   ; else \
 	    export moduledir=${moduledir}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
 	   ; fi \
 	&& export moduleversion=${packageversion} \
 	&& if [ "${MODE}" = "seq" ] ; then \
-	      export installext=${packageversion}-${TACC_SYSTEM}-${LMOD_FAMILY_COMPILER} \
-	        ; \
-	   else \
-	      export installext=${packageversion}-${TACC_SYSTEM}-${LMOD_FAMILY_COMPILER}-${LMOD_FAMILY_MPI} \
-	       && export moduledir=${moduledir}/${LMOD_FAMILY_MPI} \
-	        ; \
-	   fi \
+	      export installext=${packageversion}-${taccsystemcode}-${LMOD_FAMILY_COMPILER} \
+	   ; else \
+	      export installext=${packageversion}-${taccsystemcode}-${LMOD_FAMILY_COMPILER}-${LMOD_FAMILY_MPI} \
+	   ; fi \
 	&& export moduledir=${moduledir}/${package} \
 	&& if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export installext=${installext}-$4 \
