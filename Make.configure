@@ -8,11 +8,11 @@ info ::
 	@echo "    [ PREFIXEXTRA=... for attaching to prefix ]"
 .PHONY: configure config-help
 configure :: modules
-	@( \
-	    source ${MAKEINCLUDES}/names.sh \
+	@source ${MAKEINCLUDES}/names.sh \
 	     && export MODE=${MODE} \
 	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
-	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
+	&& ( \
+	    if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
 	            installdir=${PREFIXOVERRIDE} ; fi \
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	            installdir=$${installdir}-${PREFIXEXTRA} ; fi \
@@ -37,7 +37,7 @@ configure :: modules
 	     && if [ ! -z "${CONFIGURE_SOURCE_THIS}" ] ; then \
 	            echo "Sourcing: ${CONFIGURE_SOURCE_THIS}" \
 	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
-	     && configureline="./configure --prefix=$$installdir ${CONFIGURE_FLAGS}" \
+	     && configureline="./configure --prefix=$$installdir ${CONFIGUREFLAGS}" \
 	     && echo "Configuring as:" && echo $$configureline \
 	     && echo " .. with CC=$${CC} CXX=$${CXX} FC=$${FC}" \
 	     && if [ ! -z "$${CFLAGS}$${CXXFLAGS}$${FFLAGS}" ] ; then \
