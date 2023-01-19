@@ -8,14 +8,17 @@ info ::
 	@echo "    [ PREFIXEXTRA=... for attaching to prefix ]"
 .PHONY: configure config-help
 configure :: modules
-	@( \
-	    source ${MAKEINCLUDES}/names.sh \
+	@source ${MAKEINCLUDES}/names.sh \
 	     && export MODE=${MODE} \
 	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	  && ( \
+	    reportnames \
 	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
-	            installdir=${PREFIXOVERRIDE} ; fi \
+	            echo "prefix: using PREFIXOVERRIDE=${PREFIXOVERRIDE}" \
+	             && installdir=${PREFIXOVERRIDE} ; fi \
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
-	            installdir=$${installdir}-${PREFIXEXTRA} ; fi \
+	            echo "prefix: attaching PREFIXEXTRA=$F{PREFIXEXTRA}" \
+	             && installdir=$${installdir}-${PREFIXEXTRA} ; fi \
 	     && if [ "${ECHO}" = "1" ] ; then set -x ; fi \
 	     && source ${MAKEINCLUDES}/compilers.sh \
 	     && if [ "${MODE}" = "mpi" ] ; then \
