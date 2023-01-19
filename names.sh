@@ -6,6 +6,8 @@ function systemcode () {
 	  export taccsystemcode=clx \
 	; elif [ "${TACC_SYSTEM}" = "ls6" ] ; then \
 	  export taccsystemcode=milan \
+	; elif [ ! -z "${TACC_SYSTEM_CODE}" ] ; then \
+	  export taccsystemcode=${TACC_SYSTEM_CODE} \
 	; else \
 	  export taccsystemcode=${TACC_SYSTEM} \
 	; fi
@@ -19,7 +21,7 @@ function setnames () {
 	echo "WARNING: variable LMOD_FAMILY_COMPILER not set" ; \
 	fi \
      && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
-	&& systemcode \
+	&& TACC_SYSTEM=${TACC_SYSTEM} systemcode \
 	&& export scriptdir=`pwd` \
 	&& PACKAGE=$2 \
 	&& export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
