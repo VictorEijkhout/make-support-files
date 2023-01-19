@@ -79,7 +79,8 @@ pull :: clone
 	 && cd $${srcdir} \
 	 && git pull \
 	 && if [ ! -z "${BRANCH}" ] ; then \
-	        git checkout ${BRANCH} \
+	        echo "Checking out branch: ${BRANCH}" \
+	         && git checkout ${BRANCH} \
 	        ; \
 	    fi \
 	 && if [ ! -z "${PULLAFTERACTIONS}" ] ; then \
