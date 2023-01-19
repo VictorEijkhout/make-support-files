@@ -40,7 +40,7 @@ configure :: modules
 	     && if [ ! -z "${CONFIGURE_SOURCE_THIS}" ] ; then \
 	            echo "Sourcing: ${CONFIGURE_SOURCE_THIS}" \
 	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
-	     && configureline="./configure --prefix=$$installdir ${CONFIGURE_FLAGS}" \
+	     && configureline="./configure --prefix=$$installdir ${CONFIGUREFLAGS}" \
 	     && echo "Configuring as:" && echo $$configureline \
 	     && echo " .. with CC=$${CC} CXX=$${CXX} FC=$${FC}" \
 	     && if [ ! -z "$${CFLAGS}$${CXXFLAGS}$${FFLAGS}" ] ; then \
