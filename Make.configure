@@ -26,6 +26,7 @@ configure :: modules
 	            setmpicompilers ; else setcompilers ; fi \
 	     && reportcompilers \
 	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
+	     && export LIBS=${LIBS} \
 	     \
 	     && cd $$srcdir \
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
@@ -48,6 +49,8 @@ configure :: modules
 	     && echo " .. with CC=$${CC} CXX=$${CXX} FC=$${FC}" \
 	     && if [ ! -z "$${CFLAGS}$${CXXFLAGS}$${FFLAGS}" ] ; then \
 	            echo " .. and CFLAGS=$${CFLAGS}" ; fi \
+	     && if [ ! -z "$${LIBS}" ] ; then \
+	            echo " .. and  LIBS=$${LIBS}" ; fi \
 	     && eval $$configureline \
 	    ) 2>&1 | tee $$configurelog \
 	 && echo && echo "See $$configurelog" \
