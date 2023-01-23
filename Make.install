@@ -17,17 +17,18 @@ build ::
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
 	 && if [ -z "${NOINSTALL}" ] ; then \
-	    ( \
-	    cd $$srcdir \
-	     && echo "building in $${srcdir} with ${JCOUNT} threads" \
-	     && make --no-print-directory -j V=1 VERBOSE=1 -j ${JCOUNT} \
-	     && if [ ! -z "${EXTRABUILDTARGETS}" ] ; then \
-	          make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
-	        ; fi \
-	     && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
-	        ; else echo "Installing...." ; fi \
-	     && ${SUDO} make --no-print-directory install \
-	    ) 2>&1 | tee install.log \
+	      ( \
+	      cd $$srcdir \
+	       && echo "building in $${srcdir} with ${JCOUNT} threads" \
+	       && make --no-print-directory -j V=1 VERBOSE=1 -j ${JCOUNT} \
+	       && if [ ! -z "${EXTRABUILDTARGETS}" ] ; then \
+	            make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
+	          ; fi \
+	       && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
+	          ; else echo "Installing...." ; fi \
+	       && ${SUDO} make --no-print-directory install \
+	      ) 2>&1 | tee $$installlog \
+	       && echo && echo "See $$installlog" \
 	    ; fi \
 	 && ( cd $$scriptdir && FAMILY=${FAMILY} make --no-print-directory varsmodule )
 
