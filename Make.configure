@@ -20,10 +20,13 @@ configure :: modules
 	            echo "prefix: attaching PREFIXEXTRA=$F{PREFIXEXTRA}" \
 	             && installdir=$${installdir}-${PREFIXEXTRA} ; fi \
 	     && if [ "${ECHO}" = "1" ] ; then set -x ; fi \
+	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
 	     && if [ "${MODE}" = "mpi" ] ; then \
 	            setmpicompilers ; else setcompilers ; fi \
+	     && reportcompilers \
 	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
+	     \
 	     && cd $$srcdir \
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
 	            echo "First autogen" \
