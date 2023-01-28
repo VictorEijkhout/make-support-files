@@ -26,7 +26,7 @@ function setnames () {
 	&& PACKAGE=$2 \
 	&& export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
 	&& export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
-	&& export packageversion=$3 \
+	&& export packageversion=$( echo $3 | tr A-Z a-z ) \
 	&& export homedir=$1/$package \
 	&& if [ ! -z "$5" ] ; then \
 	      export packagebasename=$5 \
