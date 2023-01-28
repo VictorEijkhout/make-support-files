@@ -1,9 +1,9 @@
 # -*- makefile -*-
 info ::
 	@echo
-	@echo "================ tar file download:"
-	@echo "make download untar [ TGZURL=... ]"
-.PHONY: download untar
+	@echo "================ tar/zip file download:"
+	@echo "make download untar/unpack [ TGZURL=... ] [ ZIPURL=... ]"
+.PHONY: download untar unpack
 download :: homedir
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
@@ -16,12 +16,13 @@ download :: homedir
 	        export tgz="${TGZURL}" && export tgz="$${tgz##*/}" \
 	    ; fi \
 	 && rm -rf $$tgz $${package}-${PACKAGEVERSION} \
-	 && wget ${TGZURL} \
+	 && if [ ! -z "${ZIPURL}" ] ; then \
+	        wget ${ZIPURL} ; else wget ${TGZURL} ; fi \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        echo " .. rename: ${TGZRENAME}" \
 	         && eval ${TGZRENAME}  ; fi \
 	)
-untar :: 
+unpack untar :: 
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
@@ -32,11 +33,20 @@ untar ::
 	    ; else \
 	        tgz=${TGZURL} && tgz=$${tgz##*/} \
 	    ; fi \
-	 && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
-	 && unpackdir=$${unpackdir%%/} \
-	 && echo " .. tar file <<$$tgz>> contains: $$unpackdir, unpacking" \
-	 && rm -rf $$unpackdir \
-	 && tar fxz $$tgz \
+	 && if [ ! -z "${ZIPURL}" ] ; then \
+	        unpackdir=$$( unzip -l $$tgz | sed -n -e '5p' | awk '{print $$4}' ) \
+	         && unpackdir=$${unpackdir%%/*} \
+	         && echo " .. zip file <<$$tgz>> contains: $$unpackdir; unpacking" \
+	         && rm -rf $$unpackdir \
+	         && unzip $$tgz \
+	    ; else \
+	        unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
+	         && unpackdir=$${unpackdir%%/} \
+	         && echo " .. tar file <<$$tgz>> contains: $$unpackdir; unpacking" \
+	         && rm -rf $$unpackdir \
+	         && tar fxz $$tgz \
+	    ; fi \
+	 && echo " .. done unpacking" \
 	 && packagedir=$${packagebasename}-${PACKAGEVERSION} \
 	 && if [ ! "$${unpackdir}" = "$${packagedir}" ] ; then \
 	        echo " .. move to $${packagedir}" \
