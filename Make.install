@@ -27,6 +27,8 @@ build ::
 	       && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
 	          ; else echo "Installing...." ; fi \
 	       && ${SUDO} make --no-print-directory install \
+	            $$( if [ ! -z "${INSTALL_USE_DESTDIR}" ] ; then \
+	                echo DESTDIR=$$installdir ; fi ) \
 	      ) 2>&1 | tee $$installlog \
 	       && echo && echo "See $$installlog" \
 	    ; fi \
