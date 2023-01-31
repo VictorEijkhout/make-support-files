@@ -77,7 +77,7 @@ findstring :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
-	 && find $$homedir -type f -exec grep ${STRING} {} \;
+	 && find $$homedir -type f -exec grep -i "${STRING}" {} \; -print
 installext :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
