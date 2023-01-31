@@ -16,5 +16,6 @@ public ::
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
 	        installdir=${PREFIXOVERRIDE} ; fi \
-	 && echo "opening $$installdir" \
+	 && echo "opening $$homedir , $$installdir" \
+	 && ${SUDO} chmod    g+rX,o+rX $$homedir \
 	 && ${SUDO} chmod -R g+rX,o+rX $$installdir
