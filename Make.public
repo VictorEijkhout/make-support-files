@@ -1,0 +1,19 @@
+# -*- makefile -*-
+################################################################
+####
+#### Make include file for opening a directory to the world.
+#### this file is included in Make.install Make.cbuild
+####
+################################################################
+
+info ::
+	@echo "make public : install dir"
+	@echo "    [ PREFIXOVERRIDE=... for non-standard prefix ]"
+.PHONY: public
+public ::
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
+	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
+	        installdir=${PREFIXOVERRIDE} ; fi \
+	 && echo "opening $$installdir" \
+	 && ${SUDO} chmod -R g+rX,o+rX $$installdir

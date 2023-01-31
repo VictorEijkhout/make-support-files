@@ -35,15 +35,4 @@ build ::
 	 && ( cd $$scriptdir && FAMILY=${FAMILY} make --no-print-directory varsmodule )
 
 include ${MAKEINCLUDES}/Make.vars
-
-info ::
-	@echo "make public : install dir"
-	@echo "    [ PREFIXOVERRIDE=... for non-standard prefix ]"
-.PHONY: public
-public ::
-	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
-	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
-	        installdir=${PREFIXOVERRIDE} ; fi \
-	 && echo "opening $$installdir" \
-	 && ${SUDO} chmod -R g+rX,o+rX $$installdir
+include ${MAKEINCLUDES}/Make.public

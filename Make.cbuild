@@ -1,4 +1,10 @@
 # -*- makefile -*-
+################################################################
+####
+#### Make.install : make & install rules for cmake based packages
+####
+################################################################
+
 info ::
 	@echo "================ cmake compile and install:"
 	@echo "make build"
@@ -22,16 +28,4 @@ build :
 	    ) 2>&1 | tee $$installlog \
 	 && echo && echo "Installation in: $$installdir" && echo
 include ${MAKEINCLUDES}/Make.vars
-install :
-	@echo && echo ">>>> Error: no install rule, use build instead <<<<" && echo
-
-info ::
-	@echo "make public : install dir"
-	@echo "    [ INSTALLEXT as for cmake configure ]"
-.PHONY: public
-public :
-	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	 && echo "opening $$installdir" \
-	 && ${SUDO} chmod -R g+rX,o+rX $$installdir
+include ${MAKEINCLUDES}/Make.public
