@@ -43,10 +43,13 @@ configure : cmakeopts
 	             && eval $$cmdline \
 	            ) \
 	        ; fi \
+	    ) 2>&1 | tee $$configurelog
+novarsfile :
+	foo \
 	     && make --no-print-directory varsfile VARSFILE=$$varfile \
 	            PACKAGE=${PACKAGE} \
 	            INSTALLDIR="$${installdir}" \
 	            LIBDIR="$${installdir}/lib" \
 	            INCDIR="$${installdir}/include" \
 	            PKGCONFIGSET="${PKGCONFIGSET}" \
-	    ) 2>&1 | tee $$configurelog
+	foo
