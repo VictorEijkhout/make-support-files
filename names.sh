@@ -40,6 +40,7 @@ function setnames () {
 	    ; fi \
 	&& if [ ! -z "${MODULEPATH}" ] ; then
 	      export moduledir="${MODULEPATH}" \
+	       && echo "Using explicit module path for package: $moduledir" \
 	   ; else \
 	      export moduledir=${MODULEROOT} \
 	       && if [ "${MODE}" = "mpi" ] ; then \
@@ -47,6 +48,7 @@ function setnames () {
 	          ; else \
 	            export moduledir=${moduledir}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
 	          ; fi \
+	       && echo "Using constructed module path for package: $moduledir" \
 	   ; fi \
 	&& export moduleversion=${packageversion} \
 	&& if [ "${MODE}" = "seq" ] ; then \
