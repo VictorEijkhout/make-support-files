@@ -1,8 +1,9 @@
 # -*- makefile -*-
 
-.PHONY: info
+.PHONY: info moreinfo
 info :: modules
-	@echo && echo "================ General info" && echo
+	@echo && echo "================ General info" 
+	@echo "(make moreinfo for options)" && echo 
 	@echo "make targets for ${PACKAGE}"
 	@if [ -z "${MAKEINCLUDES}" ] ; then \
 	    echo "Set MAKEINCLUDES to location of Make.stuff files" \
@@ -19,6 +20,12 @@ info :: modules
 	 && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	        installdir=$${installdir}-${PREFIXEXTRA} ; fi \
 	 && echo "  install: $$installdir" \
+	 && echo "    make list_installations for already present"
+.PHONY: list_installations
+list_installations :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
 	 && echo && echo "Already available installations:" \
 	 && ls -d $${homedir}/installation* 2>/dev/null || echo >/dev/null \
 	 && make --no-print-directory moduleprint \

@@ -1,16 +1,20 @@
 # -*- makefile -*-
-info ::
+.PHONY: cmake_info
+cmake_info :
 	@echo "================ cmake configure:"
 	@echo "make configure"
+info :: cmake_info
+moreinfo :: cmake_info
 	@echo "    [ CMAKEFLAGS=... ] [ INSTALLEXT=... (extra extension ) ] "
 	@echo "    [ PKGCONFIGSET :  non-blank is added to vars file ]"
 	@echo "    [ PKG_CONFIG_PATHS / PKG_CONFIG_ADDS = .... ]"
 	@echo "    [ CMAKE_PREFIX_PATH / CMAKE_PREFIX_ADDS = ... ]"
 	@echo "    [ INSTALLROOT=... (alternative install root) ]"
+
 .PHONY: configure cmakeopts
 cmakeopts ::
 	@touch .cmakeopts
-configure : cmakeopts
+configure : modules cmakeopts
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \

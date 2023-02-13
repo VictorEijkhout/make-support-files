@@ -1,10 +1,12 @@
 # -*- makefile -*-
 
-info ::
+.PHONY: git_info
+git_info :: 
 	@echo "================ Repository rules"
-
-info ::
-	@echo "make clone GITREPO=.... [ GITPACKAGE=... for nonstandard unpack ]"
+	@echo "make clone GITREPO=.... "
+info :: git_info
+moreinfo :: git_info
+	@echo "    [ GITPACKAGE=... for nonstandard unpack ]"
 	@echo "    [ BRANCH=... (nonzero switches) ]"
 	@echo "    [ SUBMODULE=... (nonzero for init and update) ]"
 	@if [ -z "${GITREPO}" ] ; then \
@@ -14,6 +16,7 @@ info ::
 	 ; fi
 	@echo "     oneclone : non-recursive rule"
 	@echo "     newclone : delete and reclone"
+
 .PHONY: clone oneclone
 clone oneclone ::
 	@if [ -z "${GITREPO}" ] ; then \
@@ -65,9 +68,13 @@ newclone ::
 	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	        BRANCH=${BRANCH} SUBMODULE=${SUBMODULE} BOOTSTRAP="${BOOTSTRAP}"
 
-info :: 
+.PHONY: pull_info
+pull_info :: 
 	@echo "make pull : git pull on repo"
+info :: pull_info
+moreinfo :: pull_info
 	@echo "    [ PULLAFTERACTIONS= (mods inside the repo) ]"
+
 .PHONY: pull 
 pull :: clone
 	@if [ -z "${GITREPO}" ] ; then \
