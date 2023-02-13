@@ -21,24 +21,24 @@ function setnames () {
 	echo "WARNING: variable LMOD_FAMILY_COMPILER not set" ; \
 	fi \
      && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
-	&& TACC_SYSTEM=${TACC_SYSTEM} systemcode \
-	&& export scriptdir=`pwd` \
-	&& PACKAGE=$2 \
-	&& export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
-	&& export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
-	&& export packageversion=$( echo $3 | tr A-Z a-z ) \
-	&& export homedir=$1/$package \
-	&& if [ ! -z "$5" ] ; then \
+	 && TACC_SYSTEM=${TACC_SYSTEM} systemcode \
+	 && export scriptdir=`pwd` \
+	 && PACKAGE=$2 \
+	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
+	 && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
+	 && export packageversion=$( echo $3 | tr A-Z a-z ) \
+	 && export homedir=$1/$package \
+	 && if [ ! -z "$5" ] ; then \
 	      export packagebasename=$5 \
 	    ; else \
 	      export packagebasename=$package \
 	    ; fi \
-	&& if [ ! -z "${SRCPATH}" ] ; then
+	 && if [ ! -z "${SRCPATH}" ] ; then
 	      export srcdir="${SRCPATH}" \
 	    ; else \
 	      export srcdir=$homedir/${packagebasename}-${packageversion} \
 	    ; fi \
-	&& if [ ! -z "${MODULEPATH}" ] ; then
+	 && if [ ! -z "${MODULEPATH}" ] ; then
 	      modulepath="${MODULEPATH}" \
 	       && echo "Using explicit module path for package: $modulepath" \
 	   ; else \
@@ -49,23 +49,23 @@ function setnames () {
 	            modulepath=${modulepath}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
 	          ; fi \
 	       && echo "Using constructed module path for package: $modulepath" \
+	       && export moduledir=${modulepath}/${package} \
 	   ; fi \
-	&& export moduleversion=${packageversion} \
-	&& if [ "${MODE}" = "seq" ] ; then \
+	 && echo "Module directory: ${moduledir}" \
+	 && export moduleversion=${packageversion} \
+	 && if [ "${MODE}" = "seq" ] ; then \
 	      export installext=${packageversion}-${taccsystemcode}-${LMOD_FAMILY_COMPILER} \
 	   ; else \
 	      export installext=${packageversion}-${taccsystemcode}-${LMOD_FAMILY_COMPILER}-${LMOD_FAMILY_MPI} \
 	   ; fi \
-	&& export moduledir=${modulepath}/${package} \
-	&& echo "Module directory: ${moduledir}" \
-	&& if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
+	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export installext=${installext}-$4 \
 	        && export moduleversion=${moduleversion}-$4 \
 	   ; fi \
-	&& export configurelog=configure-${installext}.log \
-	&& export installlog=install-${installext}.log \
-	&& export builddir=${homedir}/build-${installext} \
-	&& if [ ! -z "${INSTALLPATH}" ] ; then \
+	 && export configurelog=configure-${installext}.log \
+	 && export installlog=install-${installext}.log \
+	 && export builddir=${homedir}/build-${installext} \
+	 && if [ ! -z "${INSTALLPATH}" ] ; then \
 	     export installdir=${INSTALLPATH} \
 	   ; else \
 	     if [ -z "${INSTALLROOT}" ] ; then \
@@ -78,9 +78,9 @@ function setnames () {
 
 function reportnames () {
 	echo "Installing package=${PACKAGE} version=${packageversion}" \
-	&& echo "using directories:" \
-	&& echo "srcdir=${srcdir}" \
-	&& echo "builddir=${builddir}" \
-	&& echo "installdir=${installdir}" \
-	&& echo "logfiles: ${configurelog} ${installlog}"
+	 && echo "using directories:" \
+	 && echo "srcdir=${srcdir}" \
+	 && echo "builddir=${builddir}" \
+	 && echo "installdir=${installdir}" \
+	 && echo "logfiles: ${configurelog} ${installlog}"
 }
