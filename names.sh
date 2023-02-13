@@ -33,7 +33,11 @@ function setnames () {
 	    ; else \
 	      export packagebasename=$package \
 	    ; fi \
-	&& export srcdir=$homedir/${packagebasename}-${packageversion} \
+	&& if [ ! -z "${SRCPATH}" ] ; then
+	      export srcdir="${SRCPATH}" \
+	    ; else \
+	      export srcdir=$homedir/${packagebasename}-${packageversion} \
+	    ; fi \
 	&& export moduledir=${MODULEROOT} \
 	&& if [ "${MODE}" = "mpi" ] ; then \
 	    export moduledir=${moduledir}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
