@@ -7,7 +7,7 @@ info ::
 download :: homedir
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo "Dowload starting for $${package}-${PACKAGEVERSION} in `pwd`" \
 	 && cd $$homedir \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
@@ -25,7 +25,7 @@ download :: homedir
 unpack untar :: 
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo "Unpacking tar file for $${package}-${PACKAGEVERSION}" \
 	 && cd $$homedir \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \

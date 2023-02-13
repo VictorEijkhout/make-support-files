@@ -25,8 +25,7 @@ clone oneclone ::
 	 && if [ ! -z "${PACKAGEBASENAME}" ] ; then \
 	        packagebasename=${PACKAGEBASENAME} \
 	    ; else packagebasename=${PACKAGE} ; fi \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
-	        "" $${packagebasename} \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "$${packagebasename}" \
 	 && package=$${package}-git \
 	 && if [ ! -z "${GITPACKAGE}" ] ; then package=${GITPACKAGE} ; fi \
 	 && echo "Clone of package=${PACKAGE}, version=${PACKAGEVERSION} into $${package}" \
@@ -61,7 +60,7 @@ newclone ::
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
 	 && rm -rf $${homedir}/$${package}-git \
 	 && echo "recloning...." \
 	 && make --no-print-directory clone \
@@ -81,7 +80,7 @@ pull :: clone
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo "Updating repo: $${srcdir}" \
 	 && cd $${srcdir} \
 	 && git pull \
@@ -100,6 +99,6 @@ clone pull ::
 	@if [ "${CHMODR}" = "1" ] ; then \
 	    echo "setting permissions open" \
 	     && source ${MAKEINCLUDES}/names.sh \
-	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	     && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	     && chmod -R g+rX,o+rX $${homedir}/$${package}-git \
 	 ; fi

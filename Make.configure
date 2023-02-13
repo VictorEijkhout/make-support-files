@@ -10,7 +10,7 @@ info ::
 configure :: modules
 	@source ${MAKEINCLUDES}/names.sh \
 	     && export MODE=${MODE} \
-	     && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	     && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	  && ( \
 	    reportnames \
 	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
@@ -58,7 +58,7 @@ configure :: modules
 config-help :
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && set -x \
 	 && cd $$srcdir \
 	 && ./configure --help \

@@ -23,10 +23,12 @@ function setnames () {
      && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
 	 && TACC_SYSTEM=${TACC_SYSTEM} systemcode \
 	 && export scriptdir=`pwd` \
-	 && PACKAGE=$2 \
+	 && PACKAGE=$2 && PACKAGEVERSION=$3 \
 	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
 	 && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
-	 && export packageversion=$( echo $3 | tr A-Z a-z ) \
+	 && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
+	 && if [ -z "${packageversion}" ] ; then \
+	        echo "No PACKAGEVERSION parameter given" && exit 1 ; fi \
 	 && export homedir=$1/$package \
 	 && if [ ! -z "$5" ] ; then \
 	      export packagebasename=$5 \
@@ -62,6 +64,7 @@ function setnames () {
 	       export installext=${installext}-$4 \
 	        && export moduleversion=${moduleversion}-$4 \
 	   ; fi \
+	 && echo "Using module version: ${moduleversion}" \
 	 && export configurelog=configure-${installext}.log \
 	 && export installlog=install-${installext}.log \
 	 && export builddir=${homedir}/build-${installext} \
