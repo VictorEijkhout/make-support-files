@@ -39,16 +39,16 @@ function setnames () {
 	      export srcdir=$homedir/${packagebasename}-${packageversion} \
 	    ; fi \
 	&& if [ ! -z "${MODULEPATH}" ] ; then
-	      export moduledir="${MODULEPATH}" \
-	       && echo "Using explicit module path for package: $moduledir" \
+	      modulepath="${MODULEPATH}" \
+	       && echo "Using explicit module path for package: $modulepath" \
 	   ; else \
-	      export moduledir=${MODULEROOT} \
+	      modulepath=${MODULEROOT} \
 	       && if [ "${MODE}" = "mpi" ] ; then \
-	            export moduledir=${moduledir}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
+	            modulepath=${modulepath}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
 	          ; else \
-	            export moduledir=${moduledir}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
+	            modulepath=${modulepath}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
 	          ; fi \
-	       && echo "Using constructed module path for package: $moduledir" \
+	       && echo "Using constructed module path for package: $modulepath" \
 	   ; fi \
 	&& export moduleversion=${packageversion} \
 	&& if [ "${MODE}" = "seq" ] ; then \
@@ -56,7 +56,8 @@ function setnames () {
 	   ; else \
 	      export installext=${packageversion}-${taccsystemcode}-${LMOD_FAMILY_COMPILER}-${LMOD_FAMILY_MPI} \
 	   ; fi \
-	&& export moduledir=${moduledir}/${package} \
+	&& export moduledir=${modulepath}/${package} \
+	&& echo "Module directory: ${moduledir}" \
 	&& if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export installext=${installext}-$4 \
 	        && export moduleversion=${moduleversion}-$4 \
