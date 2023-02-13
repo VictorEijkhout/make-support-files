@@ -38,11 +38,15 @@ function setnames () {
 	    ; else \
 	      export srcdir=$homedir/${packagebasename}-${packageversion} \
 	    ; fi \
-	&& export moduledir=${MODULEROOT} \
-	&& if [ "${MODE}" = "mpi" ] ; then \
-	    export moduledir=${moduledir}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
+	&& if [ ! -z "${MODULEPATH}" ] ; then
+	      export moduledir="${MODULEPATH}" \
 	   ; else \
-	    export moduledir=${moduledir}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
+	      export moduledir=${MODULEROOT} \
+	       && if [ "${MODE}" = "mpi" ] ; then \
+	            export moduledir=${moduledir}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
+	          ; else \
+	            export moduledir=${moduledir}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
+	          ; fi \
 	   ; fi \
 	&& export moduleversion=${packageversion} \
 	&& if [ "${MODE}" = "seq" ] ; then \
