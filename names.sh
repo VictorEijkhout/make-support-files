@@ -40,8 +40,8 @@ function setnames () {
 	    ; else \
 	      export srcdir=$homedir/${packagebasename}-${packageversion} \
 	    ; fi \
-	 && if [ ! -z "${MODULEPATH}" ] ; then
-	      export moduledir="${MODULEPATH}" \
+	 && if [ ! -z "${MODULEDIR}" ] ; then
+	      export moduledir="${MODULEDIR}" \
 	    ; else \
 	      modulepath=${MODULEROOT} \
 	       && if [ "${MODE}" = "mpi" ] ; then \
