@@ -40,17 +40,15 @@ function setnames () {
 	    ; else \
 	      export srcdir=$homedir/${packagebasename}-${packageversion} \
 	    ; fi \
-	 && if [ ! -z "${MODULEDIR}" ] ; then
-	      export moduledir="${MODULEDIR}" \
+	 && if [ -z "${MODULEROOT}" ] ; then
+	      echo "Please set MODULEROOT variable" && exit 1 ; fi \
+	 && modulepath=${MODULEROOT} \
+	 && if [ "${MODE}" = "mpi" ] ; then \
+	        modulepath=${modulepath}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
 	    ; else \
-	      modulepath=${MODULEROOT} \
-	       && if [ "${MODE}" = "mpi" ] ; then \
-	            modulepath=${modulepath}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
-	          ; else \
-	            modulepath=${modulepath}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
-	          ; fi \
-	       && export moduledir=${modulepath}/${package} \
+	        modulepath=${modulepath}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
 	    ; fi \
+	 && export moduledir=${modulepath}/${package} \
 	 && export moduleversion=${packageversion} \
 	 && if [ "${MODE}" = "seq" ] ; then \
 	      export installext=${packageversion}-${taccsystemcode}-${LMOD_FAMILY_COMPILER} \

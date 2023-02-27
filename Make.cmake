@@ -28,8 +28,17 @@ configure : modules cmakeopts
 	     && export PKGCONFIGPATH=${PKG_CONFIG_PATH} \
 	     && export PKGCONFIGPATH=${PKG_CONFIG_ADDS}$${PKGCONFIGPATH} \
 	     && export PKG_CONFIG_PATH=$${PKGCONFIGPATH} \
+	     && if [ ! -z "$${PKG_CONFIG_PATH}" ] ; then \
+	          echo "Using PKG_CONFIG_PATH = $${PKG_CONFIG_PATH}" ; fi \
 	     \
 	     && export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_ADDS}${CMAKE_PREFIX_PATH} \
+	     && if [ ! -z "$${CMAKE_PREFIX_PATH}" ] ; then \
+	          echo "Using CMAKE_PREFIX_PATH = $${CMAKE_PREFIX_PATH}" ; fi \
+	     \
+	     && export CMAKE_MODULE_PATH=${CMAKE_MODULE_ADDS}${CMAKE_MODULE_PATH} \
+	     && if [ ! -z "$${CMAKE_MODULE_PATH}" ] ; then \
+	          echo "Using CMAKE_MODULE_PATH = $${CMAKE_MODULE_PATH}" ; fi \
+	     \
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
 	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
 	     && reportcompilers \
@@ -42,8 +51,7 @@ configure : modules cmakeopts
 	             && cmdline="cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    $$srcdir" \
-	             && if [ "${ECHO}" = "1" ] ; then \
-	                    echo "cmdline=$$cmdline" ; fi \
+	             && echo "cmdline=$$cmdline" \
 	             && eval $$cmdline \
 	            ) \
 	        ; fi \

@@ -1,11 +1,15 @@
 # -*- makefile -*-
-info ::
+.PHONY: conf_info
+conf_info :
 	@echo "================ autotools configure:"
 	@echo "make configure config-help"
+info :: conf_info
+moreinfo :: conf_info
 	@echo "    [ CONFIGUREFLAGS=... ]"
 	@echo "    [ ECHO=0/1 ]"
 	@echo "    [ PREFIXOVERRIDE=... for non-standard prefix ]"
 	@echo "    [ PREFIXEXTRA=... for attaching to prefix ]"
+	@echo "    [ PKG_CONFIG_PATHS / PKG_CONFIG_ADDS = .... ]"
 .PHONY: configure config-help
 configure :: modules
 	@source ${MAKEINCLUDES}/names.sh \
