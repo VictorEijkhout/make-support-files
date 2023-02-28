@@ -4,6 +4,39 @@ This is a set of make include files that greatly
 facilitate making your own Makefiles to wrap
 around CMake or Autotools installations.
 
+As an example, here is my makefile for the Aspect finite element library:
+
+```
+PACKAGE = ASPECT
+PACKAGEVERSION = 2.4.0
+MODE = mpi
+MODULES = dealii
+
+include ${MAKEINCLUDES}/Make.info
+
+CMAKEFLAGS = \
+        -D CMAKE_BUILD_TYPE=Release \
+        -D DEAL_II_DIR=${LMOD_DEALII_DIR} \
+        -Wno-dev
+include ${MAKEINCLUDES}/Make.cmake
+include ${MAKEINCLUDES}/Make.cbuild
+
+ASPECT_BIN = ${ASPECT_INSTALLATION}/bin
+
+TGZURL = https://github.com/geodynamics/aspect/releases/download/v${PACKAGEVERSION}/aspect-${PACKAGEVERSION}.tar.gz
+include ${MAKEINCLUDES}/Make.download
+include ${MAKEINCLUDES}/Make.clean
+```
+
+You see that it consists of some variables and some include files. Together this make it possible to say 
+
+```
+make configure build
+```
+
+which will do the whole installation and generate an Lmod module file.
+
+
 ## Site-specific variables
 
 Your makefile uses some site-specific variables. You can define them in the makefile, but by setting them in the environment you can make your makefile portable.
@@ -136,4 +169,6 @@ configure ::
          && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
 ```
 
-The `names.sh` files
+The `names.sh` files defines the following variables:
+
+- 
