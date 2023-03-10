@@ -20,6 +20,8 @@ function setnames () {
     && if [ -z "${LMOD_FAMILY_COMPILER}" ] ; then \
 	echo "WARNING: variable LMOD_FAMILY_COMPILER not set" ; \
 	fi \
+    && if [ -z "$1" ] ; then \
+	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
      && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
 	 && TACC_SYSTEM=${TACC_SYSTEM} systemcode \
 	 && export scriptdir=`pwd` \
