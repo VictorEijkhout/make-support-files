@@ -39,6 +39,9 @@ configure : modules cmakeopts
 	     && if [ ! -z "$${CMAKE_MODULE_PATH}" ] ; then \
 	          echo "Using CMAKE_MODULE_PATH = $${CMAKE_MODULE_PATH}" ; fi \
 	     \
+	     && if [ ! -z "${CPPSTANDARD}" ] ; then \
+	            cppstandard="-D CMAKE_CXX_FLAGS=-std=c++${CPPSTANDARD}" ; fi \
+	     \
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
 	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
 	     && reportcompilers && echo \
@@ -48,7 +51,8 @@ configure : modules cmakeopts
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
-	             && cmdline="cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
+	             && cmdline="cmake -D CMAKE_INSTALL_PREFIX=$$installdir \
+	                    ${CMAKEFLAGS} $$cppstandard \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    $$srcdir" \
 	             && echo "cmdline=$$cmdline" \
