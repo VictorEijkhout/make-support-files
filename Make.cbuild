@@ -23,9 +23,11 @@ build :
 	     && if [ ! -z "${EXTRABUILDTARGETS}" ] ; then \
 	          make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
 	        ; fi \
+	     && echo "installing in $${installdir}" \
 	     && ${SUDO} make --no-print-directory install \
+	     && echo "generating module file" \
 	     && ( cd $$scriptdir && make --no-print-directory varsmodule ) \
 	    ) 2>&1 | tee $$installlog \
-	 && echo && echo "Installation in: $$installdir" && echo
+	 && echo && echo "Installation finished in: $$installdir" && echo
 include ${MAKEINCLUDES}/Make.vars
 include ${MAKEINCLUDES}/Make.public
