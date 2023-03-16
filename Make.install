@@ -29,10 +29,15 @@ build ::
 	       && ${SUDO} make --no-print-directory install \
 	            $$( if [ ! -z "${INSTALL_USE_DESTDIR}" ] ; then \
 	                echo DESTDIR=$$installdir ; fi ) \
+	     && if [ -z "${NOMODULE}" ] ; then \
+	            echo "generating module file" \
+	             && ( cd $$scriptdir \
+	                    && make FAMILY=${FAMILY} --no-print-directory varsmodule ) \
+	        ; fi \
 	      ) 2>&1 | tee $$installlog \
-	       && echo && echo "See $$installlog" \
-	    ; fi \
-	 && ( cd $$scriptdir && FAMILY=${FAMILY} make --no-print-directory varsmodule )
+	       && echo && echo "Installation finished in: $$installdir" \
+	       && echo "See $$installlog" && echo \
+	    ; fi
 
 include ${MAKEINCLUDES}/Make.vars
 include ${MAKEINCLUDES}/Make.public

@@ -151,6 +151,8 @@ The `DIR,INC,LIB` variables are generated both with `TACC_`  and `LMOD_` prefix.
 
 Setting `MODULEDIRSET` completely overrides this mechanism: this is the fully explicit location for the `.lua` file.
 
+Setting `NOMODULE` to any non-blank value omits creation of the modulefile. That's good for when you build your own compiler or MPI: those modules need to inherit, declare `family`, et cetera.
+
 ## CMake discoverability
 
 If you package generates a `.pc` file, specify its location relative to the install directory by a line such as 

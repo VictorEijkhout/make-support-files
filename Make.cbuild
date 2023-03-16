@@ -25,9 +25,13 @@ build :
 	        ; fi \
 	     && echo "installing in $${installdir}" \
 	     && ${SUDO} make --no-print-directory install \
-	     && echo "generating module file" \
-	     && ( cd $$scriptdir && make --no-print-directory varsmodule ) \
+	     && if [ -z "${NOMODULE}" ] ; then \
+	            echo "generating module file" \
+	             && ( cd $$scriptdir \
+	                    && make FAMILY=${FAMILY} --no-print-directory varsmodule ) \
+	        ; fi \
 	    ) 2>&1 | tee $$installlog \
 	 && echo && echo "Installation finished in: $$installdir" && echo
+
 include ${MAKEINCLUDES}/Make.vars
 include ${MAKEINCLUDES}/Make.public
