@@ -42,15 +42,19 @@ function setnames () {
 	    ; else \
 	      export srcdir=$homedir/${packagebasename}-${packageversion} \
 	    ; fi \
-	 && if [ -z "${MODULEROOT}" ] ; then
-	      echo "Please set MODULEROOT variable" && exit 1 ; fi \
-	 && modulepath=${MODULEROOT} \
-	 && if [ "${MODE}" = "mpi" ] ; then \
-	        modulepath=${modulepath}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
+	 && if [ ! -z "${MODULEPATH}" ] ; then \
+	        export moduledir=${MODULEPATH} \
 	    ; else \
-	        modulepath=${modulepath}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
+	        if [ -z "${MODULEROOT}" ] ; then
+	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
+	         && modulepath=${MODULEROOT} \
+	         && if [ "${MODE}" = "mpi" ] ; then \
+	                modulepath=${modulepath}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
+	            ; else \
+	                modulepath=${modulepath}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
+	            ; fi \
+	         && export moduledir=${modulepath}/${package} \
 	    ; fi \
-	 && export moduledir=${modulepath}/${package} \
 	 && export moduleversion=${packageversion} \
 	 && if [ "${MODE}" = "seq" ] ; then \
 	      export installext=${packageversion}-${taccsystemcode}-${LMOD_FAMILY_COMPILER} \

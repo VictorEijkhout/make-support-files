@@ -126,6 +126,31 @@ include ${MAKEINCLUDES}/Make.cmake
 include ${MAKEINCLUDES}/Make.cbuild
 ```
 
+# Module file
+
+The build stage generates a modulefile using the guidelines of the Lmod package.
+
+* Start at `${MODULEROOT}`
+* If `MODE` IS `mpi`, append `MPI`, for mode `seq` append `Compiler`
+* Append `${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}`
+* For MPI packages, append  `${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION}`
+
+The `DIR,INC,LIB` variables are generated both with `TACC_`  and `LMOD_` prefix.
+
+Setting `MODULEPATH` completely overrides this mechanism: this is the fully explicit location for the `.lua` file.
+
+## CMake discoverability
+
+If you package generates a `.pc` file, specify its location relative to the install directory by a line such as 
+
+```
+PKGCONFIGSET = lib/pkgconfig
+```
+
+The resulting path will be added to the `PKG_CONFIG_PATH` in the modulefile.
+
+Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MODULE_PATH`, and `CMAKE_PREFIXPATH_SET` will be added to the `CMAKE_PREFIX_PATH`.
+
 # Customizations
 
 ## Autotools
@@ -137,10 +162,17 @@ Define a variable `CONFIGUREFLAGS` in your makefile for any configuration option
 Define a variable `CMAKEFLAGS` in your makefile for any configuration 
 options beyond the installation prefix.
 
+Set `CPPSTANDARD=20` (et cetera) to dictate a specific standard to CMake.
+
+## Source directory
+
+By default, the source is found in `${PACKAGEROOT}/${package}` where `package` is an all-lowercase version of `${PACKAGE}`. To override this, set the `SRCDIR` variable.
+
 ## Installation directory
 
 The name and location of the installation directory 
-are determined automatically as describe above.
+are determined automatically as describe above. 
+The location can be customized by setting `INSTALLPATH`.
 The contents are whatever the `make install` stage puts there.
 
 In the module file, the `LMOD_YOURPACKAGE_LIB` is set to the `lib` subdirectory. If the library directory is named something else, typically `lib64`, specify 
@@ -149,14 +181,6 @@ In the module file, the `LMOD_YOURPACKAGE_LIB` is set to the `lib` subdirectory.
 LIBDIR=lib64
 ```
 
-## CMake discoverability
-
-If you package generates a `.pc` file, specify its location
-by a line such as 
-
-```
-PKGCONFIGSET = lib/pkgconfig
-```
 
 ## Writing your own rules
 
