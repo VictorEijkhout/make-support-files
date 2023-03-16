@@ -60,6 +60,13 @@ MODE = seq # or mpi
 ```
 that determines the type of compiler used, and influences the name of the module file.
 
+If your package needs other packages loaded, set
+
+```
+MODULES = petsc boost
+```
+or whatever may be the case.
+
 ## Download
 
 You can make your Makefile do a package download or a repository checkout.
@@ -104,11 +111,11 @@ make configure install
 This generates directories
 
 ```
-${PACKAGEROOT}/${PACKAGE}/build-${ID}
-${PACKAGEROOT}/${PACKAGE}/installation-${ID}
+${PACKAGEROOT}/${package}/build-${ID}
+${PACKAGEROOT}/${package}/installation-${ID}
 ```
 
-where `ID` is a composite of the version number, `LMOD_FAMILY_COMPILER` and `LMOD_FAMILY_MPI` for MPI packages.
+where `package` is the lowercase form of the package name, and`ID` is a composite of the version number, `LMOD_FAMILY_COMPILER` and `LMOD_FAMILY_MPI` for MPI packages.
 
 It also generates a modulefile.
 
@@ -126,6 +133,11 @@ include ${MAKEINCLUDES}/Make.cmake
 include ${MAKEINCLUDES}/Make.cbuild
 ```
 
+The  `make` is parallel: specify 
+
+```JCOUNT=24```
+in your makefile (or better: on your make commandline) to use 24 threads, et cetera.
+
 # Module file
 
 The build stage generates a modulefile using the guidelines of the Lmod package.
@@ -137,7 +149,7 @@ The build stage generates a modulefile using the guidelines of the Lmod package.
 
 The `DIR,INC,LIB` variables are generated both with `TACC_`  and `LMOD_` prefix.
 
-Setting `MODULEPATH` completely overrides this mechanism: this is the fully explicit location for the `.lua` file.
+Setting `MODULEDIRSET` completely overrides this mechanism: this is the fully explicit location for the `.lua` file.
 
 ## CMake discoverability
 

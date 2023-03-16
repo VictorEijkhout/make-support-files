@@ -42,8 +42,8 @@ function setnames () {
 	    ; else \
 	      export srcdir=$homedir/${packagebasename}-${packageversion} \
 	    ; fi \
-	 && if [ ! -z "${MODULEPATH}" ] ; then \
-	        export moduledir=${MODULEPATH} \
+	 && if [ ! -z "${MODULEDIRSET}" ] ; then \
+	        export moduledir=${MODULEDIRSET} \
 	    ; else \
 	        if [ -z "${MODULEROOT}" ] ; then
 	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
