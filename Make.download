@@ -3,13 +3,14 @@ info ::
 	@echo
 	@echo "================ tar/zip file download:"
 	@echo "make download untar/unpack [ TGZURL=... ] [ ZIPURL=... ]"
-.PHONY: download untar unpack
+.PHONY: download untar unpack retar
 download :: homedir
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo "Dowload starting for $${package}-${PACKAGEVERSION} in `pwd`" \
-	 && cd $$homedir \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
 	    ; else \
@@ -27,7 +28,8 @@ unpack untar ::
 	source ${MAKEINCLUDES}/names.sh \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo "Unpacking tar file for $${package}-${PACKAGEVERSION}" \
-	 && cd $$homedir \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
 	    ; else \
@@ -61,3 +63,20 @@ unpack untar ::
 	 && echo "unpacked: $${packagedir}" \
 	 && ls \
 	) 2>&1 | tee untar.log
+
+retar :
+	@\
+	source ${MAKEINCLUDES}/names.sh \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
+	 && tgz=${TGZURL} && tgz=$${tgz##*/} \
+	 && packagedir=$${packagebasename}-${PACKAGEVERSION} \
+	 && if [ $$tgz != $$packagedir ] ; then \
+	      unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
+	       && unpackdir=$${unpackdir%%/} \
+	       && tgzname=$${packagedir}.tgz \
+	       && echo "repacking $$unpackdir to: $$tgzname" \
+	       && tar fcz $${tgzname} $$unpackdir \
+	    ; fi
