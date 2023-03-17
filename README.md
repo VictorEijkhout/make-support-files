@@ -67,6 +67,12 @@ MODULES = petsc boost
 ```
 or whatever may be the case.
 
+## Directory structure
+
+- `PACKAGEROOT` is the root of the whole installation tree. Each package will by default be installed in:
+- `homedir = ${PACKAGEROOT}/${package}` where `package` is an all-lowercase version of `${PACKAGE}`. Override this by setting `HOMEDIR`.
+- `srcdir = ${homedir}/${packagebasename}-${packageversion}` is what downloads and clones are unpacked to and what is used for compilation. Override this by setting `SRCDIR`.
+
 ## Download
 
 You can make your Makefile do a package download or a repository checkout.

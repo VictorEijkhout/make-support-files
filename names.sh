@@ -28,6 +28,11 @@ function setnames () {
 	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
 	 && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
 	 && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
+	 && if [ -z "${HOMEDIR}" ] ; then \
+	      export homedir=$1/$package \
+	    ; else \
+	      export homedir="${HOMEDIR}" \
+	    ; fi \
 	 && if [ -z "${packageversion}" ] ; then \
 	        echo "No PACKAGEVERSION parameter given" && exit 1 ; fi \
 	 && if [ ! -z "$5" ] ; then \
@@ -39,9 +44,6 @@ function setnames () {
 
 function setdirlognames() {
 	export scriptdir=`pwd` \
-	 && if [ -z "$package" ] ; then \
-	      echo "No package name for dirlog" && exit 1 ; fi \
-	 && export homedir=$1/$package \
 	 && if [ ! -z "${SRCPATH}" ] ; then
 	      export srcdir="${SRCPATH}" \
 	    ; else \
@@ -50,6 +52,8 @@ function setdirlognames() {
 	 && export configurelog=configure-${installext}.log \
 	 && export installlog=install-${installext}.log \
 	 && export builddir=${homedir}/build-${installext} \
+	 && if [ -z "$package" ] ; then \
+	      echo "No package name for dirlog" && exit 1 ; fi \
 	 && if [ ! -z "${INSTALLPATH}" ] ; then \
 	     export installdir=${INSTALLPATH} \
 	   ; else \

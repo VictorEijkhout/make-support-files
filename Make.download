@@ -49,18 +49,18 @@ unpack untar ::
 	         && tar fxz $$tgz \
 	    ; fi \
 	 && echo " .. done unpacking" \
-	 && packagedir=$${packagebasename}-${PACKAGEVERSION} \
-	 && if [ ! "$${unpackdir}" = "$${packagedir}" ] ; then \
-	        echo " .. move to $${packagedir}" \
-	         && rm -rf $${packagedir} \
-	         && mv $${unpackdir} $${packagedir} \
+	 && export srcdir=$${packagebasename}-$${packageversion} \
+	 && if [ ! "$${unpackdir}" = "$${srcdir}" ] ; then \
+	        echo " .. move to $${srcdir}" \
+	         && rm -rf $${srcdir} \
+	         && mv $${unpackdir} $${srcdir} \
 	        ; \
 	    fi \
 	 && if [ ! -z "${BOOTSTRAP}" ] ; then \
 	        echo ".. bootstrapping" \
-	         && ( cd $${packagedir} && eval ${BOOTSTRAP} ) \
+	         && ( cd $${srcdir} && eval ${BOOTSTRAP} ) \
 	    ; fi \
-	 && echo "unpacked: $${packagedir}" \
+	 && echo "unpacked: $${srcdir}" \
 	 && ls \
 	) 2>&1 | tee untar.log
 
@@ -72,9 +72,9 @@ retar :
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
 	 && tgz=${TGZURL} && tgz=$${tgz##*/} \
-	 && packagedir=$${packagebasename}-${PACKAGEVERSION} \
-	 && if [ $$tgz != $$packagedir ] ; then \
-	      tgzname=$${packagedir}.tgz \
-	       && echo "repacking $$packagedir to: $$tgzname" \
-	       && tar fcz $${tgzname} $$packagedir \
+	 && export srcdir=$homedir/${packagebasename}-${packageversion} \
+	 && if [ $$tgz != $$srcdir ] ; then \
+	      tgzname=$${srcdir}.tgz \
+	       && echo "repacking $$srcdir to: $$tgzname" \
+	       && tar fcz $${tgzname} $$srcdir \
 	    ; fi
