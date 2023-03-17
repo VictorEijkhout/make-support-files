@@ -8,9 +8,10 @@ download :: homedir
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && echo "Dowload starting for $${package}-${PACKAGEVERSION} in `pwd`" \
+	 && echo "Dowload starting for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
+	 && echo " .. download in $$( pwd )" \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
 	    ; else \
@@ -18,7 +19,9 @@ download :: homedir
 	    ; fi \
 	 && rm -rf $$tgz $${package}-${PACKAGEVERSION} \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
-	        wget ${ZIPURL} ; else wget ${TGZURL} ; fi \
+	        cmdline="wget ${ZIPURL}" ; else cmdline="wget ${TGZURL}" ; fi \
+	 && echo " .. cmdline=$$cmdline" \
+	 && eval $$cmdline \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        echo " .. rename: ${TGZRENAME}" \
 	         && eval ${TGZRENAME}  ; fi \
