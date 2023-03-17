@@ -82,6 +82,8 @@ which allows you to `make download untar`. This creates the source directory:
  
 ```${PACKAGEROOT}/${PACKAGE}/${PACKAGE}-${PACKAGEVERSION}```
 
+Note that the downloaded tar file does not necessarily contain a directory with this standardized name: in that case the unpacked directory is rename. Bug: MacOS "case preserving" is a problem.
+
 For repositories, you would have:
 
 ```
@@ -89,16 +91,24 @@ GITREPO= https://github.com/ECP-WarpX/WarpX.git
 include ${MAKEINCLUDES}/Make.git
 ```
 
-and use `make clone` and later `make pull`.
+and use `make clone` and later `make pull`. This does the same directory renaming as for `tgz` downloads above.
 
-You can have all four of the lines, and use the 
-package version explicitly (or explicitly for whatever is
-hard wired in the makefile):
+You can have all four of the `download/clone` lines, and use the 
+package versions explicitly:
 
 ```
 make download PACKAGEVERSION=3.1.4
 make pull PACKAGEVERSION=git
 ```
+
+You can override the download location by setting `DOWNLOADPATH`.
+
+There is a rule
+
+```
+make retar
+```
+that creates a new `.tgz` file with the standardized name as above.
 
 ## Configure and install
 

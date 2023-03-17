@@ -24,24 +24,46 @@ function setnames () {
 	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
      && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
 	 && TACC_SYSTEM=${TACC_SYSTEM} systemcode \
-	 && export scriptdir=`pwd` \
 	 && PACKAGE=$2 && PACKAGEVERSION=$3 \
 	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
 	 && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
 	 && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
 	 && if [ -z "${packageversion}" ] ; then \
 	        echo "No PACKAGEVERSION parameter given" && exit 1 ; fi \
-	 && export homedir=$1/$package \
 	 && if [ ! -z "$5" ] ; then \
 	      export packagebasename=$5 \
 	    ; else \
 	      export packagebasename=$package \
-	    ; fi \
+	    ; fi
+}
+
+function setdirlognames() {
+	export scriptdir=`pwd` \
+	 && if [ -z "$package" ] ; then \
+	      echo "No package name for dirlog" && exit 1 ; fi \
+	 && export homedir=$1/$package \
 	 && if [ ! -z "${SRCPATH}" ] ; then
 	      export srcdir="${SRCPATH}" \
 	    ; else \
 	      export srcdir=$homedir/${packagebasename}-${packageversion} \
 	    ; fi \
+	 && export configurelog=configure-${installext}.log \
+	 && export installlog=install-${installext}.log \
+	 && export builddir=${homedir}/build-${installext} \
+	 && if [ ! -z "${INSTALLPATH}" ] ; then \
+	     export installdir=${INSTALLPATH} \
+	   ; else \
+	     if [ -z "${INSTALLROOT}" ] ; then \
+	        export installdir=${homedir}/installation-${installext} \
+	     ; else \
+	        export installdir=${INSTALLROOT}/$package/installation-${installext} \
+	   ; fi ; fi
+}
+
+function setmodulenames () {
+	TACC_SYSTEM=${TACC_SYSTEM} systemcode \
+	 && if [ -z "$packageversion" ] ; then \
+	      echo "No packageversion for module names" && exit 1 ; fi \
 	 && if [ ! -z "${MODULEDIRSET}" ] ; then \
 	        export moduledir=${MODULEDIRSET} \
 	    ; else \
@@ -65,18 +87,6 @@ function setnames () {
 	       export installext=${installext}-$4 \
 	        && export moduleversion=${moduleversion}-$4 \
 	   ; fi \
-	 && export configurelog=configure-${installext}.log \
-	 && export installlog=install-${installext}.log \
-	 && export builddir=${homedir}/build-${installext} \
-	 && if [ ! -z "${INSTALLPATH}" ] ; then \
-	     export installdir=${INSTALLPATH} \
-	   ; else \
-	     if [ -z "${INSTALLROOT}" ] ; then \
-	        export installdir=${homedir}/installation-${installext} \
-	     ; else \
-	        export installdir=${INSTALLROOT}/$package/installation-${installext} \
-	   ; fi ; fi \
-        && export varfile=${scriptdir}/vars-${installext}.sh
 }
 
 function reportnames () {

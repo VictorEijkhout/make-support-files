@@ -91,3 +91,7 @@ installext :
 	 && export MODE=${MODE} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo $$installext
+
+.PHONY: clean
+clean ::
+	@rm -f *.log *~

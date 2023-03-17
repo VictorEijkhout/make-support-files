@@ -13,8 +13,10 @@ moreinfo :: conf_info
 .PHONY: configure config-help
 configure :: modules
 	@source ${MAKEINCLUDES}/names.sh \
-	     && export MODE=${MODE} \
-	     && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && export MODE=${MODE} \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setmodulenames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
 	  && ( \
 	    reportnames \
 	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
@@ -63,6 +65,7 @@ config-help :
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
 	 && set -x \
 	 && cd $$srcdir \
 	 && ./configure --help \
