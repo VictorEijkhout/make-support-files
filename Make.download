@@ -74,9 +74,7 @@ retar :
 	 && tgz=${TGZURL} && tgz=$${tgz##*/} \
 	 && packagedir=$${packagebasename}-${PACKAGEVERSION} \
 	 && if [ $$tgz != $$packagedir ] ; then \
-	      unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
-	       && unpackdir=$${unpackdir%%/} \
-	       && tgzname=$${packagedir}.tgz \
-	       && echo "repacking $$unpackdir to: $$tgzname" \
-	       && tar fcz $${tgzname} $$unpackdir \
+	      tgzname=$${packagedir}.tgz \
+	       && echo "repacking $$packagedir to: $$tgzname" \
+	       && tar fcz $${tgzname} $$packagedir \
 	    ; fi
