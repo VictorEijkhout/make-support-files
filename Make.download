@@ -75,7 +75,7 @@ retar :
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
 	 && tgz=${TGZURL} && tgz=$${tgz##*/} \
-	 && export srcdir=$homedir/${packagebasename}-${packageversion} \
+	 && export srcdir=$${packagebasename}-$${packageversion} \
 	 && if [ $$tgz != $$srcdir ] ; then \
 	      tgzname=$${srcdir}.tgz \
 	       && echo "repacking $$srcdir to: $$tgzname" \
