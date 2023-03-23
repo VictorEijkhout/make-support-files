@@ -114,7 +114,13 @@ betar :
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
+	        downloaddir="${DOWNLOADPATH}" \
+	    ; else \
+	        downloaddir=$$homedir \
+	    ; fi \
+	 && if [ ! -d "$${downloaddir}" ] ; then \
+	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \
+	 && cd "$${downloaddir}" \
 	 && srcname=$${packagebasename}-$${packageversion} \
 	 && tgzname=$${srcname}.tgz \
 	 && tar fcz $${tgzname} $${srcname}
