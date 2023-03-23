@@ -26,8 +26,6 @@ clone oneclone ::
 	        packagebasename=${PACKAGEBASENAME} \
 	    ; else packagebasename=${PACKAGE} ; fi \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "$${packagebasename}" \
-	 && setmodulenames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	 && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 \
 	 && package=$${package}-git \
 	 && if [ ! -z "${GITPACKAGE}" ] ; then package=${GITPACKAGE} ; fi \
