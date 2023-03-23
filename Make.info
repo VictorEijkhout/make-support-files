@@ -1,7 +1,7 @@
 # -*- makefile -*-
 
 .PHONY: info moreinfo
-info :: modules
+info :: 
 	@echo && echo "================ General info" 
 	@echo "(make moreinfo for options)" && echo 
 	@echo "make targets for ${PACKAGE}"

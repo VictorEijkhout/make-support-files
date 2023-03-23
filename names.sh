@@ -40,10 +40,15 @@ function setnames () {
 	    ; else \
 	      export packagebasename=$package \
 	    ; fi \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	        export downloaddir="${DOWNLOADPATH}" \
+	    ; else \
+	        export downloaddir=$homedir \
+	    ; fi \
 	 && if [ ! -z "${SRCPATH}" ] ; then
 	      export srcdir="${SRCPATH}" \
 	    ; else \
-	      export srcdir=$homedir/${packagebasename}-${packageversion} \
+	      export srcdir=${downloaddir}/${packagebasename}-${packageversion} \
 	    ; fi
 }
 
