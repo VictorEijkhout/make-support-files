@@ -104,3 +104,17 @@ clone pull ::
 	     && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	     && chmod -R g+rX,o+rX $${homedir}/$${package}-git \
 	 ; fi
+
+info ::
+	@echo "make betar : tgz the git directory"
+.PHONY: betar
+betar :
+	@\
+	source ${MAKEINCLUDES}/names.sh \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
+	 && srcname=$${packagebasename}-$${packageversion} \
+	 && tgzname=$${srcname}.tgz \
+	 && tar fcz $${tgzname} $${srcname}
