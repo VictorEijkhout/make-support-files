@@ -112,3 +112,13 @@ clone pull ::
 	     && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	     && chmod -R g+rX,o+rX $${homedir}/$${package}-git \
 	 ; fi
+
+info ::
+	@echo "make list_branch"
+.PHONY: list_branch
+list_branch :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setmodulenames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
+	 && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
+	 && cd $$srcdir && git branch -a
