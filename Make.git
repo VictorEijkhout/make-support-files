@@ -75,6 +75,7 @@ newclone ::
 .PHONY: pull_info
 pull_info :: 
 	@echo "make pull : git pull on repo"
+	@echo "    [ BRANCH=.... ]"
 info :: pull_info
 moreinfo :: pull_info
 	@echo "    [ PULLAFTERACTIONS= (mods inside the repo) ]"
