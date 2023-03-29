@@ -23,11 +23,11 @@ info ::
 	 && echo "  module dir: $$moduledir" \
 	 && echo "    make list_installations for already present"
 .PHONY: list_installations
-list_installations :
+list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && echo && echo "Already available installations:" \
+	 && echo && echo "Already available installations in $${homedir}:" \
 	 && ls -d $${homedir}/installation* 2>/dev/null || echo >/dev/null \
 	 && make --no-print-directory moduleprint \
 	 && echo

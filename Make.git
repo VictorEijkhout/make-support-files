@@ -79,6 +79,7 @@ newclone ::
 .PHONY: pull_info
 pull_info :: 
 	@echo "make pull : git pull on repo"
+	@echo "    [ BRANCH=.... ]"
 info :: pull_info
 moreinfo :: pull_info
 	@echo "    [ PULLAFTERACTIONS= (mods inside the repo) ]"
@@ -112,6 +113,16 @@ clone pull ::
 	     && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	     && chmod -R g+rX,o+rX $${downloaddir}/$${package}-git \
 	 ; fi
+
+info ::
+	@echo "make list_branch"
+.PHONY: list_branch
+list_branch :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setmodulenames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
+	 && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
+	 && cd $$srcdir && git branch -a
 
 info ::
 	@echo "make betar : tgz the git directory"
