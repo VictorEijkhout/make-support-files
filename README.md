@@ -162,7 +162,9 @@ in your makefile (or better: on your make commandline) to use 24 threads, et cet
 
 # Module file
 
-The build stage generates a modulefile using the guidelines of the Lmod package.
+The build stage generates a modulefile using the guidelines of the Lmod package; see next.
+
+## Default module file
 
 * Start at `${MODULEROOT}`
 * If `MODE` IS `mpi`, append `MPI`, for mode `seq` append `Compiler`
@@ -177,9 +179,19 @@ Setting `MODULEDIRSET` completely overrides this mechanism: this is the fully ex
 
 Setting `NOMODULE` to any non-blank value omits creation of the modulefile. That's good for when you build your own compiler or MPI: those modules need to inherit, declare `family`, et cetera.
 
+## Explicit modulefile generation
+
+The modulefile generation is usually taken care of by the cmake or autoconf `build` rule. In case you write that yourself, include 
+
+```
+include ${MAKEINCLUDES}/Make.vars
+```
+
+and use the command `make varsmodule` to create the modulefile.
+
 ## CMake discoverability
 
-If you package generates a `.pc` file, specify its location relative to the install directory by a line such as 
+If your package generates a `.pc` file, specify its location relative to the install directory by a line such as 
 
 ```
 PKGCONFIGSET = lib/pkgconfig
