@@ -1,5 +1,5 @@
 # -*- makefile -*-
-function systemcode () {
+function systemnames () {
 	if [ "${TACC_SYSTEM}" = "stampede2" ] ; then \
 	  export taccsystemcode=skx \
 	; elif [ "${TACC_SYSTEM}" = "frontera" ] ; then \
@@ -13,6 +13,16 @@ function systemcode () {
 	; fi
 }
 
+function compilernames () {
+	if [ ! -z "${LMOD_FAMILY_COMPILER}" ] ; then \
+	    export compilercode="${LMOD_FAMILY_COMPILER}" \
+	     && export compilerversion="${LMOD_FAMILY_COMPILER_VERSION}" \
+	; else \
+	    export compilercode="${TACC_FAMILY_COMPILER}" \
+	     && export compilerversion="${TACC_FAMILY_COMPILER_VERSION}" \
+	; fi 
+}
+
 function setnames () {
     if [ -z "${TACC_SYSTEM}" ] ; then \
 	echo "WARNING: variable TACC_SYSTEM not set" ; \
@@ -23,7 +33,7 @@ function setnames () {
     && if [ -z "$1" ] ; then \
 	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
      && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
-	 && TACC_SYSTEM=${TACC_SYSTEM} systemcode \
+	 && TACC_SYSTEM=${TACC_SYSTEM} systemnames \
 	 && PACKAGE=$2 && PACKAGEVERSION=$3 \
 	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
 	 && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
@@ -54,6 +64,14 @@ function setnames () {
 
 function setdirlognames() {
 	export scriptdir=`pwd` \
+	 && systemnames && compilernames \
+	 && requirenonzero taccsystemcode \
+	 && requirenonzero compilercode \
+	 && if [ "${MODE}" = "seq" ] ; then \
+	      export installext=${packageversion}-${taccsystemcode}-${compilercode} \
+	   ; else \
+	      export installext=${packageversion}-${taccsystemcode}-${compilercode}-${LMOD_FAMILY_MPI} \
+	   ; fi \
 	 && export configurelog=configure-${installext}.log \
 	 && export installlog=install-${installext}.log \
 	 && export builddir=${homedir}/build-${installext} \
@@ -69,10 +87,18 @@ function setdirlognames() {
 	   ; fi ; fi
 }
 
+function requirenonzero () {
+	eval r=\${$1} \
+	 && if [ -z "$r" ] ; then \
+	      echo "Internal Error: zero variable <<$1>>" && exit 1 \
+	    ; fi 
+}
+
 function setmodulenames () {
-	TACC_SYSTEM=${TACC_SYSTEM} systemcode \
-	 && if [ -z "$packageversion" ] ; then \
-	      echo "No packageversion for module names" && exit 1 ; fi \
+	TACC_SYSTEM=${TACC_SYSTEM} systemnames && compilernames \
+	 && requirenonzero packageversion \
+	 && requirenonzero compilercode \
+	 && requirenonzero compilerversion \
 	 && if [ ! -z "${MODULEDIRSET}" ] ; then \
 	        export moduledir=${MODULEDIRSET} \
 	    ; else \
@@ -80,18 +106,13 @@ function setmodulenames () {
 	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
 	         && modulepath=${MODULEROOT} \
 	         && if [ "${MODE}" = "mpi" ] ; then \
-	                modulepath=${modulepath}/MPI/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
+	                modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
 	            ; else \
-	                modulepath=${modulepath}/Compiler/${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION} \
+	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
 	            ; fi \
 	         && export moduledir=${modulepath}/${package} \
 	    ; fi \
 	 && export moduleversion=${packageversion} \
-	 && if [ "${MODE}" = "seq" ] ; then \
-	      export installext=${packageversion}-${taccsystemcode}-${LMOD_FAMILY_COMPILER} \
-	   ; else \
-	      export installext=${packageversion}-${taccsystemcode}-${LMOD_FAMILY_COMPILER}-${LMOD_FAMILY_MPI} \
-	   ; fi \
 	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export installext=${installext}-$4 \
 	        && export moduleversion=${moduleversion}-$4 \
