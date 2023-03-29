@@ -107,6 +107,12 @@ make download PACKAGEVERSION=3.1.4
 make pull PACKAGEVERSION=git
 ```
 
+To switch branches:
+
+```
+make pull BRANCH=somebranch
+```
+
 You can override the download location by setting `DOWNLOADPATH`.
 
 There is a rule
@@ -162,6 +168,8 @@ The build stage generates a modulefile using the guidelines of the Lmod package.
 * If `MODE` IS `mpi`, append `MPI`, for mode `seq` append `Compiler`
 * Append `${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}`
 * For MPI packages, append  `${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION}`
+
+The module file name is usually equal to `${PACKAGEVERSION}` but setting `MODULEVERSIONEXTRA` appends that with a dash.
 
 The `DIR,INC,LIB` variables are generated both with `TACC_`  and `LMOD_` prefix.
 
