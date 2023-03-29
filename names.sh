@@ -39,16 +39,21 @@ function setnames () {
 	      export packagebasename=$5 \
 	    ; else \
 	      export packagebasename=$package \
+	    ; fi \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	        export downloaddir="${DOWNLOADPATH}" \
+	    ; else \
+	        export downloaddir=$homedir \
+	    ; fi \
+	 && if [ ! -z "${SRCPATH}" ] ; then
+	      export srcdir="${SRCPATH}" \
+	    ; else \
+	      export srcdir=${downloaddir}/${packagebasename}-${packageversion} \
 	    ; fi
 }
 
 function setdirlognames() {
 	export scriptdir=`pwd` \
-	 && if [ ! -z "${SRCPATH}" ] ; then
-	      export srcdir="${SRCPATH}" \
-	    ; else \
-	      export srcdir=$homedir/${packagebasename}-${packageversion} \
-	    ; fi \
 	 && export configurelog=configure-${installext}.log \
 	 && export installlog=install-${installext}.log \
 	 && export builddir=${homedir}/build-${installext} \

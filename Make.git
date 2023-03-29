@@ -26,21 +26,23 @@ clone oneclone ::
 	        packagebasename=${PACKAGEBASENAME} \
 	    ; else packagebasename=${PACKAGE} ; fi \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "$${packagebasename}" \
-	 && setmodulenames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	 && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 \
 	 && package=$${package}-git \
 	 && if [ ! -z "${GITPACKAGE}" ] ; then package=${GITPACKAGE} ; fi \
 	 && echo "Clone of package=${PACKAGE}, version=${PACKAGEVERSION} into $${package}" \
-	 && if [ ! -d $${homedir} ] ; then \
-	        echo " .. first creating homedir=$${homedir}" \
-	         && mkdir -p $${homedir} ; fi \
-	 && if [ -d $${homedir}/$${package} ] ; then \
-	    echo ".. repo already in place: $${homedir}/$${package}" \
+	 \
+	 && if [ ! -d $${downloaddir} ] ; then \
+	        echo " .. first creating downloaddir=$${downloaddir}" \
+	         && mkdir -p $${downloaddir} ; fi \
+	 && if [ ! -d "$${downloaddir}" ] ; then \
+	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \
+	 && cd "$${downloaddir}" \
+	 && if [ -d $${downloaddir}/$${package} ] ; then \
+	    echo ".. repo already in place: $${downloaddir}/$${package}" \
 	    ; \
 	else \
-	    echo ".. cloning repo ${GITREPO} into $${homedir}/$${package}" \
-	     && cd $${homedir} \
+	    echo ".. cloning repo ${GITREPO} into $${downloaddir}/$${package}" \
+	     && cd $${downloaddir} \
 	     && git clone ${GITREPO} $${package} \
 	     && if [ ! -z "${BRANCH}" ] ; then \
 	            echo ".. switching to branch ${BRANCH}" \
@@ -64,9 +66,11 @@ newclone ::
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
 	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
-	 && setmodulenames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	 && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	 && rm -rf $${homedir}/$${package}-git \
+	 \
+	 && if [ ! -d "$${downloaddir}" ] ; then \
+	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \
+	 \
+	 && rm -rf $${downloaddir}/$${package}-git \
 	 && echo "recloning...." \
 	 && make --no-print-directory clone \
 	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
@@ -87,8 +91,6 @@ pull :: clone
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && setmodulenames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	 && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 \
 	 && echo "Updating repo: $${srcdir}" \
 	 && cd $${srcdir} \
@@ -109,9 +111,7 @@ clone pull ::
 	    echo "setting permissions open" \
 	     && source ${MAKEINCLUDES}/names.sh \
 	     && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	     && setmodulenames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	     && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	     && chmod -R g+rX,o+rX $${homedir}/$${package}-git \
+	     && chmod -R g+rX,o+rX $${downloaddir}/$${package}-git \
 	 ; fi
 
 info ::
@@ -123,3 +123,21 @@ list_branch :
 	 && setmodulenames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
 	 && cd $$srcdir && git branch -a
+
+info ::
+	@echo "make betar : tgz the git directory"
+.PHONY: betar
+betar :
+	@\
+	source ${MAKEINCLUDES}/names.sh \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
+	 && if [ ! -d "$${downloaddir}" ] ; then \
+	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \
+	 && cd "$${downloaddir}" \
+	 && srcname=$${packagebasename}-$${packageversion} \
+	 && if [ ! -d "$$srcname" ] ; then \
+	        echo "Error: download dir $$downloaddir does not contain: $$srcname" \
+	         && exit 1 ; fi \
+	 && tgzname=$${srcname}.tgz \
+	 && tar fcz $${tgzname} $${srcname}
