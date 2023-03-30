@@ -21,6 +21,13 @@ function compilernames () {
 	    export compilercode="${TACC_FAMILY_COMPILER}" \
 	     && export compilerversion="${TACC_FAMILY_COMPILER_VERSION}" \
 	; fi 
+	if [ ! -z "${LMOD_FAMILY_MPI}" ] ; then \
+	    export mpicode="${LMOD_FAMILY_MPI}" \
+	     && export mpiversion="${LMOD_FAMILY_MPI_VERSION}" \
+	; else \
+	    export mpicode="${TACC_FAMILY_MPI}" \
+	     && export mpiversion="${TACC_FAMILY_MPI_VERSION}" \
+	; fi 
 }
 
 function setnames () {
@@ -70,7 +77,7 @@ function setdirlognames() {
 	 && if [ "${MODE}" = "seq" ] ; then \
 	      export installext=${packageversion}-${taccsystemcode}-${compilercode} \
 	   ; else \
-	      export installext=${packageversion}-${taccsystemcode}-${compilercode}-${LMOD_FAMILY_MPI} \
+	      export installext=${packageversion}-${taccsystemcode}-${compilercode}-${mpicode} \
 	   ; fi \
 	 && export configurelog=configure-${installext}.log \
 	 && export installlog=install-${installext}.log \
@@ -106,7 +113,7 @@ function setmodulenames () {
 	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
 	         && modulepath=${MODULEROOT} \
 	         && if [ "${MODE}" = "mpi" ] ; then \
-	                modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION} \
+	                modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
 	            ; else \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
 	            ; fi \
