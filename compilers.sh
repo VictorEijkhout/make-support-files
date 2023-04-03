@@ -1,17 +1,17 @@
 function setcompilers () {
-    if [ -z "${LMOD_FAMILY_COMPILER}" ] ; then \
-	echo "WARNING: variable LMOD_FAMILY_COMPILER not set" ; \
+    if [ -z "${LMOD_FAMILY_COMPILER}" -a -z "${TACC_FAMILY_COMPILER}" ] ; then \
+	echo "WARNING: variable LMOD/TACC_FAMILY_COMPILER not set" ; \
 	fi 
     echo "Setting compilers for ${LMOD_FAMILY_COMPILER}" >/dev/null \
-     && if [ "${LMOD_FAMILY_COMPILER}" = "intel" ] ; then \
+     && if [ "${LMOD_FAMILY_COMPILER}" = "intel" -o "${TACC_FAMILY_COMPILER}" = "intel" ] ; then \
         export cc=icc && export cxx=icpc && export fc=ifort \
     ; elif [ "${LMOD_FAMILY_COMPILER}" = "intelx" ] ; then \
         export cc=icx && export cxx=icpx && export fc=ifx \
     ; elif [ "${LMOD_FAMILY_COMPILER}" = "clang" ] ; then \
         export cc=clang && export cxx=clang++ && export fc=gfortran \
-    ; elif [ "${LMOD_FAMILY_COMPILER}" = "gcc" ] ; then \
+    ; elif [ "${LMOD_FAMILY_COMPILER}" = "gcc" -o "${TACC_FAMILY_COMPILER}" = "gcc" ] ; then \
         export cc=gcc && export cxx=g++ && export fc=gfortran \
-    ; elif [ "${LMOD_FAMILY_COMPILER}" = "oneapi" ] ; then \
+    ; elif [ "${LMOD_FAMILY_COMPILER}" = "oneapi" -o "${TACC_FAMILY_COMPILER}" = "oneapi" ] ; then \
         export cc=icx && export cxx=icpx && export fc=ifx \
     ; else \
         export cc=mpicc && export cxx=mpicxx && export fc=mpif90 \
