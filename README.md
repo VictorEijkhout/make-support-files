@@ -201,6 +201,10 @@ The resulting path will be added to the `PKG_CONFIG_PATH` in the modulefile.
 
 Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MODULE_PATH`, and `CMAKE_PREFIXPATH_SET` will be added to the `CMAKE_PREFIX_PATH`.
 
+## More module stuff
+
+Set the variable `HASBIN` to anything nonero to include a bin directory. Otherwise the installation will assume that only `DIR/LIB/INC` apply.
+
 # Customizations
 
 ## Autotools
