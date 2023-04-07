@@ -14,8 +14,13 @@ public ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setmodulenames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	 \
 	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
 	        installdir=${PREFIXOVERRIDE} ; fi \
+	 && requirenonzero homedir \
+	 && requirenonzero installdir \
 	 && echo "opening $$homedir , $$installdir" \
 	 && ${SUDO} chmod    g+rX,o+rX $$homedir \
 	 && ${SUDO} chmod -R g+rX,o+rX $$installdir
