@@ -34,8 +34,8 @@ function setnames () {
     if [ -z "${TACC_SYSTEM}" ] ; then \
 	echo "WARNING: variable TACC_SYSTEM not set" ; \
 	fi \
-    && if [ -z "${LMOD_FAMILY_COMPILER}" ] ; then \
-	echo "WARNING: variable LMOD_FAMILY_COMPILER not set" ; \
+    && if [ -z "${LMOD_FAMILY_COMPILER}" -a -z "${TACC_FAMILY_COMPILER}" ] ; then \
+	echo "WARNING: variable LMOD/TACC_FAMILY_COMPILER not set" ; \
 	fi \
     && if [ -z "$1" ] ; then \
 	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
