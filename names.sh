@@ -74,10 +74,12 @@ function setdirlognames() {
 	 && systemnames && compilernames \
 	 && requirenonzero taccsystemcode \
 	 && requirenonzero compilercode \
+	 && if [ "${MODE}" = "mpi" ] ; then requirenonzero mpicode ; fi \
 	 && if [ "${MODE}" = "seq" ] ; then \
-	      export installext=${packageversion}-${taccsystemcode}-${compilercode} \
+	        export installext=${packageversion}-${taccsystemcode}-${compilercode} \
 	   ; else \
-	      export installext=${packageversion}-${taccsystemcode}-${compilercode}-${mpicode} \
+	        export \
+	          installext=${packageversion}-${taccsystemcode}-${compilercode}-${mpicode} \
 	   ; fi \
 	 && export configurelog=configure-${installext}.log \
 	 && export installlog=install-${installext}.log \
@@ -98,6 +100,9 @@ function requirenonzero () {
 	eval r=\${$1} \
 	 && if [ -z "$r" ] ; then \
 	      echo "Internal Error: zero variable <<$1>>" && exit 1 \
+	    ; fi \
+	 && if [ $( echo $1 | grep ":" | wc -l ) -gt 0 ] ; then \
+	      echo "Please no colons in paths / directory names" && exit 1 \
 	    ; fi 
 }
 
@@ -127,7 +132,7 @@ function setmodulenames () {
 }
 
 function reportnames () {
-	echo "Installing package=${PACKAGE} version=${packageversion}" \
+	echo "Installing package=${PACKAGE} version=${packageversion} at $(date)" \
 	 && echo "using directories:" \
 	 && echo "srcdir=${srcdir}" \
 	 && echo "builddir=${builddir}" \
