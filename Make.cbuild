@@ -12,7 +12,7 @@ info ::
 	@echo "    [ JCOUNT=123 (default ${JCOUNT}) ]"
 .PHONY: build install
 JCOUNT = 2
-build :
+build ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
