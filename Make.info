@@ -67,7 +67,7 @@ moduleprint ::
 
 .PHONY: ls findfile findstring installext
 info ::
-	@echo "    make ls [ PATTERN=... ( ls in src dir ) ]"
+	@echo "    make ls [ LSPATH=.... relative to src ] [ PATTERN=... ( ls in src dir ) ]"
 	@echo "    make findfile   FILE=..."
 	@echo "    make findstring STRING=..."
 	@echo "    make installext"
@@ -75,8 +75,8 @@ ls :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && echo "$${srcdir}:" \
-	 && ls $${srcdir}/${PATTERN}
+	 && echo "$${srcdir}/${LSPATH}:" \
+	 && ls $${srcdir}/${LSPATH}/${PATTERN}
 findfile :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
