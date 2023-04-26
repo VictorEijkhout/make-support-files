@@ -15,7 +15,8 @@ download :: homedir
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
 	    ; else \
-	        export tgz="${TGZURL}" && export tgz="$${tgz##*/}" \
+	        export tgz="${TGZURL}" && requirenonzero tgz \
+	         && export tgz="$${tgz##*/}" \
 	    ; fi \
 	 && rm -rf $$tgz $${package}-${PACKAGEVERSION} \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
