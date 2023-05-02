@@ -1,4 +1,8 @@
 # -*- makefile -*-
+function notetoself() {
+	echo $1 >/dev/null
+}
+
 function systemnames () {
 	if [ "${TACC_SYSTEM}" = "stampede2" ] ; then \
 	  export taccsystemcode=skx \
@@ -21,7 +25,7 @@ function compilernames () {
 	    export compilercode="${TACC_FAMILY_COMPILER}" \
 	     && export compilerversion="${TACC_FAMILY_COMPILER_VERSION}" \
 	; fi 
-	export compilerversion=${compilerversion%%.*}
+	export compilershortversion=${compilerversion%%.*}
 	if [ ! -z "${LMOD_FAMILY_MPI}" ] ; then \
 	    export mpicode="${LMOD_FAMILY_MPI}" \
 	     && export mpiversion="${LMOD_FAMILY_MPI_VERSION}" \
@@ -73,14 +77,15 @@ function setnames () {
 function setdirlognames() {
 	export scriptdir=`pwd` \
 	 && systemnames && compilernames \
+	 && setnames       "$1" "$2" "$3" "$4" "$5" \
+	 && setmodulenames "$1" "$2" "$3" "$4" "$5" \
 	 && requirenonzero taccsystemcode \
 	 && requirenonzero compilercode \
-	 && if [ "${MODE}" = "mpi" ] ; then requirenonzero mpicode ; fi \
-	 && if [ "${MODE}" = "seq" ] ; then \
-	        export installext=${packageversion}-${taccsystemcode}-${compilercode}${compilerversion} \
-	   ; else \
-	        export \
-	          installext=${packageversion}-${taccsystemcode}-${compilercode}${compilerversion}-${mpicode} \
+	 &&  export \
+               installext=${packageversion}-${taccsystemcode}-${compilercode}${compilershortversion} \
+	 && if [ "${MODE}" = "mpi" ] ; then \
+	      requirenonzero mpicode \
+	       && export installext=${installext}-${mpicode} \
 	   ; fi \
 	 && export configurelog=configure-${installext}.log \
 	 && export installlog=install-${installext}.log \

@@ -14,17 +14,16 @@ moreinfo :: conf_info
 configure :: modules
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && setmodulenames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	  && ( \
-	    reportnames \
+	    echo "Start autotools-based configuration" \
 	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
 	            echo "prefix: using PREFIXOVERRIDE=${PREFIXOVERRIDE}" \
 	             && installdir=${PREFIXOVERRIDE} ; fi \
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	            echo "prefix: attaching PREFIXEXTRA=$F{PREFIXEXTRA}" \
 	             && installdir=$${installdir}-${PREFIXEXTRA} ; fi \
+	     && reportnames \
 	     && if [ "${ECHO}" = "1" ] ; then set -x ; fi \
 	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
@@ -50,7 +49,12 @@ configure :: modules
 	     && if [ ! -z "${CONFIGURE_SOURCE_THIS}" ] ; then \
 	            echo "Sourcing: ${CONFIGURE_SOURCE_THIS}" \
 	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
-	     && configureline="./configure --prefix=$$installdir ${CONFIGUREFLAGS}" \
+	     && note_to_self "libdir should not be needed" \
+	     && configureline="\
+	            ./configure \
+	                --prefix=$$installdir --libdir=$${installdir}/lib \
+	                ${CONFIGUREFLAGS} \
+	            " \
 	     && echo "Configuring as:" && echo $$configureline \
 	     && echo " .. with CC=$${CC} CXX=$${CXX} FC=$${FC}" \
 	     && if [ ! -z "$${CFLAGS}$${CXXFLAGS}$${FFLAGS}" ] ; then \

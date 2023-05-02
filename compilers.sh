@@ -9,9 +9,6 @@ function setcompilers () {
     ; elif [ "${LMOD_FAMILY_COMPILER}" = "intelx" ] ; then \
         export cc=icx && export cxx=icpx && export fc=ifx \
 	export ompflag=-qopenmp \
-    ; elif [ "${LMOD_FAMILY_COMPILER}" = "oneapi" -o "${TACC_FAMILY_COMPILER}" = "oneapi" ] ; then \
-        export cc=icx && export cxx=icpx && export fc=ifx \
-	export ompflag=-qopenmp \
     ; elif [ "${LMOD_FAMILY_COMPILER}" = "clang" ] ; then \
         export cc=clang && export cxx=clang++ && export fc=gfortran \
 	export ompflag=-fopenmp \
