@@ -44,7 +44,7 @@ configure : modules cmakeopts
 	     \
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
 	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
-	     && reportcompilers && echo && module list && echo \
+	     && reportcompilers && echo \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
