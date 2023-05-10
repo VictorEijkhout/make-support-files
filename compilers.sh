@@ -4,10 +4,7 @@ function setcompilers () {
 	fi 
     echo "Setting compilers for ${LMOD_FAMILY_COMPILER}" >/dev/null \
      && if [ "${LMOD_FAMILY_COMPILER}" = "intel" -o "${TACC_FAMILY_COMPILER}" = "intel" ] ; then \
-        export cc=icc && export cxx=icpc && export fc=ifort \
-	export ompflag=-qopenmp \
-    ; elif [ "${LMOD_FAMILY_COMPILER}" = "intelx" ] ; then \
-        export cc=icx && export cxx=icpx && export fc=ifx \
+        export cc=${CC} && export cxx=${CXX} && export fc=${FC} \
 	export ompflag=-qopenmp \
     ; elif [ "${LMOD_FAMILY_COMPILER}" = "clang" ] ; then \
         export cc=clang && export cxx=clang++ && export fc=gfortran \
