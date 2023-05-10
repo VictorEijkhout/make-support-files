@@ -44,6 +44,7 @@ configure : modules cmakeopts
 	     \
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
 	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
+	     && cmake --version | head -n 1 \
 	     && reportcompilers && echo \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
