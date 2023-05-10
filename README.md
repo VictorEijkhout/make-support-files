@@ -216,7 +216,7 @@ Define a variable `CONFIGUREFLAGS` in your makefile for any configuration option
 Define a variable `CMAKEFLAGS` in your makefile for any configuration 
 options beyond the installation prefix.
 
-Set `CPPSTANDARD=20` (et cetera) to dictate a specific standard to CMake.
+Set `CPPSTANDARD=20` (et cetera) to dictate a specific C++ standard to CMake.
 
 ## Source directory
 
