@@ -49,7 +49,7 @@ configure :: modules
 	     && if [ ! -z "${CONFIGURE_SOURCE_THIS}" ] ; then \
 	            echo "Sourcing: ${CONFIGURE_SOURCE_THIS}" \
 	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
-	     && note_to_self "libdir should not be needed" \
+	     && notetoself "libdir should not be needed" \
 	     && configureline="\
 	            ./configure \
 	                --prefix=$$installdir --libdir=$${installdir}/lib \
