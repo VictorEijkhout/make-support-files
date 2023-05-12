@@ -207,14 +207,20 @@ Set the variable `HASBIN` to anything nonero to include a bin directory. Otherwi
 
 # Customizations
 
-## Autotools
+## Autotools configure
 
-Define a variable `CONFIGUREFLAGS` in your makefile for any configuration options beyond the installation prefix.
+Define a variable `CONFIGUREFLAGS` in your makefile for any flags beyond the prefix.
 
 ## CMake
 
 Define a variable `CMAKEFLAGS` in your makefile for any configuration 
-options beyond the installation prefix.
+options beyond the installation prefix. The use of quotes in this flag is tricky:
+
+```
+CMAKEFLAGS=\
+    -D CMAKE_CXX_FLAGS=\"-qsomething -qelse\" \
+    -D CMAKEWHATEVER:BOOL=ON
+```
 
 Set `CPPSTANDARD=20` (et cetera) to dictate a specific C++ standard to CMake.
 
