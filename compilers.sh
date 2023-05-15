@@ -3,9 +3,15 @@ function setcompilers () {
 	echo "WARNING: variable LMOD/TACC_FAMILY_COMPILER not set" ; \
 	fi 
     echo "Setting compilers for ${LMOD_FAMILY_COMPILER}" >/dev/null \
+     && compiler_version=${TACC_FAMILY_COMPILER_VERSION} \
+     && compiler_version=${compiler_version%%.*} \
      && if [ "${LMOD_FAMILY_COMPILER}" = "intel" -o "${TACC_FAMILY_COMPILER}" = "intel" ] ; then \
-        export cc=${CC} && export cxx=${CXX} && export fc=${FC} \
-	export ompflag=-qopenmp \
+	if [ ${compiler_version} -lt 23 ] ; then \
+	    export cc=icc && export cxx=icpc && export fc=ifort \
+	; else \
+	    export cc=icx && export cxx=icpx && export fc=ifx \
+	; fi \
+     && export ompflag=-qopenmp \
     ; elif [ "${LMOD_FAMILY_COMPILER}" = "clang" ] ; then \
         export cc=clang && export cxx=clang++ && export fc=gfortran \
 	export ompflag=-fopenmp \
