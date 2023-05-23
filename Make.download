@@ -56,8 +56,9 @@ unpack untar ::
 	 && export srcdir=$${packagebasename}-$${packageversion} \
 	 && if [ ! "$${unpackdir}" = "$${srcdir}" ] ; then \
 	        echo " .. move to $${srcdir}" \
+	         && mv $${unpackdir} unpacked \
 	         && rm -rf $${srcdir} \
-	         && mv $${unpackdir} $${srcdir} \
+	         && mv unpacked $${srcdir} \
 	        ; \
 	    fi \
 	 && if [ ! -z "${BOOTSTRAP}" ] ; then \
