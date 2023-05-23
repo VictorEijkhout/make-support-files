@@ -75,7 +75,7 @@ ls :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && echo "$${srcdir}/${LSPATH}:" \
+	 && echo "ls $${srcdir}/${LSPATH} :" \
 	 && ls $${srcdir}/${LSPATH}/${PATTERN}
 findfile :
 	@source ${MAKEINCLUDES}/names.sh \
