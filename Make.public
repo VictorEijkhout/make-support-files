@@ -13,8 +13,6 @@ info ::
 public ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && setmodulenames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
 	 \
 	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
