@@ -33,6 +33,8 @@ list_installations ::
 	 && echo
 
 .PHONY: homedir
+moreinfo ::
+	@echo "make homedir : create home dir"
 homedir :
 	@if [ -z "${MAKEINCLUDES}" ] ; then \
 	    echo "Set MAKEINCLUDES to location of Make.stuff files" \
@@ -40,11 +42,20 @@ homedir :
 	 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && requirenonzero homedir \
 	 && if [ ! -d "$$homedir" ] ; then \
 	    echo "First creating home dir for ${PACKAGE}" \
 	     && mkdir -p "$$homedir" \
 	    ; \
 	fi
+.PHONY: installdir
+moreinfo ::
+	@echo "make installdir : name of install dir"
+installdir :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	 && echo $${installdir}
 
 .PHONY: modules moduleprint
 modules ::
