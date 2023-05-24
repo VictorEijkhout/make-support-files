@@ -124,6 +124,7 @@ that creates a new `.tgz` file with the standardized name as above.
 
 ## Configure and install
 
+There is support for autotools and CMake based packagesr.
 For both types of packages, the configure/install proceeds by
 
 ```
@@ -159,6 +160,26 @@ The  `make` is parallel: specify
 
 ```JCOUNT=24```
 in your makefile (or better: on your make commandline) to use 24 threads, et cetera.
+
+The installation pass also generates a modulefile. If you don't use the built-in installation scripts, see below.
+
+### Permissions
+
+The installation pass standard opens the install directory to the world.
+If you write your own installation:
+
+```
+include ${MAKEINCLUDES}/Make.public
+```
+
+and
+
+```
+make public
+# or for system locations:
+make public SUDO=1
+```
+
 
 # Module file
 
