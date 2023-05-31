@@ -49,12 +49,14 @@ configure : modules cmakeopts
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
+	                -D BUILD_SHARED_LIBS=TRUE \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
 	             && cmdline="cmake -D CMAKE_INSTALL_PREFIX=$$installdir \
 	                    ${CMAKEFLAGS} $$cppstandard \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
+	                    -D BUILD_SHARED_LIBS=TRUE \
 	                    $$srcdir" \
 	             && echo "cmdline=$$cmdline" \
 	             && eval $$cmdline \
