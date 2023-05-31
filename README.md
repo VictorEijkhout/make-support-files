@@ -73,9 +73,11 @@ or whatever may be the case.
 - `homedir = ${PACKAGEROOT}/${package}` where `package` is an all-lowercase version of `${PACKAGE}`. Override this by setting `HOMEDIR`.
 - `srcdir = ${homedir}/${packagebasename}-${packageversion}` is what downloads and clones are unpacked to and what is used for compilation. Override this by setting `SRCDIR`.
 
-## Download
+## Obtain the sources
 
 You can make your Makefile do a package download or a repository checkout.
+
+### Download tar or zip files
 
 For downloadable packages, you would have two lines:
 
@@ -88,9 +90,15 @@ which allows you to `make download untar`. This creates the source directory:
  
 ```${PACKAGEROOT}/${PACKAGE}/${PACKAGE}-${PACKAGEVERSION}```
 
-Note that the downloaded tar file does not necessarily contain a directory with this standardized name: in that case the unpacked directory is rename. Bug: MacOS "case preserving" is a problem.
+Note that the downloaded tar file does not necessarily contain a directory with this standardized name: in that case the unpacked directory is renamed from whatever gets unpacked.
 
-For repositories, you would have:
+* If the download is a `.zip` file, specify `ZIPURL=....`
+instead of `TGZURL`.
+* You can create a `.tgz` file from the standard name with `make retar`. (This is for instance convenient in TACC build jail.)
+
+### Clone repositories
+
+For git repositories, you would have:
 
 ```
 GITREPO= https://github.com/ECP-WarpX/WarpX.git
@@ -121,6 +129,8 @@ There is a rule
 make retar
 ```
 that creates a new `.tgz` file with the standardized name as above.
+
+* Just like `make retar` for download sources, there is `make betar` for repositories. Why not the same make rule? Because you sometimes want both download & clone in the same makefile.
 
 ## Configure and install
 
@@ -220,12 +230,19 @@ PKGCONFIGSET = lib/pkgconfig
 
 The resulting path will be added to the `PKG_CONFIG_PATH` in the modulefile.
 
-Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MODULE_PATH`, and `CMAKE_PREFIXPATH_SET` will be added to the `CMAKE_PREFIX_PATH`.
+Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MODULE_PATH`. By default, the install prefix will be added to the `CMAKE_PREFIX_PATH`.
 
 ## More module stuff
 
-Set the variable `HASBIN` to anything nonero to include a bin directory. Otherwise the installation will assume that only `DIR/LIB/INC` apply.
+Set the variable `HASBIN` to anything nonero to include a bin directory. 
+Otherwise the installation will assume that only `DIR/LIB/INC` apply.
 
+You can add custom variables to the module by specifying
+
+```
+EXTRAVARS="var1=val1 var2=val2"
+```
+ 
 # Customizations
 
 ## Autotools configure
