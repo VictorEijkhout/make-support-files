@@ -6,7 +6,7 @@ cmake_info :
 info :: cmake_info
 moreinfo :: cmake_info
 	@echo "    [ CMAKEFLAGS=... ] [ INSTALLEXT=... (extra extension ) ] "
-	@echo "    [ PKGCONFIGSET :  non-blank is added to vars file ]"
+	@echo "    [ PKGCONFIG :  non-blank is added to vars file ]"
 	@echo "    [ PKG_CONFIG_PATHS / PKG_CONFIG_ADDS = .... ]"
 	@echo "    [ CMAKE_PREFIX_PATH / CMAKE_PREFIX_ADDS = ... ]"
 	@echo "    [ INSTALLROOT=... (alternative install root) ]"
@@ -49,12 +49,14 @@ configure : modules cmakeopts
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
+	                -D BUILD_SHARED_LIBS=TRUE \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
 	             && cmdline="cmake -D CMAKE_INSTALL_PREFIX=$$installdir \
 	                    ${CMAKEFLAGS} $$cppstandard \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
+	                    -D BUILD_SHARED_LIBS=TRUE \
 	                    $$srcdir" \
 	             && echo "cmdline=$$cmdline" \
 	             && eval $$cmdline \
