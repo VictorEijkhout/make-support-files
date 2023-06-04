@@ -6,7 +6,7 @@ cmake_info :
 info :: cmake_info
 moreinfo :: cmake_info
 	@echo "    [ CMAKEFLAGS=... ] [ INSTALLEXT=... (extra extension ) ] "
-	@echo "    [ PKGCONFIGSET :  non-blank is added to vars file ]"
+	@echo "    [ PKGCONFIG :  non-blank is added to vars file ]"
 	@echo "    [ PKG_CONFIG_PATHS / PKG_CONFIG_ADDS = .... ]"
 	@echo "    [ CMAKE_PREFIX_PATH / CMAKE_PREFIX_ADDS = ... ]"
 	@echo "    [ INSTALLROOT=... (alternative install root) ]"
