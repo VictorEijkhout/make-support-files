@@ -225,12 +225,12 @@ and use the command `make varsmodule` to create the modulefile.
 If your package generates a `.pc` file, specify its location relative to the install directory by a line such as 
 
 ```
-PKGCONFIGSET = lib/pkgconfig
+PKGCONFIG = lib/pkgconfig
 ```
 
 The resulting path will be added to the `PKG_CONFIG_PATH` in the modulefile.
 
-Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MODULE_PATH`. By default, the install prefix will be added to the `CMAKE_PREFIX_PATH`.
+Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MODULE_PATH`. By default, the install prefix will always be added to the `CMAKE_PREFIX_PATH`.
 
 ## More module stuff
 
