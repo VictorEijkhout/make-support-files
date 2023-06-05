@@ -14,7 +14,7 @@ moreinfo :: conf_info
 configure :: modules
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" \
 	  && ( \
 	    echo "Start autotools-based configuration" \
 	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \

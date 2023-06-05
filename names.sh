@@ -44,7 +44,7 @@ function setnames () {
 	fi \
     && if [ -z "$1" ] ; then \
 	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
-     && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5 variant=$6" >/dev/null \
+     && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5 variant=$6" \
 	 && TACC_SYSTEM=${TACC_SYSTEM} systemnames \
 	 && PACKAGE=$2 && PACKAGEVERSION=$3 \
 	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
@@ -73,6 +73,33 @@ function setnames () {
 	    ; else \
 	      export srcdir=${downloaddir}/${packagebasename}-${packageversion} \
 	    ; fi
+}
+
+function setmodulenames () {
+	TACC_SYSTEM=${TACC_SYSTEM} systemnames && compilernames \
+	 && requirenonzero packageversion \
+	 && requirenonzero compilercode \
+	 && requirenonzero compilerversion \
+	 && if [ ! -z "${MODULEDIRSET}" ] ; then \
+	        export moduledir=${MODULEDIRSET} \
+	    ; else \
+	        if [ -z "${MODULEROOT}" ] ; then
+	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
+	         && modulepath=${MODULEROOT} \
+	         && if [ "${MODE}" = "mpi" ] ; then \
+	                modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
+	            ; else \
+	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
+	            ; fi \
+	         && export moduledir=${modulepath}/${package} \
+	    ; fi \
+	 && export moduleversion=${packageversion} \
+	 && if [ ! -z "${variant}" ] ; then \
+	      export moduleversion=${moduleversion}-${variant} ; fi \
+	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
+	       export installext=${installext}-$4 \
+	        && export moduleversion=${moduleversion}-$4 \
+	   ; fi \
 }
 
 function setdirlognames() {
@@ -113,31 +140,6 @@ function requirenonzero () {
 	 && if [ $( echo $1 | grep ":" | wc -l ) -gt 0 ] ; then \
 	      echo "Please no colons in paths / directory names" && exit 1 \
 	    ; fi 
-}
-
-function setmodulenames () {
-	TACC_SYSTEM=${TACC_SYSTEM} systemnames && compilernames \
-	 && requirenonzero packageversion \
-	 && requirenonzero compilercode \
-	 && requirenonzero compilerversion \
-	 && if [ ! -z "${MODULEDIRSET}" ] ; then \
-	        export moduledir=${MODULEDIRSET} \
-	    ; else \
-	        if [ -z "${MODULEROOT}" ] ; then
-	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
-	         && modulepath=${MODULEROOT} \
-	         && if [ "${MODE}" = "mpi" ] ; then \
-	                modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
-	            ; else \
-	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
-	            ; fi \
-	         && export moduledir=${modulepath}/${package} \
-	    ; fi \
-	 && export moduleversion=${packageversion} \
-	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
-	       export installext=${installext}-$4 \
-	        && export moduleversion=${moduleversion}-$4 \
-	   ; fi \
 }
 
 function reportnames () {

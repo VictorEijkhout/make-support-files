@@ -17,7 +17,7 @@ cmakeopts ::
 configure : modules cmakeopts
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" \
 	 && source ${MAKEINCLUDES}/compilers.sh \
 	 && if [ "${MODE}" = "mpi" ] ; then \
 	      setmpicompilers ; else setcompilers ; fi \
