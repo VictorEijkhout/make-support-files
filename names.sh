@@ -44,7 +44,7 @@ function setnames () {
 	fi \
     && if [ -z "$1" ] ; then \
 	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
-     && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5" >/dev/null \
+     && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5 variant=$6" >/dev/null \
 	 && TACC_SYSTEM=${TACC_SYSTEM} systemnames \
 	 && PACKAGE=$2 && PACKAGEVERSION=$3 \
 	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
@@ -62,6 +62,7 @@ function setnames () {
 	    ; else \
 	      export packagebasename=$package \
 	    ; fi \
+	 && export variant="$6" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	        export downloaddir="${DOWNLOADPATH}" \
 	    ; else \
@@ -77,8 +78,8 @@ function setnames () {
 function setdirlognames() {
 	export scriptdir=`pwd` \
 	 && systemnames && compilernames \
-	 && setnames       "$1" "$2" "$3" "$4" "$5" \
-	 && setmodulenames "$1" "$2" "$3" "$4" "$5" \
+	 && setnames       "$1" "$2" "$3" "$4" "$5" "$6" \
+	 && setmodulenames "$1" "$2" "$3" "$4" "$5" "$6" \
 	 && requirenonzero taccsystemcode \
 	 && requirenonzero compilercode \
 	 &&  export \
@@ -87,6 +88,8 @@ function setdirlognames() {
 	      requirenonzero mpicode \
 	       && export installext=${installext}-${mpicode} \
 	   ; fi \
+	 && if [ ! -z "${variant}" ] ; then \
+	      export installext=${installext}-${variant} ; fi \
 	 && export configurelog=configure-${installext}.log \
 	 && export installlog=install-${installext}.log \
 	 && export builddir=${homedir}/build-${installext} \

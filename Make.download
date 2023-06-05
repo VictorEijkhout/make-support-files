@@ -15,12 +15,16 @@ download :: homedir
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
 	    ; else \
-	        export tgz="${TGZURL}" \
+	        export tgz="$$( echo ${TGZURL} | sed 's/ //g' )" \
 	         && export tgz="$${tgz##*/}" \
 	    ; fi \
-	 && rm -rf $$tgz $${package}-${PACKAGEVERSION} \
+	 && cmdline="rm -rf $$tgz $${package}-${PACKAGEVERSION}" \
+	 && echo " .. cleanup: $${cmdline}" && eval $${cmdline} \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
-	        url=${ZIPURL} ; else url=${TGZURL} ; fi \
+	        url=${ZIPURL} \
+	    ; else \
+	        url=$$( echo ${TGZURL} | sed 's/ //g' ) \
+	    ; fi \
 	 && requirenonzero url && cmdline="wget $${url}" \
 	 && echo " .. cmdline=$$cmdline" \
 	 && eval $$cmdline \
