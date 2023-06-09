@@ -35,7 +35,7 @@ download :: homedir
 unpack untar :: 
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo "Unpacking file for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
