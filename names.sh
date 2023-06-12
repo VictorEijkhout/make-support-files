@@ -91,7 +91,11 @@ function setmodulenames () {
 	            ; else \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
 	            ; fi \
-	         && export moduledir=${modulepath}/${package} \
+	         && if [ ! -z "${MODULENAME}" ] ; then \
+	                export moduledir=${modulepath}/${MODULENAME} \
+	            ; else \
+	                export moduledir=${modulepath}/${package} \
+	            ; fi \
 	    ; fi \
 	 && export moduleversion=${packageversion} \
 	 && if [ ! -z "${variant}" ] ; then \
