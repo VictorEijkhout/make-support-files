@@ -51,6 +51,8 @@ configure :: modules
 	            echo "Sourcing: ${CONFIGURE_SOURCE_THIS}" \
 	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
 	     && notetoself "libdir should not be needed" \
+	     && if [ -f Makefile ] ; then \
+	            echo " .. distcleaning" && ( make distclean || echo "" ) ; fi \
 	     && configureline="\
 	            ./configure \
 	                --prefix=$$installdir --libdir=$${installdir}/lib \
