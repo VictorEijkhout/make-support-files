@@ -33,6 +33,7 @@ configure :: modules
 	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
 	     && export LIBS=${LIBS} \
 	     \
+	     && requirenonzero srcdir && echo " .. configuring in srcdir=$${srcdir}" \
 	     && cd $$srcdir \
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
 	            echo "First autogen" \
