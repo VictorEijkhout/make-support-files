@@ -53,7 +53,7 @@ unpack untar ::
 	         && unzip $$tgz \
 	    ; else \
 	        unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
-	         && unpackdir=$${unpackdir%%/} \
+	         && unpackdir=$${unpackdir%%/*} \
 	         && echo " .. tar file <<$$tgz>> contains: $$unpackdir; unpacking" \
 	         && rm -rf $$unpackdir \
 	         && tar fxz $$tgz \

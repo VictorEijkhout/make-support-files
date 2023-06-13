@@ -33,6 +33,7 @@ configure :: modules
 	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
 	     && export LIBS=${LIBS} \
 	     \
+	     && requirenonzero srcdir && echo " .. configuring in srcdir=$${srcdir}" \
 	     && cd $$srcdir \
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
 	            echo "First autogen" \
@@ -50,6 +51,8 @@ configure :: modules
 	            echo "Sourcing: ${CONFIGURE_SOURCE_THIS}" \
 	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
 	     && notetoself "libdir should not be needed" \
+	     && if [ -f Makefile ] ; then \
+	            echo " .. distcleaning" && ( make distclean || echo "" ) ; fi \
 	     && configureline="\
 	            ./configure \
 	                --prefix=$$installdir --libdir=$${installdir}/lib \

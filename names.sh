@@ -88,8 +88,10 @@ function setmodulenames () {
 	         && modulepath=${MODULEROOT} \
 	         && if [ "${MODE}" = "mpi" ] ; then \
 	                modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
-	            ; else \
+	            ; elif [ "${MODE}" = "seq" ] ; then \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
+	            ; elif [ ! -z "${MODE}" ] ; then \
+	                echo "ERROR: unknown mode: ${MODE}" && exit 1 \
 	            ; fi \
 	         && if [ ! -z "${MODULENAME}" ] ; then \
 	                export moduledir=${modulepath}/${MODULENAME} \
