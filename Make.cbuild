@@ -28,7 +28,7 @@ build ::
 	     && if [ -z "${NOMODULE}" ] ; then \
 	            echo "generating module file" \
 	             && ( cd $$scriptdir \
-	                    && make FAMILY=${FAMILY} --no-print-directory varsmodule ) \
+	                    && make FAMILY=${FAMILY} --no-print-directory module ) \
 	        ; fi \
 	    ) 2>&1 | tee $$installlog \
 	 && echo && echo "Installation finished in: $$installdir" && echo
