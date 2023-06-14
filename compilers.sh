@@ -5,7 +5,7 @@ function setcompilers () {
     echo "Setting compilers for ${TACC_FAMILY_COMPILER}" \
      && compiler_version=${TACC_FAMILY_COMPILER_VERSION} \
      && compiler_version=${compiler_version%%.*} \
-     && echo " .. version $${compiler_version}" \
+     && echo " .. version ${compiler_version}" \
      && if [ "${TACC_FAMILY_COMPILER}" = "intel" ] ; then \
 	   if [ ${compiler_version} -lt 23 ] ; then \
 	       export cc=icc && export cxx=icpc && export fc=ifort \
