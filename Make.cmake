@@ -43,6 +43,14 @@ configure : modules cmakeopts
 	            cppstandard="-D CMAKE_CXX_FLAGS=-std=c++${CPPSTANDARD}" ; fi \
 	     \
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
+	     \
+	     && if [ ! -z "${CMAKECOMPILERFLAGS}" ] ; then \
+	            echo "Setting compiler flags to <<${CMAKECOMPILERFLAGS}>>" \
+	             && export CXXFLAGS="${CMAKECOMPILERFLAGS}" \
+	             && export CFLAGS="${CMAKECOMPILERFLAGS}" \
+	             && export FFLAGS="${CMAKECOMPILERFLAGS}" \
+	        ; fi \
+	     \
 	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
 	     && cmake --version | head -n 1 \
 	     && reportcompilers && echo \
