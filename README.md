@@ -230,7 +230,7 @@ PKGCONFIG = lib/pkgconfig
 
 The resulting path will be added to the `PKG_CONFIG_PATH` in the modulefile.
 
-Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MODULE_PATH`. By default, the install prefix will always be added to the `CMAKE_PREFIX_PATH`.
+Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MODULE_PATH`. By default, the install prefix will always  be added to the `CMAKE_PREFIX_PATH`.
 
 ## More module stuff
 
@@ -260,7 +260,17 @@ CMAKEFLAGS=\
     -D CMAKEWHATEVER:BOOL=ON
 ```
 
+However, for mere compiler flags,
+set 
+
+```
+CMAKECOMPILERFLAGS=-Wno-whatever
+```
+
+to add identical flags to all three compilers.
+
 Set `CPPSTANDARD=20` (et cetera) to dictate a specific C++ standard to CMake.
+
 
 ## Source directory
 
