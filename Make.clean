@@ -7,13 +7,11 @@ clean ::
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
-	 && set -x \
 	 && rm -rf $$builddir \
 	) 
 totalclean :: clean
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
-	 && set -x \
 	 && rm -rf $$installdir \
 	) 
