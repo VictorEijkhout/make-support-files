@@ -58,7 +58,7 @@ In addition to the previous, you can have a line
 ```
 MODE = seq # or mpi
 ```
-that determines the type of compiler used, and influences the name of the module file.
+that determines the type of compiler used, and influences the name of the module file and its location in the module hierarchy.
 
 If your package needs other packages loaded, set
 
@@ -274,7 +274,7 @@ Set `CPPSTANDARD=20` (et cetera) to dictate a specific C++ standard to CMake.
 
 ## Source directory
 
-By default, the source is found in `${PACKAGEROOT}/${package}` where `package` is an all-lowercase version of `${PACKAGE}`. To override this, set the `SRCDIR` variable.
+By default, the source is found in `${PACKAGEROOT}/${package}` where `package` is an all-lowercase version of `${PACKAGE}`. To override this, set the `SRCDIR` variable. Note that this convention is more or less enforced by the download and clone rules, which create this directory if it doesn't exist yet.
 
 ## Installation directory
 
@@ -292,6 +292,8 @@ LIBDIR=lib64
 
 ## Writing your own rules
 
+### Directory names
+
 The above include files all operate by means of a shell script `names.sh`. So if you need to write your own configure rule,
 you can still use this support infrastructure by using that script explicitly.
 
@@ -303,4 +305,10 @@ configure ::
 
 The `names.sh` files defines the following variables:
 
-- 
+ - `srcdir`, `builddir`, `installdir` for the package source, the temporary directory for building, and the final install location. The latter encodes the system, compiler, MPI names and versions for uniqueness.
+
+- `configurelog`, `installlog` for qualified names of log files. You can use these or ignore them for your own names.
+
+### Compilers
+
+Secondly, there is a file `compilers.sh` which when sourced deduces the compiler from `TACC_FAMILY_COMPILER`, and sets environment variables `CC, CXX, FC` accordingly. For most autoconf and CMake installations that is enough.
