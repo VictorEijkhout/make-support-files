@@ -1,4 +1,10 @@
 # -*- makefile -*-
+################################################################
+####
+#### top level Make include file
+#### this probably needs to be included always.
+####
+################################################################
 
 .PHONY: info moreinfo
 info :: 
