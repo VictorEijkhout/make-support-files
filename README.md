@@ -242,6 +242,13 @@ You can add custom variables to the module by specifying
 ```
 EXTRAVARS="var1=val1 var2=val2"
 ```
+
+Likewise,
+
+```
+EXTRAINSTALLVARS = var=subdir
+```
+defines `var` relative to the installation directory.
  
 # Customizations
 
