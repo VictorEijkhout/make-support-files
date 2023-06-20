@@ -225,8 +225,15 @@ and use the command `make varsmodule` to create the modulefile.
 If your package generates a `.pc` file, specify its location relative to the install directory by a line such as 
 
 ```
-PKGCONFIG = lib/pkgconfig
+PKGCONFIG = share/pkgconfig
 ```
+
+If the `pc` file is somewhere in the `lib` or `lib64` directory, specify
+
+```
+PKGCONFIGLIB = pkgconfig
+```
+which will use `lib` or `lib64` depending on what is found.
 
 The resulting path will be added to the `PKG_CONFIG_PATH` in the modulefile.
 
@@ -290,10 +297,10 @@ are determined automatically as describe above.
 The location can be customized by setting `INSTALLPATH`.
 The contents are whatever the `make install` stage puts there.
 
-In the module file, the `LMOD_YOURPACKAGE_LIB` is set to the `lib` subdirectory. If the library directory is named something else, typically `lib64`, specify 
+In the module file, the `LMOD_YOURPACKAGE_LIB` is set to the `lib` or `lib64` subdirectory, depending on which one is found. If the library directory is named something else entirely, specify 
 
 ```
-LIBDIR=lib64
+LIBDIR=library
 ```
 
 
