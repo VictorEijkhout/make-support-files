@@ -197,12 +197,17 @@ The build stage generates a modulefile using the guidelines of the Lmod package;
 
 ## Default module file
 
+The path to the module is determined as follows:
+
 * Start at `${MODULEROOT}`
 * If `MODE` IS `mpi`, append `MPI`, for mode `seq` append `Compiler`
 * Append `${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}`
 * For MPI packages, append  `${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION}`
 
-The module file name is usually equal to `${PACKAGEVERSION}` but setting `MODULEVERSIONEXTRA` appends that with a dash.
+After that the module is `${PACKAGE}/${PACKAGEVERSION}.lua`, where the package name has been lowercased. Two customizations:
+
+ * Setting `MODULENAME` uses that instead of the package name (see for instance `phdf5` for the `hdf5` package);
+ * Setting `MODULEVERSIONEXTRA` appends that to the package version with a dash; see the multiple petsc variants.
 
 The `DIR,INC,LIB` variables are generated both with `TACC_`  and `LMOD_` prefix.
 
