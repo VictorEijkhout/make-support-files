@@ -13,7 +13,7 @@ info ::
 public ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" \
 	 \
 	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
 	        installdir=${PREFIXOVERRIDE} ; fi \

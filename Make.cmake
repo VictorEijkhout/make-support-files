@@ -17,12 +17,14 @@ cmakeopts ::
 configure : modules cmakeopts
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" \
 	 && source ${MAKEINCLUDES}/compilers.sh \
 	 && if [ "${MODE}" = "mpi" ] ; then \
 	      setmpicompilers ; else setcompilers ; fi \
 	 && ( \
-	    rm -rf $$builddir && mkdir -p $$builddir \
+	    echo "Start of CMake configure" \
+	     && reportnames \
+	     && rm -rf $$builddir && mkdir -p $$builddir \
 	     && find $$builddir -name CMakeCache.txt -exec rm {} \; \
 	     \
 	     && export PKGCONFIGPATH=${PKG_CONFIG_PATH} \

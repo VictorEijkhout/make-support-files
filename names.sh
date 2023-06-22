@@ -44,12 +44,13 @@ function setnames () {
 	fi \
     && if [ -z "$1" ] ; then \
 	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
-     && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5 variant=$6" \
+     && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5 variant=$6 modulename=$7" \
 	 && TACC_SYSTEM=${TACC_SYSTEM} systemnames \
 	 && PACKAGE=$2 && PACKAGEVERSION=$3 \
 	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
 	 && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
 	 && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
+	 && export modulename=$7 \
 	 && if [ -z "${HOMEDIR}" ] ; then \
 	      export homedir=$1/$package \
 	    ; else \
@@ -93,8 +94,8 @@ function setmodulenames () {
 	            ; elif [ ! -z "${MODE}" ] ; then \
 	                echo "ERROR: unknown mode: ${MODE}" && exit 1 \
 	            ; fi \
-	         && if [ ! -z "${MODULENAME}" ] ; then \
-	                export moduledir=${modulepath}/${MODULENAME} \
+	         && if [ ! -z "${modulename}" ] ; then \
+	                export moduledir=${modulepath}/${modulename} \
 	            ; else \
 	                export moduledir=${modulepath}/${package} \
 	            ; fi \
@@ -111,8 +112,8 @@ function setmodulenames () {
 function setdirlognames() {
 	export scriptdir=`pwd` \
 	 && systemnames && compilernames \
-	 && setnames       "$1" "$2" "$3" "$4" "$5" "$6" \
-	 && setmodulenames "$1" "$2" "$3" "$4" "$5" "$6" \
+	 && setnames       "$1" "$2" "$3" "$4" "$5" "$6" "$7" \
+	 && setmodulenames "$1" "$2" "$3" "$4" "$5" "$6" "$7" \
 	 && requirenonzero taccsystemcode \
 	 && requirenonzero compilercode \
 	 &&  export \
@@ -132,10 +133,19 @@ function setdirlognames() {
 	     export installdir=${INSTALLPATH} \
 	   ; else \
 	     if [ -z "${INSTALLROOT}" ] ; then \
-	        export installdir=${homedir}/installation-${installext} \
+	        export installdir=${homedir}/installation \
 	     ; else \
-	        export installdir=${INSTALLROOT}/$package/installation-${installext} \
-	   ; fi ; fi
+	        export installdir=${INSTALLROOT}/installation \
+	     ; fi \
+	     && requirenonzero package \
+	     && if [ ! -z "${modulename}" -a "${modulename}" != "${package}" ] ; then \
+	          export installdir=${installdir}-${modulename} \
+	        ; else \
+	          export installdir=${installdir}-${package} \
+	        ; fi \
+	      && export installdir=${installdir}-${installext} \
+	   ; fi \
+	 && echo "using install dir: ${installdir}"
 }
 
 function requirenonzero () {
