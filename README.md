@@ -260,7 +260,12 @@ Likewise,
 ```
 EXTRAINSTALLVARS = var=subdir
 ```
-defines `var` relative to the installation directory.
+defines `var` relative to the installation directory. Also likewise, 
+
+```
+EXTRAINSTALLPATHS = var=path
+```
+prepends the path, relative to the install directory, to an existing value of the `var` path.
  
 # Customizations
 
