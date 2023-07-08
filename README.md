@@ -173,6 +173,8 @@ in your makefile (or better: on your make commandline) to use 24 threads, et cet
 
 The installation pass also generates a modulefile. If you don't use the built-in installation scripts, see below.
 
+If the package does not generate a `lib` (or `lib64`) directory, set the variable `NOLIB` to anything nonzero.
+
 ### Permissions
 
 The installation pass standard opens the install directory to the world.
