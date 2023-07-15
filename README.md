@@ -120,21 +120,26 @@ To switch branches:
 ```
 make pull BRANCH=somebranch
 ```
+or permanently put the branch in your makefile.
 
 You can override the download location by setting `DOWNLOADPATH`.
 
-There is a rule
+Remember that we do some directory renaming after the download? It might be convenient have a tar file with the standardized name as above.
+
+* There is a rule
 
 ```
 make retar
 ```
-that creates a new `.tgz` file with the standardized name as above.
+that creates a new `.tgz` file that would unpack to the standardized name.
 
-* Just like `make retar` for download sources, there is `make betar` for repositories. Why not the same make rule? Because you sometimes want both download & clone in the same makefile.
+* Just like `make retar` for download sources, there is `make betar` for repositories; this creates a `tar.gz` file that unpacks to the repository directory. 
+
+Why two separate rule names? Because you sometimes want both download & clone in the same makefile.
 
 ## Configure and install
 
-There is support for autotools and CMake based packagesr.
+There is support for autotools and CMake based packages.
 For both types of packages, the configure/install proceeds by
 
 ```
