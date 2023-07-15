@@ -44,36 +44,34 @@ function setnames () {
 	fi \
     && if [ -z "$1" ] ; then \
 	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
-     && echo "Setting names for root=$1 package=$2 version=$3 ext=$4 basename=$5 variant=$6 modulename=$7" \
-	 && TACC_SYSTEM=${TACC_SYSTEM} systemnames \
-	 && PACKAGE=$2 && PACKAGEVERSION=$3 \
-	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
-	 && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
-	 && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
-	 && export modulename=$7 \
-	 && if [ -z "${HOMEDIR}" ] ; then \
-	      export homedir=$1/$package \
-	    ; else \
-	      export homedir="${HOMEDIR}" \
-	    ; fi \
-	 && if [ -z "${packageversion}" ] ; then \
-	        echo "No PACKAGEVERSION parameter given" && exit 1 ; fi \
-	 && if [ ! -z "$5" ] ; then \
-	      export packagebasename=$5 \
-	    ; else \
-	      export packagebasename=$package \
-	    ; fi \
-	 && export variant="$6" \
-	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-	        export downloaddir="${DOWNLOADPATH}" \
-	    ; else \
-	        export downloaddir=$homedir \
-	    ; fi \
-	 && if [ ! -z "${SRCPATH}" ] ; then
-	      export srcdir="${SRCPATH}" \
-	    ; else \
-	      export srcdir=${downloaddir}/${packagebasename}-${packageversion} \
-	    ; fi
+     && TACC_SYSTEM=${TACC_SYSTEM} systemnames \
+     && PACKAGE=$2 && PACKAGEVERSION=$3 \
+     && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
+     && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
+     && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
+     && export modulename=$7 \
+     && if [ -z "${HOMEDIR}" ] ; then \
+          export homedir=$1/$package \
+        ; else \
+          export homedir="${HOMEDIR}" \
+        ; fi \
+     && requirenonzero packageversion \
+     && if [ ! -z "$5" ] ; then \
+          export packagebasename=$5 \
+        ; else \
+          export packagebasename=$package \
+        ; fi \
+     && export variant="$6" \
+     && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+            export downloaddir="${DOWNLOADPATH}" \
+        ; else \
+            export downloaddir=$homedir \
+        ; fi \
+     && if [ ! -z "${SRCPATH}" ] ; then
+          export srcdir="${SRCPATH}" \
+        ; else \
+          export srcdir=${downloaddir}/${packagebasename}-${packageversion} \
+        ; fi
 }
 
 function setmodulenames () {
