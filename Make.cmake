@@ -11,10 +11,8 @@ moreinfo :: cmake_info
 	@echo "    [ CMAKE_PREFIX_PATH / CMAKE_PREFIX_ADDS = ... ]"
 	@echo "    [ INSTALLROOT=... (alternative install root) ]"
 
-.PHONY: configure cmakeopts
-cmakeopts ::
-	@touch .cmakeopts
-configure : modules cmakeopts
+.PHONY: configure 
+configure : modules
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" \
@@ -47,7 +45,7 @@ configure : modules cmakeopts
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
 	     \
 	     && if [ ! -z "${CMAKECOMPILERFLAGS}" ] ; then \
-	            echo "Setting compiler flags to <<${CMAKECOMPILERFLAGS}>>" \
+	            echo "Exporting compiler flags to <<${CMAKECOMPILERFLAGS}>>" \
 	             && export CXXFLAGS="${CMAKECOMPILERFLAGS}" \
 	             && export CFLAGS="${CMAKECOMPILERFLAGS}" \
 	             && export FFLAGS="${CMAKECOMPILERFLAGS}" \
