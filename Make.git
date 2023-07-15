@@ -29,7 +29,7 @@ clone oneclone ::
 	 \
 	 && package=$${package}-git \
 	 && if [ ! -z "${GITPACKAGE}" ] ; then package=${GITPACKAGE} ; fi \
-	 && echo "Clone of package=${PACKAGE}, version=${PACKAGEVERSION} into $${package}" \
+	 && echo "Establishing package=${PACKAGE}, version=${PACKAGEVERSION} into $${package}" \
 	 \
 	 && if [ ! -d $${downloaddir} ] ; then \
 	        echo " .. first creating downloaddir=$${downloaddir}" \
