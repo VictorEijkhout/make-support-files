@@ -15,6 +15,7 @@ info ::
 	    echo "Set MAKEINCLUDES to location of Make.stuff files" \
 	     && return 1 \
 	 ; fi
+	@if [ ! -z "${URL}" ] ; then echo "make homepage : open URL" ; fi
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
@@ -28,6 +29,9 @@ info ::
 	 && echo "  install: $$installdir" \
 	 && echo "  module dir: $$moduledir" \
 	 && echo "    make list_installations for already present"
+.PHONY: homepage
+homepage :
+	@open ${URL}
 .PHONY: list_installations
 list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
