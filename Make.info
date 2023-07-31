@@ -69,6 +69,9 @@ modules ::
 	    M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
 	     && vt=`env | grep $${tmd} | cut -d = -f 2` \
 	     && vl=`env | grep $${lmd} | cut -d = -f 2` \
+	     && if [ ! -z "${ECHO}" ] ; then \
+	            echo "Testing module: $$M; has $$tmd=<<$$vt>>" \
+	        ; fi \
 	     && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
 	            echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
 	        ; fi \
