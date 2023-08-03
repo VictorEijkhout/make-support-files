@@ -49,7 +49,9 @@ function setnames () {
      && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
      && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
      && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
-     && export modulename=$7 \
+     && if [ ! -z "$7" ] ; then 
+          export modulename=$7 ; else export modulename=${package} ; fi \
+     && requirenonzero modulename \
      && if [ -z "${HOMEDIR}" ] ; then \
           export homedir=$1/$package \
         ; else \
