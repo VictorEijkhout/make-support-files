@@ -67,7 +67,10 @@ installdir :
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
 	 && echo $${installdir}
 
-.PHONY: modules moduleprint
+.PHONY: modules moduleversion moduleprint
+info ::
+	@echo "================ module stuff"
+	@echo "    make modules : check if prereq modules are loaded"
 modules ::
 	@for m in ${MODULES} ; do \
 	    M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
@@ -80,6 +83,30 @@ modules ::
 	            echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
 	        ; fi \
 	 ; done
+	@make --no-print-directory moduleversion
+info ::
+	@echo "    make moduleversion : test if all loaded modules are new enough"
+moduleversion :
+	@source ${BASH_ENV} \
+	 && loaded=$$( for m in $$( module list 2>&1 | awk 'p==1 {print} /Currently/ {p=1}' ) ; do echo $$m ; done | awk '/\// {print}' | cut -d '/' -f 1 ) \
+	 && for l in $$loaded ; do \
+	      versionname=MODULE_MINIMUM_VERSION_$$l \
+	       && minversion=$$( make -p | \grep $$versionname | tr -d ' ' | cut -d '=' -f 2 ) \
+	       && if [ ! -z "$$minversion" ] ; then \
+	            loadversion=$$( \
+	                for m in $$( module list $$l 2>&1 ) ; do echo $$m ; done \
+	                | awk '/\// {print}' \
+	                | cut -d '/' -f 2 | cut -d '.' -f 1 \
+	                ) \
+	             && if [ $$loadversion -lt $$minversion ] ; then \
+	                  echo "Module $$l has loaded $$loadversion, s/b at least $$minversion" \
+                           && exit 1 \
+	                ; fi \
+	          ; fi \
+	    ; done \
+	 && for m in $( module list 2>&1 | awk 'p==1 {print} /Currently/ {p=1}' ) ; do echo $m ; done | awk '/'$SEEK'/ {print}' | cut -d '/' -f 2 | cut -d '.' -f 1
+info ::
+	@echo "    make moduleprint : print prereq modules"
 moduleprint ::
 	@if [ ! -z "${MODULES}" ] ; then \
 	    echo && echo "Loaded prereq modules:" \
@@ -91,6 +118,7 @@ moduleprint ::
 
 .PHONY: ls findfile findstring installext
 info ::
+	@echo "================ utility stuff"
 	@echo "    make ls [ LSPATH=.... relative to src ] [ PATTERN=... ( ls in src dir ) ]"
 	@echo "    make findfile   FILE=..."
 	@echo "    make findstring STRING=..."
