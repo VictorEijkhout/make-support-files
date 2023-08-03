@@ -343,3 +343,22 @@ The `names.sh` files defines the following variables:
 ### Compilers
 
 Secondly, there is a file `compilers.sh` which when sourced deduces the compiler from `TACC_FAMILY_COMPILER`, and sets environment variables `CC, CXX, FC` accordingly. For most autoconf and CMake installations that is enough.
+
+## Some interesting use cases
+
+### hdf5 and parallel hdf5
+
+The problem here is to build two different modules from the same code base. This is done by calling make recursively, specifying the `MODULENAME` variable to override the default.
+
+```
+HDF5PARALLEL = ON
+CMAKEFLAGS = -D HDF5_ENABLE_PARALLEL:BOOL=${HDF5PARALLEL}
+
+.PHONY: seq par
+seq :
+        make configure build \
+            HDF5PARALLEL=OFF MODE=seq
+par :
+        make configure build \
+            HDF5PARALLEL=ON  MODE=mpi MODULENAME=phdf5
+```
