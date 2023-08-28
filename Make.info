@@ -83,6 +83,14 @@ modules ::
 	            echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
 	        ; fi \
 	 ; done
+	@for m in ${NONMODULES} ; do \
+	    M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
+	     && vt=`env | grep $${tmd} | cut -d = -f 2` \
+	     && vl=`env | grep $${lmd} | cut -d = -f 2` \
+	     && if [ ! -z "$${vl}" -o ! -z "$${vt}" ] ; then \
+	            echo "Incompatible module found: $$m (from: ${NONMODULES})" && exit 1 \
+	        ; fi \
+	 ; done
 	@make --no-print-directory moduleversion
 info ::
 	@echo "    make moduleversion : test if all loaded modules are new enough"
