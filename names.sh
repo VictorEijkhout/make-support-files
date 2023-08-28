@@ -104,8 +104,7 @@ function setmodulenames () {
 	 && if [ ! -z "${variant}" ] ; then \
 	      export moduleversion=${moduleversion}-${variant} ; fi \
 	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
-	       export installext=${installext}-$4 \
-	        && export moduleversion=${moduleversion}-$4 \
+	       export moduleversion=${moduleversion}-$4 \
 	   ; fi \
 }
 
@@ -118,6 +117,9 @@ function setdirlognames() {
 	 && requirenonzero compilercode \
 	 &&  export \
                installext=${packageversion}-${taccsystemcode}-${compilercode}${compilershortversion} \
+	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
+	       export installext=${installext}-$4 \
+	    ; fi \
 	 && if [ "${MODE}" = "mpi" ] ; then \
 	      requirenonzero mpicode \
 	       && export installext=${installext}-${mpicode} \
