@@ -320,6 +320,12 @@ In the module file, the `LMOD_YOURPACKAGE_LIB` is set to the `lib` or `lib64` su
 LIBDIR=library
 ```
 
+If your package has multiple installation modes (for instance cpu and gpu) you can add an extension to the install directory:
+
+```
+make build INSTALLEXT=cuda
+```
+This is appended to the automatically generated install directory name, as well as the module name.
 
 ## Writing your own rules
 
