@@ -128,13 +128,14 @@ moduleprint ::
 	         ; done \
 	 ; fi
 
-.PHONY: ls findfile findstring installext
+.PHONY: ls findfile findstring installext ziplog
 info ::
 	@echo "================ utility stuff"
 	@echo "    make ls [ LSPATH=.... relative to src ] [ PATTERN=... ( ls in src dir ) ]"
 	@echo "    make findfile   FILE=..."
 	@echo "    make findstring STRING=..."
 	@echo "    make installext"
+	@echo "    make ziplog"
 ls :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
@@ -156,6 +157,13 @@ installext :
 	 && export MODE=${MODE} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo $$installext
+ziplog :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && cmdline="zip $${packagebasename}_logs.zip $${configurelog} $${installlog}" \
+	 && echo $$cmdline \
+	 && eval $$cmdline
 
 .PHONY: clean
 clean ::
