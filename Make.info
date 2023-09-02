@@ -33,9 +33,12 @@ info ::
 	 && echo "  install: $$installdir" \
 	 && echo "  module dir: $$moduledir" \
 	 && echo "    make list_installations for already present"
-.PHONY: homepage
+.PHONY: homepage url
 homepage :
 	@open ${URL}
+url :
+	@if [ ! -z "${URL}" ] ; then \
+	    echo ${URL} ; else echo "No URL known" ; fi
 .PHONY: list_installations
 list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
