@@ -168,6 +168,8 @@ ziplog :
 	 && cmdline="zip $${packagebasename}_logs.zip $${configurelog} $${installlog}" \
 	 && echo $$cmdline \
 	 && eval $$cmdline
+clean ::
+	@rm -f *_logs.zip
 
 .PHONY: clean
 clean ::
