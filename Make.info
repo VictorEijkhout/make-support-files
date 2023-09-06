@@ -6,6 +6,7 @@
 ####
 ################################################################
 
+SHELL = bash
 .PHONY: info moreinfo
 info :: 
 	@echo && echo "================ General info" 
