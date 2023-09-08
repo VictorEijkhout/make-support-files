@@ -103,7 +103,8 @@ modules ::
 info ::
 	@echo "    make moduleversion : test if all loaded modules are new enough"
 moduleversion :
-	@source ${BASH_ENV} \
+	@if [ ! -z "${BASH_ENV}" ] ; then \
+	source ${BASH_ENV} \
 	 && loaded=$$( for m in $$( module list 2>&1 | awk 'p==1 {print} /Currently/ {p=1}' ) ; do echo $$m ; done | awk '/\// {print}' | cut -d '/' -f 1 ) \
 	 && for l in $$loaded ; do \
 	      versionname=MODULE_MINIMUM_VERSION_$$l \
@@ -120,7 +121,8 @@ moduleversion :
 	                ; fi \
 	          ; fi \
 	    ; done \
-	 && for m in $( module list 2>&1 | awk 'p==1 {print} /Currently/ {p=1}' ) ; do echo $m ; done | awk '/'$SEEK'/ {print}' | cut -d '/' -f 2 | cut -d '.' -f 1
+	 && for m in $( module list 2>&1 | awk 'p==1 {print} /Currently/ {p=1}' ) ; do echo $m ; done | awk '/'$SEEK'/ {print}' | cut -d '/' -f 2 | cut -d '.' -f 1 \
+	; fi
 info ::
 	@echo "    make moduleprint : print prereq modules"
 moduleprint ::
