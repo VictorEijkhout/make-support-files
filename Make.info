@@ -13,7 +13,7 @@ info ::
 	@echo "(make moreinfo for options)" && echo 
 	@echo "make targets for ${PACKAGE}"
 	@if [ -z "${MAKEINCLUDES}" ] ; then \
-	    echo "Set MAKEINCLUDES to location of Make.stuff files" \
+	    echo "Set MAKEINCLUDES to location of Make.stuff files" >2 \
 	     && return 1 \
 	 ; fi
 	@if [ ! -z "${URL}" ] ; then echo "  homepage : open URL" ; fi
