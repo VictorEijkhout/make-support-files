@@ -280,6 +280,13 @@ prepends the path, relative to the install directory, to an existing value of th
 
 Define a variable `CONFIGUREFLAGS` in your makefile for any flags beyond the prefix.
 
+If the configure file is hidden in a subdirectory, for instance `src`, add
+
+```
+CONFIGURESUBDIR = src
+MAKESUBDIR = src
+```
+
 ## CMake
 
 Define a variable `CMAKEFLAGS` in your makefile for any configuration 
