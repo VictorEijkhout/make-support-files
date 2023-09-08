@@ -6,6 +6,7 @@
 ####
 ################################################################
 
+SHELL = bash
 .PHONY: info moreinfo
 info :: 
 	@echo && echo "================ General info" 
@@ -24,14 +25,21 @@ info ::
 	    ; else \
 	        echo "  source : $$srcdir" \
 	    ; fi \
+	 && sources= \
+	 && for d in $${downloaddir}/$${packagebasename}-* ; do \
+	        if [ -d "$$d" ] ; then sources="$${sources} $${d#*-}" ; fi \
+	    ; done && echo "  available sources:$$sources" \
 	 && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	        installdir=$${installdir}-${PREFIXEXTRA} ; fi \
 	 && echo "  install: $$installdir" \
 	 && echo "  module dir: $$moduledir" \
 	 && echo "    make list_installations for already present"
-.PHONY: homepage
+.PHONY: homepage url
 homepage :
 	@open ${URL}
+url :
+	@if [ ! -z "${URL}" ] ; then \
+	    echo ${URL} ; else echo "No URL known" ; fi
 .PHONY: list_installations
 list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
@@ -124,13 +132,14 @@ moduleprint ::
 	         ; done \
 	 ; fi
 
-.PHONY: ls findfile findstring installext
+.PHONY: ls findfile findstring installext ziplog
 info ::
 	@echo "================ utility stuff"
 	@echo "    make ls [ LSPATH=.... relative to src ] [ PATTERN=... ( ls in src dir ) ]"
 	@echo "    make findfile   FILE=..."
 	@echo "    make findstring STRING=..."
 	@echo "    make installext"
+	@echo "    make ziplog"
 ls :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
@@ -152,6 +161,15 @@ installext :
 	 && export MODE=${MODE} \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
 	 && echo $$installext
+ziplog :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && cmdline="zip $${packagebasename}_logs.zip $${configurelog} $${installlog}" \
+	 && echo $$cmdline \
+	 && eval $$cmdline
+clean ::
+	@rm -f *_logs.zip
 
 .PHONY: clean
 clean ::
