@@ -6,12 +6,12 @@ info ::
 clean ::
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && rm -rf $$builddir \
 	) 
 totalclean :: clean
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && rm -rf $$installdir \
 	) 

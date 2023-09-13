@@ -52,6 +52,7 @@ function setnames () {
      && if [ ! -z "$7" ] ; then 
           export modulename=$7 ; else export modulename=${package} ; fi \
      && requirenonzero modulename \
+     && export mode=$8 \
      && if [ -z "${HOMEDIR}" ] ; then \
           export homedir=$1/$package \
         ; else \
@@ -87,12 +88,12 @@ function setmodulenames () {
 	        if [ -z "${MODULEROOT}" ] ; then
 	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
 	         && modulepath=${MODULEROOT} \
-	         && if [ "${MODE}" = "mpi" ] ; then \
+	         && if [ "${mode}" = "mpi" ] ; then \
 	                modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
-	            ; elif [ "${MODE}" = "seq" ] ; then \
+	            ; elif [ "${mode}" = "seq" ] ; then \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
-	            ; elif [ ! -z "${MODE}" ] ; then \
-	                echo "ERROR: unknown mode: ${MODE}" && exit 1 \
+	            ; elif [ ! -z "${mode}" ] ; then \
+	                echo "ERROR: unknown mode: ${mode}" && exit 1 \
 	            ; fi \
 	         && if [ ! -z "${modulename}" ] ; then \
 	                export moduledir=${modulepath}/${modulename} \
@@ -111,7 +112,7 @@ function setmodulenames () {
 function setdirlognames() {
 	export scriptdir=`pwd` \
 	 && systemnames && compilernames \
-	 && setnames       "$1" "$2" "$3" "$4" "$5" "$6" "$7" \
+	 && setnames       "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" \
 	 && setmodulenames "$1" "$2" "$3" "$4" "$5" "$6" "$7" \
 	 && requirenonzero taccsystemcode \
 	 && requirenonzero compilercode \
@@ -120,7 +121,7 @@ function setdirlognames() {
 	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export installext=${installext}-$4 \
 	    ; fi \
-	 && if [ "${MODE}" = "mpi" ] ; then \
+	 && if [ "${mode}" = "mpi" ] ; then \
 	      requirenonzero mpicode \
 	       && export installext=${installext}-${mpicode} \
 	   ; fi \

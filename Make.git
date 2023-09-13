@@ -65,7 +65,7 @@ newclone ::
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} "" ${PACKAGEBASENAME} \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 \
 	 && if [ ! -d "$${downloaddir}" ] ; then \
 	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \
@@ -89,8 +89,7 @@ pull :: clone
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 \
 	 && echo "Updating repo: $${srcdir}" \
 	 && cd $${srcdir} \
@@ -110,7 +109,7 @@ clone pull ::
 	@if [ "${CHMODR}" = "1" ] ; then \
 	    echo "setting permissions open" \
 	     && source ${MAKEINCLUDES}/names.sh \
-	     && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	     && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	     && chmod -R g+rX,o+rX $${downloaddir}/$${package}-git \
 	 ; fi
 
@@ -119,9 +118,7 @@ info ::
 .PHONY: list_branch
 list_branch :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && setmodulenames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
-	 && setdirlognames ${PACKAGEROOT} ${PACKAGE} ${PACKAGEVERSION} ${INSTALLEXT} \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && cd $$srcdir && git branch -a
 
 info ::
@@ -130,7 +127,7 @@ info ::
 betar :
 	@\
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -d "$${downloaddir}" ] ; then \
 	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \

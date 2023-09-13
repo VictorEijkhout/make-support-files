@@ -14,10 +14,10 @@ moreinfo :: cmake_info
 .PHONY: configure 
 configure : modules
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" \
+	 && export INSTALLROOT=${INSTALLROOT} \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && source ${MAKEINCLUDES}/compilers.sh \
-	 && if [ "${MODE}" = "mpi" ] ; then \
+	 && if [ "$${mode}" = "mpi" ] ; then \
 	      setmpicompilers ; else setcompilers ; fi \
 	 && ( \
 	    echo "Start of CMake configure" \

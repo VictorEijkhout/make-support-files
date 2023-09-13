@@ -7,7 +7,7 @@ info ::
 download :: homedir
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo "Dowload starting for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
@@ -35,7 +35,7 @@ download :: homedir
 unpack untar :: 
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo "Unpacking file for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
@@ -78,7 +78,7 @@ unpack untar ::
 retar :
 	@\
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \

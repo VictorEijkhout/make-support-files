@@ -13,8 +13,7 @@ moreinfo :: conf_info
 .PHONY: configure config-help
 configure :: modules
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	  && ( \
 	    echo "Start autotools-based configuration" \
 	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
@@ -27,7 +26,7 @@ configure :: modules
 	     && if [ "${ECHO}" = "1" ] ; then set -x ; fi \
 	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
-	     && if [ "${MODE}" = "mpi" ] ; then \
+	     && if [ "$${mode}" = "mpi" ] ; then \
 	            setmpicompilers ; else setcompilers ; fi \
 	     && reportcompilers \
 	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
@@ -74,9 +73,7 @@ configure :: modules
 config-help :
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
-	 && set -x \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && cd $$srcdir \
 	 && ./configure --help \
 	) 
