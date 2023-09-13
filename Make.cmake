@@ -65,7 +65,7 @@ configure : modules
 	                    ${CMAKEFLAGS} $$cppstandard \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    -D BUILD_SHARED_LIBS=TRUE \
-	                    $$srcdir" \
+	                    $${srcdir}/${CMAKESUBDIR}" \
 	             && echo "cmdline=$$cmdline" \
 	             && eval $$cmdline \
 	            ) \
