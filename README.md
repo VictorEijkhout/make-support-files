@@ -180,6 +180,19 @@ The installation pass also generates a modulefile. If you don't use the built-in
 
 If the package does not generate a `lib` (or `lib64`) directory, set the variable `NOLIB` to anything nonzero.
 
+If the `configure` program or the `CMakeLists.txt` is hidden in a subdirectory, for instance `src`, set
+
+```
+CONFIGURESUBDIR=src
+MAKESUBDIR=src
+```
+
+respectively
+
+```
+CMAKESUBDIR=src
+```
+
 ### Permissions
 
 The installation pass standard opens the install directory to the world.
@@ -253,8 +266,9 @@ Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MOD
 
 ## More module stuff
 
-Set the variable `HASBIN` to anything nonero to include a bin directory. 
-Otherwise the installation will assume that only `DIR/LIB/INC` apply.
+Set the variable `HASBIN` to anything nonero to include a bin directory.  Otherwise the installation will assume that only `DIR/LIB/INC` apply.
+
+Conversely `NOLIB` (for instance for C++ header-only libraries) prevents a `TACC_PACKAGE_LIB` variable being generated.
 
 You can add custom variables to the module by specifying
 
@@ -273,6 +287,8 @@ defines `var` relative to the installation directory. Also likewise,
 EXTRAINSTALLPATHS = var=path
 ```
 prepends the path, relative to the install directory, to an existing value of the `var` path.
+
+You can have a second set of variables set by specifying `MODULENAMEALT`. For instance, `HDF5` for the `phdf5` package.
  
 # Customizations
 
