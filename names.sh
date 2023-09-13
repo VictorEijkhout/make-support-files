@@ -146,8 +146,7 @@ function setdirlognames() {
 	          export installdir=${installdir}-${package} \
 	        ; fi \
 	      && export installdir=${installdir}-${installext} \
-	   ; fi \
-	 && echo "using install dir: ${installdir}"
+	   ; fi 
 }
 
 function requirenonzero () {
