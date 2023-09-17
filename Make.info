@@ -73,21 +73,13 @@ installdir :
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo $${installdir}
 
-.PHONY: modules moduleversion moduleprint
+.PHONY: modules moduletest moduleversion moduleprint
 info ::
 	@echo "================ module stuff"
 	@echo "    make modules : check if prereq modules are loaded"
 modules ::
 	@for m in ${MODULES} ; do \
-	    M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
-	     && vt=`env | grep $${tmd} | cut -d = -f 2` \
-	     && vl=`env | grep $${lmd} | cut -d = -f 2` \
-	     && if [ ! -z "${ECHO}" ] ; then \
-	            echo "Testing module: $$M; has $$tmd=<<$$vt>>" \
-	        ; fi \
-	     && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
-	            echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
-	        ; fi \
+	    make --no-print-directory moduletest MODULE=$$m \
 	 ; done
 	@for m in ${NONMODULES} ; do \
 	    M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
@@ -98,6 +90,20 @@ modules ::
 	        ; fi \
 	 ; done
 	@make --no-print-directory moduleversion
+moduletest :
+	@if [ -z "${MODULE}" ] ; then \
+	    echo "Please specify MODULE=..." && exit 1 ; fi 
+	@m=${MODULE} && M=`echo $$m | tr a-z A-Z` \
+	 && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
+	 && vt=`env | grep $${tmd} | cut -d = -f 2` \
+	 && vl=`env | grep $${lmd} | cut -d = -f 2` \
+	 && if [ ! -z "${ECHO}" ] ; then \
+	        echo "Testing module: $$M; has $$tmd=<<$$vt>>" \
+	    ; fi \
+	 && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
+	        echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
+	    ; fi
+
 info ::
 	@echo "    make moduleversion : test if all loaded modules are new enough"
 moduleversion :
