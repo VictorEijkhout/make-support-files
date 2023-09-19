@@ -14,10 +14,10 @@ moreinfo :: cmake_info
 .PHONY: configure 
 configure : modules
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" \
+	 && export INSTALLROOT=${INSTALLROOT} \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && source ${MAKEINCLUDES}/compilers.sh \
-	 && if [ "${MODE}" = "mpi" ] ; then \
+	 && if [ "$${mode}" = "mpi" ] ; then \
 	      setmpicompilers ; else setcompilers ; fi \
 	 && ( \
 	    echo "Start of CMake configure" \
@@ -57,14 +57,14 @@ configure : modules
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
-	                -D BUILD_SHARED_LIBS=TRUE \
+	                -D BUILD_SHARED_LIBS=ON \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
 	             && cmdline="cmake -D CMAKE_INSTALL_PREFIX=$$installdir \
 	                    ${CMAKEFLAGS} $$cppstandard \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
-	                    -D BUILD_SHARED_LIBS=TRUE \
+	                    -D BUILD_SHARED_LIBS=ON \
 	                    $${srcdir}/${CMAKESUBDIR}" \
 	             && echo "cmdline=$$cmdline" \
 	             && eval $$cmdline \

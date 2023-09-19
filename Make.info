@@ -18,8 +18,7 @@ info ::
 	 ; fi
 	@if [ ! -z "${URL}" ] ; then echo "  homepage : open URL" ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && if [ ! -d "$$srcdir" ] ; then \
 	        echo "  source : $$srcdir (missing)" \
 	    ; else \
@@ -43,8 +42,7 @@ url :
 .PHONY: list_installations
 list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo && echo "Already available installations in $${homedir}:" \
 	 && ls -d $${homedir}/installation* 2>/dev/null || echo >/dev/null \
 	 && make --no-print-directory moduleprint \
@@ -59,7 +57,7 @@ homedir :
 	     && return 1 \
 	 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && requirenonzero homedir \
 	 && if [ ! -d "$$homedir" ] ; then \
 	    echo "First creating home dir for ${PACKAGE}" \
@@ -71,25 +69,17 @@ moreinfo ::
 	@echo "make installdir : name of install dir"
 installdir :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	 && export INSTALLROOT=${INSTALLROOT} \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo $${installdir}
 
-.PHONY: modules moduleversion moduleprint
+.PHONY: modules moduletest moduleversion moduleprint
 info ::
 	@echo "================ module stuff"
 	@echo "    make modules : check if prereq modules are loaded"
 modules ::
 	@for m in ${MODULES} ; do \
-	    M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
-	     && vt=`env | grep $${tmd} | cut -d = -f 2` \
-	     && vl=`env | grep $${lmd} | cut -d = -f 2` \
-	     && if [ ! -z "${ECHO}" ] ; then \
-	            echo "Testing module: $$M; has $$tmd=<<$$vt>>" \
-	        ; fi \
-	     && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
-	            echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
-	        ; fi \
+	    make --no-print-directory moduletest MODULE=$$m \
 	 ; done
 	@for m in ${NONMODULES} ; do \
 	    M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
@@ -100,6 +90,20 @@ modules ::
 	        ; fi \
 	 ; done
 	@make --no-print-directory moduleversion
+moduletest :
+	@if [ -z "${MODULE}" ] ; then \
+	    echo "Please specify MODULE=..." && exit 1 ; fi 
+	@m=${MODULE} && M=`echo $$m | tr a-z A-Z` \
+	 && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
+	 && vt=`env | grep $${tmd} | cut -d = -f 2` \
+	 && vl=`env | grep $${lmd} | cut -d = -f 2` \
+	 && if [ ! -z "${ECHO}" ] ; then \
+	        echo "Testing module: $$M; has $$tmd=<<$$vt>>" \
+	    ; fi \
+	 && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
+	        echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
+	    ; fi
+
 info ::
 	@echo "    make moduleversion : test if all loaded modules are new enough"
 moduleversion :
@@ -134,35 +138,37 @@ moduleprint ::
 	         ; done \
 	 ; fi
 
-.PHONY: ls findfile findstring installext ziplog
+.PHONY: ls findfile findstring installext
 info ::
 	@echo "================ utility stuff"
 	@echo "    make ls [ LSPATH=.... relative to src ] [ PATTERN=... ( ls in src dir ) ]"
 	@echo "    make findfile   FILE=..."
 	@echo "    make findstring STRING=..."
 	@echo "    make installext"
-	@echo "    make ziplog"
 ls :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo "ls $${srcdir}/${LSPATH} :" \
 	 && ls $${srcdir}/${LSPATH}/${PATTERN}
 findfile :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && find $$homedir -name \*${FILE}\*
 findstring :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && find $$homedir -type f -exec grep -i "${STRING}" {} \; -print
 installext :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo $$installext
+
+##
+## zip up logs for github tickets
+##
+info ::
+	@echo "    make ziplog"
+.PHONY: ziplog
 ziplog :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} \
@@ -172,6 +178,19 @@ ziplog :
 	 && eval $$cmdline
 clean ::
 	@rm -f *_logs.zip
+
+##
+## list log names for easy lessing
+##
+info ::
+	@echo "make lognames"
+.PHONY: lognames
+lognames :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && export MODE=${MODE} \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && echo "$${configurelog} $${installlog}"
+
 
 .PHONY: clean
 clean ::

@@ -49,9 +49,6 @@ function setnames () {
      && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
      && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
      && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
-     && if [ ! -z "$7" ] ; then 
-          export modulename=$7 ; else export modulename=${package} ; fi \
-     && requirenonzero modulename \
      && if [ -z "${HOMEDIR}" ] ; then \
           export homedir=$1/$package \
         ; else \
@@ -73,7 +70,11 @@ function setnames () {
           export srcdir="${SRCPATH}" \
         ; else \
           export srcdir=${downloaddir}/${packagebasename}-${packageversion} \
-        ; fi
+        ; fi \
+     && if [ ! -z "$7" ] ; then 
+          export modulename=$7 ; else export modulename=${package} ; fi \
+     && requirenonzero modulename \
+     && export mode=$8
 }
 
 function setmodulenames () {
@@ -87,12 +88,13 @@ function setmodulenames () {
 	        if [ -z "${MODULEROOT}" ] ; then
 	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
 	         && modulepath=${MODULEROOT} \
-	         && if [ "${MODE}" = "mpi" ] ; then \
-	                modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
-	            ; elif [ "${MODE}" = "seq" ] ; then \
+	         && if [ "${mode}" = "mpi" ] ; then \
+	                requirenonzero mpicode \
+	                 && modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
+	            ; elif [ "${mode}" = "seq" ] ; then \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
-	            ; elif [ ! -z "${MODE}" ] ; then \
-	                echo "ERROR: unknown mode: ${MODE}" && exit 1 \
+	            ; elif [ ! -z "${mode}" ] ; then \
+	                echo "ERROR: unknown mode: ${mode}" && exit 1 \
 	            ; fi \
 	         && if [ ! -z "${modulename}" ] ; then \
 	                export moduledir=${modulepath}/${modulename} \
@@ -111,8 +113,8 @@ function setmodulenames () {
 function setdirlognames() {
 	export scriptdir=`pwd` \
 	 && systemnames && compilernames \
-	 && setnames       "$1" "$2" "$3" "$4" "$5" "$6" "$7" \
-	 && setmodulenames "$1" "$2" "$3" "$4" "$5" "$6" "$7" \
+	 && setnames       "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" \
+	 && setmodulenames "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" \
 	 && requirenonzero taccsystemcode \
 	 && requirenonzero compilercode \
 	 &&  export \
@@ -120,7 +122,7 @@ function setdirlognames() {
 	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export installext=${installext}-$4 \
 	    ; fi \
-	 && if [ "${MODE}" = "mpi" ] ; then \
+	 && if [ "${mode}" = "mpi" ] ; then \
 	      requirenonzero mpicode \
 	       && export installext=${installext}-${mpicode} \
 	   ; fi \
@@ -146,8 +148,7 @@ function setdirlognames() {
 	          export installdir=${installdir}-${package} \
 	        ; fi \
 	      && export installdir=${installdir}-${installext} \
-	   ; fi \
-	 && echo "using install dir: ${installdir}"
+	   ; fi 
 }
 
 function requirenonzero () {
@@ -162,9 +163,12 @@ function requirenonzero () {
 
 function reportnames () {
 	echo "Installing package=${PACKAGE} version=${packageversion} at $(date)" \
-	 && echo "using directories:" \
-	 && echo "srcdir=${srcdir}" \
-	 && echo "builddir=${builddir}" \
-	 && echo "installdir=${installdir}" \
-	 && echo "logfiles: ${configurelog} ${installlog}"
+	 && echo " .. using compiler:" \
+	 && echo "    compiler=${compilercode}/${compilerversion} (short: ${comilershortversion})" \
+	 && echo "    mpi=${mpicode}/${mpiversion}" \
+	 && echo " .. using names:" \
+	 && echo "    srcdir=${srcdir}" \
+	 && echo "    builddir=${builddir}" \
+	 && echo "    installdir=${installdir}" \
+	 && echo "    logfiles: ${configurelog} ${installlog}"
 }

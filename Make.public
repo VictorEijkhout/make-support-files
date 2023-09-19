@@ -12,8 +12,7 @@ info ::
 .PHONY: public
 public ::
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 \
 	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
 	        installdir=${PREFIXOVERRIDE} ; fi \
