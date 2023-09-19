@@ -65,7 +65,7 @@ If your package needs other packages loaded, set
 ```
 MODULES = petsc boost
 ```
-or whatever may be the case.
+or whatever may be the case. Variables `MODULE_MINIMUM_VERSION_yourpackage` can be used for a very simple test on mimimum versions.
 
 ## Directory structure
 
@@ -123,6 +123,15 @@ make pull BRANCH=somebranch
 or permanently put the branch in your makefile.
 
 You can override the download location by setting `DOWNLOADPATH`.
+
+Setting `SUBMODULE` to anything non-blank causes 
+
+```
+git submodule init && git submodule update
+```
+on the clone.
+
+### Tarring the clone
 
 Remember that we do some directory renaming after the download? It might be convenient have a tar file with the standardized name as above.
 
