@@ -164,7 +164,11 @@ ${PACKAGEROOT}/${package}/installation-${ID}
 
 where `package` is the lowercase form of the package name, and`ID` is a composite of the version number, `LMOD_FAMILY_COMPILER` and `LMOD_FAMILY_MPI` for MPI packages.
 
+You can set a totally explicit installpath with `INSTALLPATH=...` or replace the `${PACKAGEROOT}/${package}` part of the path by `INSTALLROOT=...`.
+
 It also generates a modulefile.
+
+### The build/install process
 
 For autotools installations, add these lines to your makefile:
 
@@ -185,7 +189,7 @@ The  `make` is parallel: specify
 ```JCOUNT=24```
 in your makefile (or better: on your make commandline) to use 24 threads, et cetera.
 
-The installation pass also generates a modulefile. If you don't use the built-in installation scripts, see below.
+### Customization
 
 If the package does not generate a `lib` (or `lib64`) directory, set the variable `NOLIB` to anything nonzero.
 
@@ -204,7 +208,7 @@ CMAKESUBDIR=src
 
 ### Permissions
 
-The installation pass standard opens the install directory to the world.
+The installation pass by default opens the install directory to the world.
 If you write your own installation:
 
 ```
@@ -216,7 +220,7 @@ and
 ```
 make public
 # or for system locations:
-make public SUDO=1
+make public SUDO=sudo
 ```
 
 
@@ -334,6 +338,8 @@ to add identical flags to all three compilers.
 
 Set `CPPSTANDARD=20` (et cetera) to dictate a specific C++ standard to CMake.
 
+Set `CMAKEPREFIXLIB` to define the path to `.cmake` files, relative to the lib directory.
+
 
 ## Source directory
 
@@ -400,3 +406,39 @@ par :
         make configure build \
             HDF5PARALLEL=ON  MODE=mpi MODULENAME=phdf5
 ```
+
+### System install from user
+
+The following uses source & makefiles in a user location, but installs software and modules to a system location:
+
+```
+make configure build \
+    SUDO=sudo \ 
+    INSTALLROOT=/opt/local/packages \
+    MODULEROOT=/opt/local/modulefiles
+```
+
+### Jail install (TACC-specific)
+
+In TACC jail you are in the source directory:
+
+```
+export SRCPATH=`pwd`
+export VICTOR=/admin/build/admin/rpms/frontera/SPECS/victor_scripts
+export MAKEINCLUDES=${VICTOR}/make-support-files
+```
+
+Now you go to the specific directory, here for `zlib`, and do a complicated commandline:
+
+```
+pushd ${VICTOR}/makefiles/zlib
+
+## get rid of that PACKAGEROOT
+make configure build JCOUNT=10 \
+    HOMEDIR=/admin/build/admin/rpms/frontera/SOURCES \
+    PACKAGEVERSION=%{pkg_version} \
+    PACKAGEROOT=/tmp \
+    SRCPATH=${SRCPATH} \
+    INSTALLPATH=%{INSTALL_DIR} \
+    MODULEDIRSET=$RPM_BUILD_ROOT/%{MODULE_DIR}
+    ```
