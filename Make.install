@@ -19,7 +19,7 @@ build ::
 	 && if [ -z "${NOINSTALL}" ] ; then \
 	      ( \
 	      cd $$srcdir \
-	       && if [ ! -z "$MAKESUBDIR}" ] ; then \
+	       && if [ ! -z "${MAKESUBDIR}" ] ; then \
 	            cd ${MAKESUBDIR} ; fi \
 	       && echo " .. building in $$(pwd) with ${JCOUNT} threads" \
 	       && make --no-print-directory -j V=1 VERBOSE=1 -j ${JCOUNT} \
