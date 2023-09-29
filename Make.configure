@@ -34,8 +34,9 @@ configure :: modules
 	     \
 	     && requirenonzero srcdir \
 	     && cd $$srcdir \
-	     && if [ ! -z "$CONFIGURESUBDIR}" ] ; then \
-	          cd ${CONFIGURESUBDIR} ; fi \
+	     && if [ ! -z "${CONFIGURESUBDIR}" ] ; then \
+	          echo " .. configure in subdir: ${CONFIGURESUBDIR}" \
+	           && cd "${CONFIGURESUBDIR}" ; fi \
 	     && echo " .. configuring in $$(pwd)" \
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
 	            echo "First autogen" \
