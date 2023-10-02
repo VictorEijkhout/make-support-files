@@ -33,16 +33,11 @@ configure :: modules
 	     && export LIBS=${LIBS} \
 	     \
 	     && requirenonzero srcdir \
-	     && cd $${srcdir} \
-	&& pwd \
+	     && cd $$srcdir \
 	     && if [ ! -z "${CONFIGURESUBDIR}" ] ; then \
-	          if [ ! -d "${CONFIGURESUBDIR}" ] ; then \
-	            echo "non-existent configure subdir: <<${CONFIGURESUBDIR}>>" && exit 1 ; fi \
-	           && cd ${CONFIGURESUBDIR} \
-	        ; fi \
-	&& pwd \
-	     && echo " .. configuring in $$( pwd )" \
-	&& pwd \
+	          echo " .. configure in subdir: ${CONFIGURESUBDIR}" \
+	           && cd "${CONFIGURESUBDIR}" ; fi \
+	     && echo " .. configuring in $$(pwd)" \
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
 	            echo "First autogen" \
 	             && ./autogen.sh ; fi \
