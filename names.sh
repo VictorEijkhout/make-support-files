@@ -18,18 +18,12 @@ function systemnames () {
 }
 
 function compilernames () {
-	if [ ! -z "${LMOD_FAMILY_COMPILER}" ] ; then \
-	    export compilercode="${LMOD_FAMILY_COMPILER}" \
-	     && export compilerversion="${LMOD_FAMILY_COMPILER_VERSION}" \
-	; else \
+	if [ ! -z "${TACC_FAMILY_COMPILER}" ] ; then \
 	    export compilercode="${TACC_FAMILY_COMPILER}" \
 	     && export compilerversion="${TACC_FAMILY_COMPILER_VERSION}" \
 	; fi 
 	export compilershortversion=${compilerversion%%.*}
-	if [ ! -z "${LMOD_FAMILY_MPI}" ] ; then \
-	    export mpicode="${LMOD_FAMILY_MPI}" \
-	     && export mpiversion="${LMOD_FAMILY_MPI_VERSION}" \
-	; else \
+	if [ ! -z "${TACC_FAMILY_MPI}" ] ; then \
 	    export mpicode="${TACC_FAMILY_MPI}" \
 	     && export mpiversion="${TACC_FAMILY_MPI_VERSION}" \
 	; fi 

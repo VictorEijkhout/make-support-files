@@ -16,19 +16,23 @@ include ${MAKEINCLUDES}/Make.info
 
 CMAKEFLAGS = \
         -D CMAKE_BUILD_TYPE=Release \
-        -D DEAL_II_DIR=${LMOD_DEALII_DIR} \
-        -Wno-dev
+        -D DEAL_II_DIR=${TACC_DEALII_DIR}
 include ${MAKEINCLUDES}/Make.cmake
 include ${MAKEINCLUDES}/Make.cbuild
 
-ASPECT_BIN = ${ASPECT_INSTALLATION}/bin
+HASBIN = 1
 
 TGZURL = https://github.com/geodynamics/aspect/releases/download/v${PACKAGEVERSION}/aspect-${PACKAGEVERSION}.tar.gz
 include ${MAKEINCLUDES}/Make.download
 include ${MAKEINCLUDES}/Make.clean
 ```
 
-You see that it consists of some variables and some include files. Together this make it possible to say 
+You see that it consists of some variables and some include files. Together this make it possible to say first
+
+```
+make download untar
+```
+and then 
 
 ```
 make configure build
@@ -48,8 +52,8 @@ Your makefile uses some site-specific variables. You can define them in the make
 
 Each package needs to define a few variables, specifically for a package.
 
-* `PACKAGE` : this is the name of your package, without any version numbers and such.
-* `PACKAGEVERSION` : this is the version number. If you do not a versioned version, but a repository checkout, use a version `git` or `git20230314` or so.
+* `PACKAGE` : this is the name of your package, without any version numbers and such. Don't worry about capitalization: all names are normalized.
+* `PACKAGEVERSION` : this is the version number. If you do not a versioned version, but a repository checkout, use a fictitious version `git` or `git20230314` or so.
 
 ## Optional variables
 
@@ -69,9 +73,14 @@ or whatever may be the case. Variables `MODULE_MINIMUM_VERSION_yourpackage` can 
 
 ## Directory structure
 
-- `PACKAGEROOT` is the root of the whole installation tree. Each package will by default be installed in:
-- `homedir = ${PACKAGEROOT}/${package}` where `package` is an all-lowercase version of `${PACKAGE}`. Override this by setting `HOMEDIR`.
+If you accept the default naming conventions, `PACKAGEROOT` is the root of the whole installation tree. Installation now obeys the following structure:
+
+- `homedir = ${PACKAGEROOT}/${package}` is created by the `download/clone` calls. This will contain the source, build and install directories. Here `package` is an all-lowercase version of `${PACKAGE}`. Override this by setting `HOMEDIR`.
 - `srcdir = ${homedir}/${packagebasename}-${packageversion}` is what downloads and clones are unpacked to and what is used for compilation. Override this by setting `SRCDIR`.
+
+Next, the installation goes into 
+
+- `installdir=${homedir}/installation-$EXTENSION` where see below for the extension. You can override this partially by setting `INSTALLROOT` which will cause the install dir to be `installdir=${INSTALLROOT}/installation-$EXTENSION`, or completely by setting `INSTALLPATH`.
 
 ## Obtain the sources
 
@@ -162,11 +171,11 @@ ${PACKAGEROOT}/${package}/build-${ID}
 ${PACKAGEROOT}/${package}/installation-${ID}
 ```
 
-where `package` is the lowercase form of the package name, and`ID` is a composite of the version number, `LMOD_FAMILY_COMPILER` and `LMOD_FAMILY_MPI` for MPI packages.
+where `package` is the lowercase form of the package name, and`ID` is a composite of the version number, `TACC_FAMILY_COMPILER` and `TACC_FAMILY_MPI` for MPI packages.
 
 You can set a totally explicit installpath with `INSTALLPATH=...` or replace the `${PACKAGEROOT}/${package}` part of the path by `INSTALLROOT=...`.
 
-It also generates a modulefile.
+The installation stage also generates a modulefile; see below.
 
 ### The build/install process
 
@@ -193,6 +202,8 @@ in your makefile (or better: on your make commandline) to use 24 threads, et cet
 
 If the package does not generate a `lib` (or `lib64`) directory, set the variable `NOLIB` to anything nonzero.
 
+If the package generates a `bin` directory, set `HASBIN` to something non-null.
+
 If the `configure` program or the `CMakeLists.txt` is hidden in a subdirectory, for instance `src`, set
 
 ```
@@ -209,7 +220,7 @@ CMAKESUBDIR=src
 ### Permissions
 
 The installation pass by default opens the install directory to the world.
-If you write your own installation:
+If you write your own installation, do
 
 ```
 include ${MAKEINCLUDES}/Make.public
@@ -234,10 +245,12 @@ The path to the module is determined as follows:
 
 * Start at `${MODULEROOT}`
 * If `MODE` IS `mpi`, append `MPI`, for mode `seq` append `Compiler`
-* Append `${LMOD_FAMILY_COMPILER}/${LMOD_FAMILY_COMPILER_VERSION}`
-* For MPI packages, append  `${LMOD_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION}`
+* Append `${TACC_FAMILY_COMPILER}/${TACC_FAMILY_COMPILER_VERSION}`
+* For MPI packages, append  `${TACC_FAMILY_MPI}/${LMOD_FAMILY_MPI_VERSION}`
 
-After that the module is `${PACKAGE}/${PACKAGEVERSION}.lua`, where the package name has been lowercased. Two customizations:
+After that the module is `${PACKAGE}/${PACKAGEVERSION}.lua`, where the package name has been lowercased. All directories upwards of the `MODULEROOT` are `mkdir`ed.
+
+Two customizations:
 
  * Setting `MODULENAME` uses that instead of the package name (see for instance `phdf5` for the `hdf5` package);
  * Setting `MODULEVERSIONEXTRA` appends that to the package version with a dash; see the multiple petsc variants.
@@ -301,7 +314,7 @@ EXTRAINSTALLPATHS = var=path
 ```
 prepends the path, relative to the install directory, to an existing value of the `var` path.
 
-You can have a second set of variables set by specifying `MODULENAMEALT`. For instance, `HDF5` for the `phdf5` package.
+You can have a second set of variables set by specifying `MODULENAMEALT`. For instance, `HDF5` for the `phdf5` package defines both `TACC_PHDF5_....` and `TACC_HDF5_...` variables.
  
 # Customizations
 
@@ -433,7 +446,6 @@ Now you go to the specific directory, here for `zlib`, and do a complicated comm
 ```
 pushd ${VICTOR}/makefiles/zlib
 
-## get rid of that PACKAGEROOT
 make configure build JCOUNT=10 \
     HOMEDIR=/admin/build/admin/rpms/frontera/SOURCES \
     PACKAGEVERSION=%{pkg_version} \
@@ -441,4 +453,15 @@ make configure build JCOUNT=10 \
     SRCPATH=${SRCPATH} \
     INSTALLPATH=%{INSTALL_DIR} \
     MODULEDIRSET=$RPM_BUILD_ROOT/%{MODULE_DIR}
-    ```
+```
+    
+## Where do I find this stuff?
+
+Make include files:
+[https://github.com/VictorEijkhout/make-support-files](https://github.com/VictorEijkhout/make-support-files)
+
+Makefiles for popular TACC packages:
+[https://github.com/VictorEijkhout/Makefiles](https://github.com/VictorEijkhout/Makefiles)
+
+Regression tests for TACC packages:
+[https://github.com/VictorEijkhout/software-testing](https://github.com/VictorEijkhout/software-testing)
