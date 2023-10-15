@@ -7,7 +7,6 @@ info :: conf_info
 moreinfo :: conf_info
 	@echo "    [ CONFIGUREFLAGS=... ]"
 	@echo "    [ ECHO=0/1 ]"
-	@echo "    [ PREFIXOVERRIDE=... for non-standard prefix ]"
 	@echo "    [ PREFIXEXTRA=... for attaching to prefix ]"
 	@echo "    [ PKG_CONFIG_PATHS / PKG_CONFIG_ADDS = .... ]"
 .PHONY: configure config-help
@@ -16,9 +15,6 @@ configure :: modules
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	  && ( \
 	    echo "Start autotools-based configuration" \
-	     && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
-	            echo "prefix: using PREFIXOVERRIDE=${PREFIXOVERRIDE}" \
-	             && installdir=${PREFIXOVERRIDE} ; fi \
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	            echo "prefix: attaching PREFIXEXTRA=$F{PREFIXEXTRA}" \
 	             && installdir=$${installdir}-${PREFIXEXTRA} ; fi \
