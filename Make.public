@@ -8,14 +8,11 @@
 
 info ::
 	@echo "make public : install dir"
-	@echo "    [ PREFIXOVERRIDE=... for non-standard prefix ]"
 .PHONY: public
 public ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 \
-	 && if [ ! -z "${PREFIXOVERRIDE}" ] ; then \
-	        installdir=${PREFIXOVERRIDE} ; fi \
 	 && requirenonzero homedir \
 	 && requirenonzero installdir \
 	 && echo "opening $$homedir , $$installdir" \

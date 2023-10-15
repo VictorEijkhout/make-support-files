@@ -142,7 +142,10 @@ function setdirlognames() {
 	          export installdir=${installdir}-${package} \
 	        ; fi \
 	      && export installdir=${installdir}-${installext} \
-	   ; fi 
+	   ; fi \
+	 && if [ ! -z "${INSTALLVARIANT}" ] ; then \
+	        export installdir=${installdir}/${INSTALLVARIANT} \
+	    ; fi
 }
 
 function requirenonzero () {
