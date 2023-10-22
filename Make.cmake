@@ -55,16 +55,17 @@ configure : modules
 	     && cmake --version | head -n 1 \
 	     && reportcompilers && echo \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
-	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir ${CMAKEFLAGS} \
+	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                -D BUILD_SHARED_LIBS=ON \
+	                ${CMAKEFLAGS} \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
 	             && cmdline="cmake -D CMAKE_INSTALL_PREFIX=$$installdir \
-	                    ${CMAKEFLAGS} $$cppstandard \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    -D BUILD_SHARED_LIBS=ON \
+	                    ${CMAKEFLAGS} $$cppstandard \
 	                    $${srcdir}/${CMAKESUBDIR}" \
 	             && echo "cmdline=$$cmdline" \
 	             && eval $$cmdline \
