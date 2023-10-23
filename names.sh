@@ -128,21 +128,24 @@ function setdirlognames() {
 	 && if [ -z "$package" ] ; then \
 	      echo "No package name for dirlog" && exit 1 ; fi \
 	 && if [ ! -z "${INSTALLPATH}" ] ; then \
-	     export installdir=${INSTALLPATH} \
-	   ; else \
-	     if [ -z "${INSTALLROOT}" ] ; then \
-	        export installdir=${homedir}/installation \
-	     ; else \
-	        export installdir=${INSTALLROOT}/installation \
-	     ; fi \
-	     && requirenonzero package \
-	     && if [ ! -z "${modulename}" -a "${modulename}" != "${package}" ] ; then \
-	          export installdir=${installdir}-${modulename} \
-	        ; else \
-	          export installdir=${installdir}-${package} \
-	        ; fi \
-	      && export installdir=${installdir}-${installext} \
-	   ; fi \
+	      export installdir=${INSTALLPATH} \
+	    ; else \
+	      if [ -z "${INSTALLROOT}" ] ; then \
+	         export installdir=${homedir}/installation \
+	      ; else \
+	         export installdir=${INSTALLROOT}/installation \
+	      ; fi \
+	      && requirenonzero package \
+	      && if [ ! -z "${modulename}" -a "${modulename}" != "${package}" ] ; then \
+	           export installdir=${installdir}-${modulename} \
+	         ; else \
+	           export installdir=${installdir}-${package} \
+	         ; fi \
+	       && export installdir=${installdir}-${installext} \
+	    ; fi \
+	 && if [ ! -z "${variant}" ] ; then \
+	        export installdir=${installdir}/${variant} \
+	    ; fi \
 	 && if [ ! -z "${INSTALLVARIANT}" ] ; then \
 	        export installdir=${installdir}/${INSTALLVARIANT} \
 	    ; fi
