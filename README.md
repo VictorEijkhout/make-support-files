@@ -161,7 +161,7 @@ There is support for autotools and CMake based packages.
 For both types of packages, the configure/install proceeds by
 
 ```
-make configure install
+make configure build
 ```
 
 This generates directories
@@ -171,7 +171,7 @@ ${PACKAGEROOT}/${package}/build-${ID}
 ${PACKAGEROOT}/${package}/installation-${ID}
 ```
 
-where `package` is the lowercase form of the package name, and`ID` is a composite of the version number, `TACC_FAMILY_COMPILER` and `TACC_FAMILY_MPI` for MPI packages.
+where `package` is the lowercase form of the package name, and`ID` is a composite of the version number, `TACC_FAMILY_COMPILER` and `TACC_FAMILY_MPI` for MPI packages. (For the rare package without a "make install" facility, set `NOINSTALL` to something non-null.)
 
 You can set a totally explicit installpath with `INSTALLPATH=...` or replace the `${PACKAGEROOT}/${package}` part of the path by `INSTALLROOT=...`.
 

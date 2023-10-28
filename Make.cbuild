@@ -29,7 +29,9 @@ build ::
 	          make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
 	        ; fi \
 	     && echo "Installing in $${installdir}" \
-	     && ${SUDO} make --no-print-directory install \
+	     && if [ -z "${NOINSTALL}" ] ; then \
+	            ${SUDO} make --no-print-directory install \
+	        ; fi \
 	     && if [ -z "${NOMODULE}" ] ; then \
 	            echo "generating module file" \
 	             && ( cd $$scriptdir \
