@@ -12,6 +12,9 @@ moreinfo :: conf_info
 .PHONY: configure config-help
 configure :: modules
 	@source ${MAKEINCLUDES}/names.sh \
+	 && if [ ! -z "${PREFIXOPTION}" ] ; then \
+	      export prefixoption=${PREFIXOPTION} \
+	    ; else export prefixoption=--prefix ; fi \
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	  && ( \
 	    echo "Start autotools-based configuration" \
@@ -51,10 +54,11 @@ configure :: modules
 	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
 	     && notetoself "libdir should not be needed" \
 	     && if [ -f Makefile ] ; then \
-	            echo " .. distcleaning" && ( make distclean || echo "" ) ; fi \
+	            echo " .. distcleaning" \
+	             && ( make distclean || echo "no distclean rule" ) ; fi \
 	     && configureline="\
 	            ./configure \
-	                --prefix=$$installdir --libdir=$${installdir}/lib \
+	                $${prefixoption}=$$installdir --libdir=$${installdir}/lib \
 	                ${CONFIGUREFLAGS} \
 	            " \
 	     && echo "Configuring as:" && echo $$configureline \
