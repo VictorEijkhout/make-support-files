@@ -155,6 +155,18 @@ that creates a new `.tgz` file that would unpack to the standardized name.
 
 Why two separate rule names? Because you sometimes want both download & clone in the same makefile.
 
+### Extra actions
+
+If you need to download extra packages you can extend the `untar` rule:
+
+```
+untar ::
+        @source ${MAKEINCLUDES}/names.sh \
+         && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${P\ACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+         && cd $$srcdir \
+         && wget http://tau.uoregon.edu/ext.tgz && tar fxz ext.tgz
+```
+
 ## Configure and install
 
 There is support for autotools and CMake based packages.
@@ -186,6 +198,8 @@ include ${MAKEINCLUDES}/Make.configure
 include ${MAKEINCLUDES}/Make.install
 ```
 
+If the package uses `-prefix` instead of the usual `--prefix`, set the variable `PREFIXOPTION` to the desired option string.
+
 For Cmake installation, add these lines:
 
 ```
@@ -202,7 +216,7 @@ in your makefile (or better: on your make commandline) to use 24 threads, et cet
 
 If the package does not generate a `lib` (or `lib64`) directory, set the variable `NOLIB` to anything nonzero.
 
-If the package generates a `bin` directory, set `HASBIN` to something non-null.
+If the package generates a `bin` directory, set `HASBIN` to something non-null. If the bin directory is other than `TACC_PACKAGE_DIR/bin`, set `BINDIR` to the location relative to `TACC_PACKAGE_DIR`.
 
 If the `configure` program or the `CMakeLists.txt` is hidden in a subdirectory, for instance `src`, set
 
