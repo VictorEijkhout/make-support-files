@@ -51,7 +51,13 @@ clone oneclone ::
 	     && if [ ! -z "${SUBMODULE}" ] ; then \
 	            echo ".. loading submodules" \
 	             && ( cd $${package} \
-	                   &&  git submodule init && git submodule update \
+	                   && git submodule init && git submodule update \
+	                   && if [ -d submodules ] ; then \
+	                        cd submodules \
+	                         && for d in * ; do \
+                                      ( cd $$d && git submodule init && git submodule update ) \
+	                            ; done \
+	                      ; fi \
 	                ) \
 	        ; fi \
 	     && if [ ! -z "${BOOTSTRAP}" ] ; then \
