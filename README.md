@@ -71,6 +71,12 @@ MODULES = petsc boost
 ```
 or whatever may be the case. Variables `MODULE_MINIMUM_VERSION_yourpackage` can be used for a very simple test on mimimum versions.
 
+Incompatible modules can be set with
+
+```
+NONMODULES = intel
+```
+
 ## Directory structure
 
 If you accept the default naming conventions, `PACKAGEROOT` is the root of the whole installation tree. Installation now obeys the following structure:
