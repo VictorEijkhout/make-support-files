@@ -83,7 +83,8 @@ retar :
 	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
-	 && tgz=${TGZURL} && tgz=$${tgz##*/} \
+	 && if [ ! -z "${ZIPURL}" ] ; then tgz=${ZIPURL} ; else tgz=${TGZURL} ; fi \
+	 && tgz=$${tgz##*/} \
 	 && export srcdir=$${packagebasename}-$${packageversion} \
 	 && if [ $$tgz != $$srcdir ] ; then \
 	      tgzname=$${srcdir}.tgz \
