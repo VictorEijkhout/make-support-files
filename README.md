@@ -291,6 +291,8 @@ include ${MAKEINCLUDES}/Make.vars
 
 and use the command `make varsmodule` to create the modulefile.
 
+If your configuration is too strange, you may want to specify the `INSTALLDIR` variable for the modulefile generation.
+
 ## CMake discoverability
 
 If your package generates a `.pc` file, specify its location relative to the install directory by a line such as 
