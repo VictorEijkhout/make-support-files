@@ -86,6 +86,7 @@ If you accept the default naming conventions, `PACKAGEROOT` is the root of the w
 
 Next, the installation goes into 
 
+- `builddir=${homedir}/build-$EXTENSION` where see below for the extension. You override this by setting `BUILDDIRROOT`, for instance to `/tmp/yourpackage`.
 - `installdir=${homedir}/installation-$EXTENSION` where see below for the extension. You can override this partially by setting `INSTALLROOT` which will cause the install dir to be `installdir=${INSTALLROOT}/installation-$EXTENSION`, or completely by setting `INSTALLPATH`.
 
 ## Obtain the sources
