@@ -124,7 +124,11 @@ function setdirlognames() {
 	      export installext=${installext}-${variant} ; fi \
 	 && export configurelog=configure-${installext}.log \
 	 && export installlog=install-${installext}.log \
-	 && export builddir=${homedir}/build-${installext} \
+         && if [ ! -z "${BUILDDIRROOT}" ] ; then \
+              export builddir=${BUILDDIRROOT}/build-${installext} \
+            ; else \
+              export builddir=${homedir}/build-${installext} \
+            ; fi \
 	 && if [ -z "$package" ] ; then \
 	      echo "No package name for dirlog" && exit 1 ; fi \
 	 && if [ ! -z "${INSTALLPATH}" ] ; then \
