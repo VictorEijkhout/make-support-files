@@ -310,7 +310,7 @@ which will use `lib` or `lib64` depending on what is found.
 
 The resulting path will be added to the `PKG_CONFIG_PATH` in the modulefile.
 
-Likewise, a `CMAKE_MODULEPATH_SET` specification will be added to the `CMAKE_MODULE_PATH`. By default, the install prefix will always  be added to the `CMAKE_PREFIX_PATH`.
+Setting `CMAKEPREFIXPATHSET` to non-null causes the install prefix to be added to the `CMAKE_PREFIX_PATH`.
 
 ## More module stuff
 
