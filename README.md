@@ -121,7 +121,7 @@ GITREPO= https://github.com/ECP-WarpX/WarpX.git
 include ${MAKEINCLUDES}/Make.git
 ```
 
-and use `make clone` and later `make pull`. This does the same directory renaming as for `tgz` downloads above.
+and use `make clone` and later `make pull`. This does the same directory renaming as for `tgz` downloads above. Use `CLONEARGS` for extra arguments such as `--depth=1`.
 
 You can have all four of the `download/clone` lines, and use the 
 package versions explicitly:
