@@ -319,6 +319,13 @@ Set the variable `HASBIN` to anything nonero to include a bin directory.  Otherw
 
 Conversely `NOLIB` (for instance for C++ header-only libraries) prevents a `TACC_PACKAGE_LIB` variable being generated.
 
+If the include directory is not immediately under the install directory, specify the relative path, including the `include` part:
+
+```
+INCLUDELOC = share/cmake/include
+```
+
+
 You can add custom variables to the module by specifying
 
 ```
