@@ -43,7 +43,7 @@ clone oneclone ::
 	else \
 	    echo ".. cloning repo ${GITREPO} into $${downloaddir}/$${package}" \
 	     && cd $${downloaddir} \
-	     && git clone ${GITREPO} $${package} \
+	     && git clone ${CLONEARGS} ${GITREPO} $${package} \
 	     && if [ ! -z "${BRANCH}" ] ; then \
 	            echo ".. switching to branch ${BRANCH}" \
 	             && ( cd $${package} && git checkout ${BRANCH} ) \
