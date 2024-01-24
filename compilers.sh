@@ -1,3 +1,4 @@
+# -*- bash -*-
 function setcompilers () {
     if [ -z "${TACC_FAMILY_COMPILER}" ] ; then \
 	echo "WARNING: variable LMOD/TACC_FAMILY_COMPILER not set" ; \
@@ -35,6 +36,12 @@ function setcompilers () {
              export cc=mpicc && export cxx=mpicxx && export fc=mpif90 \
 		 && export ompflag=-fopenmp \
         ; fi \
+    && if [ ! -z "${EXPLICITCOMPILERS}" ] ; then \
+         export cc=$( which ${cc} ) \
+	  && export cxx=$( which ${cxx} ) \
+	  && export fc=$( which ${fc} ) \
+	  && echo "long compiler paths" \
+       ; fi \
     && export CC=$cc && export CXX=$cxx && export FC=$fc
 }
 
