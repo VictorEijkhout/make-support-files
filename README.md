@@ -121,7 +121,7 @@ GITREPO= https://github.com/ECP-WarpX/WarpX.git
 include ${MAKEINCLUDES}/Make.git
 ```
 
-and use `make clone` and later `make pull`. This does the same directory renaming as for `tgz` downloads above.
+and use `make clone` and later `make pull`. This does the same directory renaming as for `tgz` downloads above. Use `CLONEARGS` for extra arguments such as `--depth=1`.
 
 You can have all four of the `download/clone` lines, and use the 
 package versions explicitly:
@@ -318,6 +318,13 @@ Setting `CMAKEPREFIXPATHSET` to non-null causes the install prefix to be added t
 Set the variable `HASBIN` to anything nonero to include a bin directory.  Otherwise the installation will assume that only `DIR/LIB/INC` apply.
 
 Conversely `NOLIB` (for instance for C++ header-only libraries) prevents a `TACC_PACKAGE_LIB` variable being generated.
+
+If the include directory is not immediately under the install directory, specify the relative path, including the `include` part:
+
+```
+INCLUDELOC = share/cmake/include
+```
+
 
 You can add custom variables to the module by specifying
 
