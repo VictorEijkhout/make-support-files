@@ -55,7 +55,12 @@ function setmpicompilers () {
 
 function reportcompilers () {
     echo "Using compilers:" \
-     && echo "  CC=${CC}, CXX=${CXX}, FC=${FC}" \
+     && echo " .. CC=${CC}" \
+     && echo "    where ${CC}=$( which ${CC} )" \
+     && echo " .. CXX=${CXXf}" \
+     && echo "    where ${CXX}=$( which ${CXX} )" \
+     && echo " .. FC=${FC}" \
+     && echo "    where ${FC}=$( which ${FC} )" \
      && if [ "${MODE}" = "mpi" ] ; then \
 	    echo "  where:" \
 	     && testcompiler=$( mpicc -show ) \
