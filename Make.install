@@ -22,9 +22,9 @@ build ::
 	       && if [ ! -z "${MAKESUBDIR}" ] ; then \
 	            cd ${MAKESUBDIR} ; fi \
 	       && echo " .. building in $$(pwd) with ${JCOUNT} threads" \
-	       && make --no-print-directory -j V=1 VERBOSE=1 -j ${JCOUNT} \
+	       && make --no-print-directory -j V=1 VERBOSE=1 ${MAKEP} -j ${JCOUNT} \
 	       && if [ ! -z "${EXTRABUILDTARGETS}" ] ; then \
-	            make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
+	            make --no-print-directory V=1 ${MAKEP} VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
 	          ; fi \
 	       && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
 	          ; else echo "Installing...." ; fi \
