@@ -54,15 +54,17 @@ configure : modules
 	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
 	     && cmake --version | head -n 1 \
 	     && reportcompilers && echo \
+	     && if [ -z "${CMAKENAME}" ] ; then \
+	          cmake=cmake ; else cmake=${CMAKENAME} ; fi \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
-	            cmake -D CMAKE_INSTALL_PREFIX=$$installdir \
+	            $${cmake} -D CMAKE_INSTALL_PREFIX=$$installdir \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                -D BUILD_SHARED_LIBS=ON \
 	                ${CMAKEFLAGS} \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
-	             && cmdline="cmake -D CMAKE_INSTALL_PREFIX=$$installdir \
+	             && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$installdir \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    -D BUILD_SHARED_LIBS=ON \
 	                    ${CMAKEFLAGS} $$cppstandard \
