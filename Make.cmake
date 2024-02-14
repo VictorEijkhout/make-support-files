@@ -74,3 +74,5 @@ configure : modules
 	            ) \
 	        ; fi \
 	    ) 2>&1 | tee $$configurelog
+	@echo && echo "CMake configuration ended: $$( date )" && echo 
+

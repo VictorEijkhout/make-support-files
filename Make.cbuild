@@ -13,6 +13,7 @@ info ::
 .PHONY: build install
 JCOUNT = 2
 build ::
+	@echo && echo "CMake build started: $$( date )" && echo 
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
@@ -39,7 +40,8 @@ build ::
 	                ) \
 	        ; fi \
 	    ) 2>&1 | tee $$installlog \
-	 && echo && echo "Installation finished in: $$installdir" && echo
+	 && echo && echo "CMake installation finished at $$( date ) " \
+	 && echo " .. in: $$installdir" && echo
 
 include ${MAKEINCLUDES}/Make.vars
 include ${MAKEINCLUDES}/Make.public
