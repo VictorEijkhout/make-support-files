@@ -73,6 +73,11 @@ installdir :
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo $${installdir}
 
+.PHONY: version packageversion
+info :: 
+	@echo "make version packageversion : list current version"
+version packageversion :
+	@echo ${PACKAGEVERSION}
 .PHONY: modules moduletest moduleversion moduleprint
 info ::
 	@echo "================ module stuff"
