@@ -58,6 +58,7 @@ configure : modules
 	          cmake=cmake ; else cmake=${CMAKENAME} ; fi \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            $${cmake} -D CMAKE_INSTALL_PREFIX=$$installdir \
+	                -D CMAKE_COLOR_DIAGNOSTICS=OFF \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                -D BUILD_SHARED_LIBS=ON \
 	                ${CMAKEFLAGS} \
@@ -65,6 +66,7 @@ configure : modules
 	        ; else \
 	            ( cd $$builddir \
 	             && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$installdir \
+	                    -D CMAKE_COLOR_DIAGNOSTICS=OFF \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    -D BUILD_SHARED_LIBS=ON \
 	                    ${CMAKEFLAGS} $$cppstandard \
