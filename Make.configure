@@ -21,13 +21,10 @@ configure :: modules
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
 	            echo "prefix: attaching PREFIXEXTRA=$F{PREFIXEXTRA}" \
 	             && installdir=$${installdir}-${PREFIXEXTRA} ; fi \
-	     && reportnames \
-	     && if [ "${ECHO}" = "1" ] ; then set -x ; fi \
-	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
 	     && if [ "$${mode}" = "mpi" ] ; then \
 	            setmpicompilers ; else setcompilers ; fi \
-	     && reportcompilers \
+	     && reportnames && reportcompilers \
 	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
 	     && export LIBS=${LIBS} \
 	     \
