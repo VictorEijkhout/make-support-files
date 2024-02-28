@@ -238,6 +238,15 @@ respectively
 CMAKESUBDIR=src
 ```
 
+### configure customization
+
+The scripts try to detect the need for `autoconf` and `autogen`, but you can force preliminary actions in the source directory by setting
+
+```
+BEFORECONFIGURECMDS = autoreconf -i
+```
+et cetera.
+
 ### Permissions
 
 The installation pass by default opens the install directory to the world.
@@ -325,6 +334,7 @@ If the include directory is not immediately under the install directory, specify
 INCLUDELOC = share/cmake/include
 ```
 
+Some packages (mapl, gftl) install to `prefixloc/PACKAGE-1.2.3/{include,lib}` so use `INSTALLEXTRAPATH` to insert that bit.
 
 You can add custom variables to the module by specifying
 
