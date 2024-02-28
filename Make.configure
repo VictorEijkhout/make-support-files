@@ -33,6 +33,10 @@ configure :: modules
 	     \
 	     && requirenonzero srcdir \
 	     && cd $$srcdir \
+	     && if [ ! -z "${BEFORECONFIGURECMDS}" ] ; then \
+	            echo " .. before configure: <<${BEFORECONFIGURECMDS}>>" \
+	             && eval ${BEFORECONFIGURECMDS} \
+	        ; fi \
 	     && if [ ! -z "${CONFIGURESUBDIR}" ] ; then \
 	          echo " .. configure in subdir: ${CONFIGURESUBDIR}" \
 	           && cd "${CONFIGURESUBDIR}" ; fi \

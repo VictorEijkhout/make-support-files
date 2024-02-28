@@ -1,3 +1,4 @@
+# -*- bash -*-
 function setcompilers () {
     if [ -z "${TACC_FAMILY_COMPILER}" ] ; then \
 	echo "WARNING: variable LMOD/TACC_FAMILY_COMPILER not set" ; \
@@ -35,6 +36,12 @@ function setcompilers () {
              export cc=mpicc && export cxx=mpicxx && export fc=mpif90 \
 		 && export ompflag=-fopenmp \
         ; fi \
+    && if [ ! -z "${EXPLICITCOMPILERS}" ] ; then \
+         export cc=$( which ${cc} ) \
+	  && export cxx=$( which ${cxx} ) \
+	  && export fc=$( which ${fc} ) \
+	  && echo "long compiler paths" \
+       ; fi \
     && export CC=$cc && export CXX=$cxx && export FC=$fc
 }
 
@@ -48,7 +55,12 @@ function setmpicompilers () {
 
 function reportcompilers () {
     echo "Using compilers:" \
-     && echo "  CC=${CC}, CXX=${CXX}, FC=${FC}" \
+     && echo " .. CC=${CC}" \
+     && echo "    where ${CC}=$( which ${CC} )" \
+     && echo " .. CXX=${CXXf}" \
+     && echo "    where ${CXX}=$( which ${CXX} )" \
+     && echo " .. FC=${FC}" \
+     && echo "    where ${FC}=$( which ${FC} )" \
      && if [ "${MODE}" = "mpi" ] ; then \
 	    echo "  where:" \
 	     && testcompiler=$( mpicc -show ) \
