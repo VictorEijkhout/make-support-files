@@ -16,12 +16,13 @@ configure : modules
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export INSTALLROOT=${INSTALLROOT} \
 	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
-	 && source ${MAKEINCLUDES}/compilers.sh \
-	 && if [ "$${mode}" = "mpi" ] ; then \
-	      setmpicompilers ; else setcompilers ; fi \
 	 && ( \
 	    echo "Start of CMake configure" \
-	     && reportnames \
+	     && source ${MAKEINCLUDES}/compilers.sh \
+	     && if [ "$${mode}" = "mpi" ] ; then \
+	      setmpicompilers ; else setcompilers ; fi \
+	     && reportnames && reportcompilers \
+	     \
 	     && rm -rf $$builddir && mkdir -p $$builddir \
 	     && find $$builddir -name CMakeCache.txt -exec rm {} \; \
 	     \
