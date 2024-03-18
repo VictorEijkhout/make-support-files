@@ -43,7 +43,10 @@ configure :: modules
 	             && ./autogen.sh ; fi \
 	     && if [ ! -f "configure" -a -f configure.ac ] ; then \
 	            echo "First autoreconf" \
-	             && aclocal && autoconf ; fi \
+	             && if [ ! -z "${AUTORECONF}" ] ; then \
+	                  eval ${AUTORECONF} \
+	                ; else aclocal && autoconf ; fi \
+	        ; fi \
 	     && if [ ! -z "${CFLAGS}" ] ; then \
 	            export CFLAGS="${CFLAGS}" ; fi \
 	     && if [ ! -z "${CXXFLAGS}" ] ; then \
