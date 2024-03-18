@@ -238,7 +238,14 @@ respectively
 CMAKESUBDIR=src
 ```
 
-### configure customization
+If there is extra stuff, such as an examples directory, to copy into the installation, specify
+
+```
+CPTOINSTALLDIR = path1 path2
+```
+where the paths are relative to the source directory.
+
+### Configure customization
 
 The scripts try to detect the need for `autoconf` and `autogen`, but you can force preliminary actions in the source directory by setting
 
