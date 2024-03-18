@@ -31,11 +31,14 @@ build ::
 	       && ${SUDO} make --no-print-directory install \
 	            $$( if [ ! -z "${INSTALL_USE_DESTDIR}" ] ; then \
 	                echo DESTDIR=$$installdir ; fi ) \
-	     && if [ -z "${NOMODULE}" ] ; then \
-	            echo "generating module file" \
+	       && if [ ! -z "${CPTOINSTALLDIR}" ] ; then \
+	            echo " .. additional copies: ${CPTOINSTALLDIR}" \
+	             && cp -r ${CPTOINSTALLDIR} $$installdir ; fi \
+	       && if [ -z "${NOMODULE}" ] ; then \
+	            echo " .. generating module file" \
 	             && ( cd $$scriptdir \
 	                    && make FAMILY=${FAMILY} --no-print-directory module ) \
-	        ; fi \
+	          ; fi \
 	      ) 2>&1 | tee $$installlog \
 	       && echo && echo "Installation finished in: $$installdir" \
 	       && echo "See $$installlog" && echo \
