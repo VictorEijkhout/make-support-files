@@ -33,6 +33,9 @@ build ::
 	     && if [ -z "${NOINSTALL}" ] ; then \
 	            ${SUDO} make --no-print-directory install \
 	        ; fi \
+	     && if [ ! -z "${CPTOINSTALLDIR}" ] ; then \
+	            echo " .. additional copies: ${CPTOINSTALLDIR}" \
+	             && ( cd $$srcdir && cp -r ${CPTOINSTALLDIR} $$installdir ) ; fi \
 	     && if [ -z "${NOMODULE}" ] ; then \
 	            echo "generating module file" \
 	             && ( cd $$scriptdir \
