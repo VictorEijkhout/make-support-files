@@ -143,10 +143,11 @@ moduleprint ::
 	         ; done \
 	 ; fi
 
-.PHONY: ls findfile findstring installext
+.PHONY: ls less findfile findstring installext
 info ::
 	@echo "================ utility stuff"
 	@echo "    make ls [ LSPATH=.... relative to src ] [ PATTERN=... ( ls in src dir ) ]"
+	@echo "    make less [ LSPATH=.... relative to src ] [ FILE= ..."
 	@echo "    make findfile   FILE=...: find in all src/build/install"
 	@echo "    make findstring STRING=...: search through all src/build/install"
 	@echo "    make installext"
@@ -155,6 +156,11 @@ ls :
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo "ls $${srcdir}/${LSPATH} :" \
 	 && ls $${srcdir}/${LSPATH}/${PATTERN}
+less :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && echo "less $${srcdir}/${LSPATH}/${FILE} :" \
+	 && less $${srcdir}/${LSPATH}/${FILE}
 findfile :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
