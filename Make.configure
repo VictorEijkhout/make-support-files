@@ -41,11 +41,15 @@ configure :: modules
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
 	            echo "First autogen" \
 	             && ./autogen.sh ; fi \
-	     && if [ ! -f "configure" -a -f configure.ac ] ; then \
+	     && if [ ! -f "configure" -o ! -z "${FORCERECONF}" ] ; then \
+	          if [ ! -f configure.ac ] ; then \
+	            echo "ERROR missing configure.ac" \
+	          ; else \
 	            echo "First autoreconf" \
 	             && if [ ! -z "${AUTORECONF}" ] ; then \
 	                  eval ${AUTORECONF} \
 	                ; else aclocal && autoconf ; fi \
+	          ; fi \
 	        ; fi \
 	     && if [ ! -z "${CFLAGS}" ] ; then \
 	            export CFLAGS="${CFLAGS}" ; fi \
