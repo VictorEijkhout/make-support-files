@@ -42,6 +42,8 @@ configure : modules
 	     \
 	     && if [ ! -z "${CPPSTANDARD}" ] ; then \
 	            cppstandard="-D CMAKE_CXX_FLAGS=-std=c++${CPPSTANDARD}" ; fi \
+	     && if [ $$( uname ) = Darwin ] ; then \
+	          CMAKEFLAGSPLATFORM="-D CMAKE_LINKER_FLAGS=-ld_classic" ; fi \
 	     \
 	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
 	     \
@@ -62,7 +64,7 @@ configure : modules
 	                -D CMAKE_COLOR_DIAGNOSTICS=OFF \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                -D BUILD_SHARED_LIBS=ON \
-	                ${CMAKEFLAGS} \
+	                ${CMAKEFLAGS} $${CMAKEFLAGSPLATFORM} $$cppstandard \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
@@ -70,7 +72,7 @@ configure : modules
 	                    -D CMAKE_COLOR_DIAGNOSTICS=OFF \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    -D BUILD_SHARED_LIBS=ON \
-	                    ${CMAKEFLAGS} $$cppstandard \
+	                    ${CMAKEFLAGS} $${CMAKEFLAGSPLATFORM} $$cppstandard \
 	                    $${srcdir}/${CMAKESUBDIR}" \
 	             && echo "cmdline=$$cmdline" \
 	             && eval $$cmdline \
