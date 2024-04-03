@@ -42,7 +42,8 @@ url :
 .PHONY: list_installations
 list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	        "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && echo && echo "Already available installations in $${homedir}:" \
 	 && ls -d $${homedir}/installation* 2>/dev/null || echo >/dev/null \
 	 && make --no-print-directory moduleprint \
@@ -57,7 +58,8 @@ homedir :
 	     && return 1 \
 	 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	        "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && requirenonzero homedir \
 	 && if [ ! -d "$$homedir" ] ; then \
 	    echo "First creating home dir for ${PACKAGE}" \
@@ -69,8 +71,33 @@ moreinfo ::
 	@echo "make installdir : name of install dir"
 installdir :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && export installpath=${INSTALLPATH} \
+	 && export installroot=${INSTALLROOT} \
+	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	        "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && if [ ! -z "$${installpath}" ] ; then \
+	      export installdir=$${installpath} \
+	    ; else \
+	      if [ -z "$${installroot}" ] ; then \
+	         export installdir=$${homedir}/installation \
+	      ; else \
+	         export installdir=$${installroot}/installation \
+	      ; fi \
+	      && requirenonzero package \
+	      && if [ ! -z "$${modulename}" -a "$${modulename}" != "$${package}" ] ; then \
+	           export installdir=$${installdir}-$${modulename} \
+	         ; else \
+	           export installdir=$${installdir}-$${package} \
+	         ; fi \
+	       && export installdir=$${installdir}-$${installext} \
+	    ; fi \
+	 && requirenonzero installdir \
+	 && if [ ! -z "$${variant}" ] ; then \
+	        export installdir=$${installdir}/$${variant} \
+	    ; fi \
+	 && if [ ! -z "${INSTALLVARIANT}" ] ; then \
+	        export installdir=$${installdir}/${INSTALLVARIANT} \
+	    ; fi \
 	 && echo $${installdir}
 
 .PHONY: version packageversion
