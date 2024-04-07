@@ -134,6 +134,10 @@ moduletest :
 	    ; fi \
 	 && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
 	        echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
+	    ; fi \
+	 && eval tmdir=\$${$${tmd}} \
+	 && if [ ! -d "$${tmdir}" ] ; then \
+	        echo "Module <<$$m>> loaded but directory not found: $${tmdir}" && exit 1 \
 	    ; fi
 
 info ::
