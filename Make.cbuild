@@ -20,6 +20,14 @@ build ::
 	 && ( \
 	    cd $$builddir \
 	     && echo "Building in $${builddir} with ${JCOUNT} threads" \
+	     && if [ ! -z "${CPTOSOURCE}" ] ; then \
+	            sourcetgt=${CPTOSOURCE} && sourcetgt=$${sourcetgt%%,*} \
+	         && sourcesrc=${CPTOSOURCE} && sourcesrc=$${sourcesrc##*,} \
+	         && cmdline="cp $$sourcesrc $${srcdir}/$${sourcetgt}" \
+	         && if [ "${ECHO}" = "1" ] ; then \
+	              echo "Copying to source: <<$$cmdline>>" ; fi \
+	         && eval $$cmdline \
+	        ; fi \
 	     && retcode=0 \
 	     && make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} \
 	        || retcode=$$? \
