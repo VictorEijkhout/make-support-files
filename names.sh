@@ -54,21 +54,33 @@ function setnames () {
         ; else \
           export packagebasename=$package \
         ; fi \
-     && export variant="$6" \
-     && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-            export downloaddir="${DOWNLOADPATH}" \
-        ; else \
-            export downloaddir=$homedir \
-        ; fi \
-     && if [ ! -z "${SRCPATH}" ] ; then
-          export srcdir="${SRCPATH}" \
-        ; else \
-          export srcdir=${downloaddir}/${packagebasename}-${packageversion} \
-        ; fi \
      && if [ ! -z "$7" ] ; then 
           export modulename=$7 ; else export modulename=${package} ; fi \
      && requirenonzero modulename \
      && export mode=$8
+}
+
+# $1 = package, $2 = packageversion, $3 = packagebasename
+function packagenames () {
+    PACKAGE=$1 \
+     && if [ -z "${PACKAGE}" ] ; then \
+          echo "packagenames called with null package" && exit 1 ; fi \
+     && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
+     && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
+     && PACKAGEVERSION=$2 \
+     && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
+     && requirenonzero packageversion \
+     && if [ ! -z "$3" ] ; then \
+          export packagebasename=$3 \
+        ; else \
+          export packagebasename=$package \
+        ; fi 
+}
+
+function lognames () {
+    installext=$1 \
+     && export configurelog=configure-${installext}.log \
+     && export installlog=install-${installext}.log
 }
 
 function setmodulenames () {
@@ -130,8 +142,7 @@ function setdirlognames() {
               export builddir=${homedir}/build-${installext} \
             ; fi \
 	 && if [ -z "$package" ] ; then \
-	      echo "No package name for dirlog" && exit 1 ; fi \
-	 && export installdir=$( make --no-print-directory installdir )
+	      echo "No package name for dirlog" && exit 1 ; fi
 }
 
 function requirenonzero () {
@@ -144,6 +155,17 @@ function requirenonzero () {
 	    ; fi 
 }
 
+function reportnonzero () {
+	eval r=\${$1} \
+	 && if [ -z "$r" ] ; then \
+	      echo "Internal Error: zero variable <<$1>>" && exit 1 \
+	    ; fi \
+	 && if [ $( echo $1 | grep ":" | wc -l ) -gt 0 ] ; then \
+	      echo "Please no colons in paths / directory names" && exit 1 \
+	    ; fi \
+	 && echo "$1: $r"
+}
+
 function reportnames () {
 	echo "Installing package=${PACKAGE} version=${packageversion} at $(date)" \
 	 && echo " .. using compiler:" \
@@ -152,7 +174,7 @@ function reportnames () {
 	 && echo " .. using names:" \
 	 && echo "    srcdir=${srcdir}" \
 	 && echo "    builddir=${builddir}" \
-	 && echo "    installdir=${installdir}" \
+	 && echo "    prefixdir=${prefixdir}" \
 	 && echo "    logfiles: ${configurelog} ${installlog}"
 }
 

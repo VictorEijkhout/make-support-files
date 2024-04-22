@@ -14,13 +14,29 @@ moreinfo :: cmake_info
 .PHONY: configure 
 configure : modules
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 && ( \
-	    echo "Start of CMake configure" \
+	    echo "CMake configure stage" \
+	     && export srcdir=$$( make --no-print-directory srcdir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} \
+	            DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	            ) \
+	     && reportnonzero srcdir \
+	     && export builddir=$$( make --no-print-directory builddir \
+	            ) \
+	     && reportnonzero builddir \
+	     && export prefixdir=$$( make --no-print-directory prefixdir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	            INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	            ) \
+	     && reportnonzero prefixdir \
+	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
-	     && if [ "$${mode}" = "mpi" ] ; then \
+	     && if [ "${MODE}" = "mpi" ] ; then \
 	      setmpicompilers ; else setcompilers ; fi \
-	     && reportnames && reportcompilers \
+	     && reportcompilers \
 	     \
 	     && rm -rf $$builddir && mkdir -p $$builddir \
 	     && find $$builddir -name CMakeCache.txt -exec rm {} \; \
@@ -53,13 +69,10 @@ configure : modules
 	             && export FFLAGS="${CMAKECOMPILERFLAGS}" \
 	        ; fi \
 	     \
-	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
-	     && cmake --version | head -n 1 \
-	     && reportcompilers && echo \
 	     && if [ -z "${CMAKENAME}" ] ; then \
 	          cmake=cmake ; else cmake=${CMAKENAME} ; fi \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
-	            $${cmake} -D CMAKE_INSTALL_PREFIX=$$installdir \
+	            $${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
 	                -D CMAKE_COLOR_DIAGNOSTICS=OFF \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                -D BUILD_SHARED_LIBS=ON \
@@ -67,7 +80,7 @@ configure : modules
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
-	             && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$installdir \
+	             && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
 	                    -D CMAKE_COLOR_DIAGNOSTICS=OFF \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    -D BUILD_SHARED_LIBS=ON \

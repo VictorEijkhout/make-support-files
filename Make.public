@@ -11,10 +11,20 @@ info ::
 .PHONY: public
 public ::
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+	        "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	 \
+	 && export homedir=$$( make homedir \
+	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        HOMEDIR=${HOMEDIR} \
+	                ) \
 	 && requirenonzero homedir \
-	 && requirenonzero installdir \
-	 && echo "opening $$homedir , $$installdir" \
+	 && export prefixdir=$$( make --no-print-directory prefixdir \
+	        INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+	        INSTALLVARIANT=${INSTALLVARIANT} \
+	                        ) \
+	 && requirenonzero prefixdir \
+	 && echo "opening $$homedir , $$prefixdir" \
 	 && ${SUDO} chmod    g+rX,o+rX $$homedir \
-	 && ${SUDO} chmod -R g+rX,o+rX $$installdir
+	 && ${SUDO} chmod -R g+rX,o+rX $$prefixdir
