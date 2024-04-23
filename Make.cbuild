@@ -22,7 +22,7 @@ build ::
 	 && requirenonzero installext \
 	 && lognames $$installext \
 	 && requirenonzero installlog \
-	 && export srcdir=$$( make --no-print-directory prefixdir \
+	 && export srcdir=$$( make --no-print-directory srcdir \
 	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	        PACKAGEBASENAME=${PACKAGEBASENAME} \
 	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \

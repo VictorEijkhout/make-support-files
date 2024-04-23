@@ -11,28 +11,24 @@ SHELL = bash
 info :: 
 	@echo && echo "================ General info" 
 	@echo "(make moreinfo for options)" && echo 
-	@echo "make targets for ${PACKAGE}"
+	@echo "make targets for package=${PACKAGE} version=${PACKAGEVERSION}"
 	@if [ -z "${MAKEINCLUDES}" ] ; then \
 	    echo "Set MAKEINCLUDES to location of Make.stuff files" >2 \
 	     && return 1 \
 	 ; fi
 	@if [ ! -z "${URL}" ] ; then echo "  homepage : open URL" ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && export srcdir=$$( make --no-print-directory srcdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} \
+	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	        ) \
 	 && if [ ! -d "$$srcdir" ] ; then \
 	        echo "  source : $$srcdir (missing)" \
 	    ; else \
 	        echo "  source : $$srcdir" \
-	    ; fi \
-	 && sources= \
-	 && for d in $${downloaddir}/$${packagebasename}-* ; do \
-	        if [ -d "$$d" ] ; then sources="$${sources} $${d#*-}" ; fi \
-	    ; done && echo "  available sources:$$sources" \
-	 && if [ ! -z "${PREFIXEXTRA}" ] ; then \
-	        prefixdir=$${prefixdir}-${PREFIXEXTRA} ; fi \
-	 && echo "  install prefix dir: $$prefixdir" \
-	 && echo "  module dir: $$moduledir" \
-	 && echo "    make list_installations for already present"
+	    ; fi
+
 .PHONY: homepage url
 homepage :
 	@open ${URL}
@@ -114,7 +110,7 @@ envcode :
 	 && echo $${taccsystemcode}-$${compilercode}$${compilershortversion}
 installext :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && systemnames \
+	 && systemnames && compilernames \
 	 && envcode=$$( make --no-print-directory envcode ) \
 	 && requirenonzero envcode \
 	 && installext=${PACKAGEVERSION}-$${envcode} \
@@ -127,7 +123,7 @@ installext :
 	       && installext=$${installext}-$${mpiext} \
 	   ; fi \
 	 && if [ ! -z "${INSTALLVARIANT}" ] ; then \
-	      installext=${installext}-${INSTALLVARIANT} ; fi \
+	      installext=$${installext}-${INSTALLVARIANT} ; fi \
 	 && echo $${installext}
 builddir :
 	@source ${MAKEINCLUDES}/names.sh \

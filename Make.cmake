@@ -23,6 +23,10 @@ configure : modules
 	            ) \
 	     && reportnonzero srcdir \
 	     && export builddir=$$( make --no-print-directory builddir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	            HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
 	            ) \
 	     && reportnonzero builddir \
 	     && export prefixdir=$$( make --no-print-directory prefixdir \
