@@ -14,6 +14,13 @@ moreinfo :: cmake_info
 .PHONY: configure 
 configure : modules
 	@source ${MAKEINCLUDES}/names.sh \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && lognames $$installext \
+	 && requirenonzero configurelog \
 	 && ( \
 	    echo "CMake configure stage" \
 	     && export srcdir=$$( make --no-print-directory srcdir \

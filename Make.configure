@@ -12,19 +12,46 @@ moreinfo :: conf_info
 .PHONY: configure config-help
 configure :: modules
 	@source ${MAKEINCLUDES}/names.sh \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && lognames $$installext \
+	 && requirenonzero configurelog \
 	 && if [ ! -z "${PREFIXOPTION}" ] ; then \
 	      export prefixoption=${PREFIXOPTION} \
 	    ; else export prefixoption=--prefix ; fi \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	  && ( \
 	    echo "Start autotools-based configuration" \
+	     && export srcdir=$$( make --no-print-directory srcdir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} \
+	            DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	            ) \
+	     && reportnonzero srcdir \
+	     && export builddir=$$( make --no-print-directory builddir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	            HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	            ) \
+	     && reportnonzero builddir \
+	     && export prefixdir=$$( make --no-print-directory prefixdir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	            INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	            ) \
+	     && reportnonzero prefixdir \
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
-	            echo "prefix: attaching PREFIXEXTRA=$F{PREFIXEXTRA}" \
-	             && installdir=$${installdir}-${PREFIXEXTRA} ; fi \
+	            echo "prefix: attaching PREFIXEXTRA=${PREFIXEXTRA}" \
+	             && prefixdir=$${prefixdir}-${PREFIXEXTRA} ; fi \
+	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
 	     && if [ "$${mode}" = "mpi" ] ; then \
 	            setmpicompilers ; else setcompilers ; fi \
-	     && reportnames && reportcompilers \
+	     && reportcompilers \
 	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
 	     && export LIBS=${LIBS} \
 	     \
@@ -66,7 +93,7 @@ configure :: modules
 	             && ( make distclean || echo "no distclean rule" ) ; fi \
 	     && configureline="\
 	            ./configure \
-	                $${prefixoption}=$$installdir --libdir=$${installdir}/lib \
+	                $${prefixoption}=$$prefixdir --libdir=$${prefixdir}/lib \
 	                ${CONFIGUREFLAGS} \
 	            " \
 	     && echo "Configuring as:" && echo $$configureline \

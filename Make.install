@@ -14,8 +14,26 @@ info ::
 JCOUNT = 2
 build ::
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && lognames $$installext \
+	 && requirenonzero installlog \
+	 && export srcdir=$$( make --no-print-directory srcdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} \
+	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	        ) \
+	 && export builddir=$$( make --no-print-directory builddir \
+	        ) \
+	 && export prefixdir=$$( make --no-print-directory prefixdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	        INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
 	 && if [ -z "${NOINSTALL}" ] ; then \
 	      ( \
 	      cd $$srcdir \
@@ -34,12 +52,13 @@ build ::
 	       && if [ ! -z "${CPTOINSTALLDIR}" ] ; then \
 	            echo " .. additional copies: ${CPTOINSTALLDIR}" \
 	             && cp -r ${CPTOINSTALLDIR} $$prefixdir ; fi \
-	       && if [ -z "${NOMODULE}" ] ; then \
+	          ) 2>&1 | tee $$installlog \
+	       && ( \
+	          if [ -z "${NOMODULE}" ] ; then \
 	            echo " .. generating module file" \
-	             && ( cd $$scriptdir \
-	                    && make FAMILY=${FAMILY} --no-print-directory module ) \
+	             && make FAMILY=${FAMILY} --no-print-directory module \
 	          ; fi \
-	      ) 2>&1 | tee $$installlog \
+	          ) 2>&1 | tee -a $$installlog \
 	       && echo && echo "Installation finished in: $$prefixdir" \
 	       && echo "See $$installlog" && echo \
 	    ; fi
