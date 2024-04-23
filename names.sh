@@ -93,33 +93,43 @@ function modulenames () {
 	   ; fi \
 }
 
-function setdirlognames() {
-	export scriptdir=`pwd` \
-	 && systemnames && compilernames \
-	 && setnames       "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" \
-	 && setmodulenames "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" \
-	 && requirenonzero taccsystemcode \
-	 && requirenonzero compilercode \
-	 &&  export \
-               installext=${packageversion}-${taccsystemcode}-${compilercode}${compilershortversion} \
-	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
-	       export installext=${installext}-$4 \
-	    ; fi \
-	 && if [ "${mode}" = "mpi" ] ; then \
-	      requirenonzero mpicode \
-	       && export installext=${installext}-${mpicode} \
-	   ; fi \
-	 && if [ ! -z "${variant}" ] ; then \
-	      export installext=${installext}-${variant} ; fi \
-	 && export configurelog=configure-${installext}.log \
-	 && export installlog=install-${installext}.log \
-         && if [ ! -z "${BUILDDIRROOT}" ] ; then \
-              export builddir=${BUILDDIRROOT}/build-${installext} \
-            ; else \
-              export builddir=${homedir}/build-${installext} \
-            ; fi \
-	 && if [ -z "$package" ] ; then \
-	      echo "No package name for dirlog" && exit 1 ; fi
+function setnames () {
+    PACKAGE=${1} && PACKAGEVERSION=${2} && PACKAGEBASENAME=${3} \
+     && DOWNLOADPATH=${4} && SRCPATH=${5} \
+     && INSTALLPATH=${6} && INSTALLROOT=${7} && INSTALLEXT=${8} && INSTALLVARIANT=${9} \
+     && HOMEDIR=${10} && BUILDDIRROOT=${11} && MODE=${12} \
+     && PREFIXOPTION=${13} && PREFIXEXTRA=${14} \
+     && installext=$( make --no-print-directory installext \
+        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+        ) \
+     && requirenonzero installext \
+     && lognames $installext \
+     && requirenonzero configurelog \
+     && requirenonzero installlog \
+     && export srcdir=$( make --no-print-directory srcdir \
+            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+            PACKAGEBASENAME=${PACKAGEBASENAME} \
+            DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+            ) \
+     && reportnonzero srcdir \
+     && export builddir=$( make --no-print-directory builddir \
+            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+            HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
+            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+            ) \
+     && reportnonzero builddir \
+     && export prefixdir=$( make --no-print-directory prefixdir \
+            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+            INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+            ) \
+     && reportnonzero prefixdir \
+     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
+            echo "prefix: attaching PREFIXEXTRA=${PREFIXEXTRA}" \
+             && export prefixdir=${prefixdir}-${PREFIXEXTRA} ; fi
 }
 
 function requirenonzero () {
