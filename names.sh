@@ -29,38 +29,7 @@ function compilernames () {
 	; fi 
 }
 
-function setnames () {
-    if [ -z "${TACC_SYSTEM}" ] ; then \
-	echo "WARNING: variable TACC_SYSTEM not set" ; \
-	fi \
-    && if [ -z "${LMOD_FAMILY_COMPILER}" -a -z "${TACC_FAMILY_COMPILER}" ] ; then \
-	echo "WARNING: variable LMOD/TACC_FAMILY_COMPILER not set" ; \
-	fi \
-    && if [ -z "$1" ] ; then \
-	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
-     && TACC_SYSTEM=${TACC_SYSTEM} systemnames \
-     && PACKAGE=$2 && PACKAGEVERSION=$3 \
-     && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
-     && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
-     && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
-     && if [ -z "${HOMEDIR}" ] ; then \
-          export homedir=$1/$package \
-        ; else \
-          export homedir="${HOMEDIR}" \
-        ; fi \
-     && requirenonzero packageversion \
-     && if [ ! -z "$5" ] ; then \
-          export packagebasename=$5 \
-        ; else \
-          export packagebasename=$package \
-        ; fi \
-     && if [ ! -z "$7" ] ; then 
-          export modulename=$7 ; else export modulename=${package} ; fi \
-     && requirenonzero modulename \
-     && export mode=$8
-}
-
-# $1 = package, $2 = packageversion, $3 = packagebasename
+# $1 = package, $2 = packageversion, $3 = packagebasename $4 = modulename
 function packagenames () {
     PACKAGE=$1 \
      && if [ -z "${PACKAGE}" ] ; then \
@@ -74,7 +43,10 @@ function packagenames () {
           export packagebasename=$3 \
         ; else \
           export packagebasename=$package \
-        ; fi 
+        ; fi \
+     && if [ ! -z "$4" ] ; then 
+          export modulename=$4 ; else export modulename=${package} ; fi \
+     && requirenonzero modulename
 }
 
 function lognames () {
@@ -164,6 +136,13 @@ function reportnonzero () {
 	      echo "Please no colons in paths / directory names" && exit 1 \
 	    ; fi \
 	 && echo "$1: $r"
+}
+
+function requirenonzeropath () {
+	requirenonzero "$1" \
+	 && eval r=\${$1} \
+	 && if [ ! -d "$r" ] ; then \
+	      echo "Non-existing path: $1=$r" && exit 1 ; fi
 }
 
 function reportnames () {
