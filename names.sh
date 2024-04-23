@@ -29,9 +29,11 @@ function compilernames () {
 	; fi 
 }
 
-# $1 = package, $2 = packageversion, $3 = packagebasename $4 = modulename
+# $1 = package, $2 = packageversion, $3 = packagebasename 
 function packagenames () {
-    PACKAGE=$1 \
+    if [ -z "$2" -o ! -z "$4" ] ; then \
+	echo "function packagenames needs 2 parameters, 3rd optional" ; fi \
+     && PACKAGE=$1 \
      && if [ -z "${PACKAGE}" ] ; then \
           echo "packagenames called with null package" && exit 1 ; fi \
      && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
@@ -43,10 +45,7 @@ function packagenames () {
           export packagebasename=$3 \
         ; else \
           export packagebasename=$package \
-        ; fi \
-     && if [ ! -z "$4" ] ; then 
-          export modulename=$4 ; else export modulename=${package} ; fi \
-     && requirenonzero modulename
+        ; fi
 }
 
 function lognames () {
@@ -55,11 +54,17 @@ function lognames () {
      && export installlog=install-${installext}.log
 }
 
-function setmodulenames () {
+# This probably assumes that you have done 
+#     packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" 
+# then this only needs MODULENAME parameter
+function modulenames () {
 	TACC_SYSTEM=${TACC_SYSTEM} systemnames && compilernames \
 	 && requirenonzero packageversion \
 	 && requirenonzero compilercode \
 	 && requirenonzero compilerversion \
+	 && if [ ! -z "$1" ] ; then \
+	      export modulename=$1 ; else export modulename=${package} ; fi \
+	 && requirenonzero modulename \
 	 && if [ ! -z "${MODULEDIRSET}" ] ; then \
 	        export moduledir=${MODULEDIRSET} \
 	    ; else \
@@ -135,7 +140,8 @@ function reportnonzero () {
 	 && if [ $( echo $1 | grep ":" | wc -l ) -gt 0 ] ; then \
 	      echo "Please no colons in paths / directory names" && exit 1 \
 	    ; fi \
-	 && echo "$1: $r"
+	 && if [ ! -z "$2" ] ; then \
+	      echo "$2 $1: $r" ; else echo "$1: $r" ; fi
 }
 
 function requirenonzeropath () {
