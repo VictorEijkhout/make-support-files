@@ -93,8 +93,13 @@ unpack untar ::
 retar :
 	@\
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
-	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
+	 && homedir=$$( make --no-print-directory homedir \
+	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && requirenonzeropath homedir \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
 	 && if [ ! -z "${ZIPURL}" ] ; then tgz=${ZIPURL} ; else tgz=${TGZURL} ; fi \
