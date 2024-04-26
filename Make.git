@@ -22,44 +22,33 @@ clone oneclone ::
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && if [ ! -z "${PACKAGEBASENAME}" ] ; then \
-	        packagebasename=${PACKAGEBASENAME} \
-	    ; else packagebasename=${PACKAGE} ; fi \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "$${packagebasename}" \
-	 \
-	 && package=$${package}-git \
-	 && if [ ! -z "${GITPACKAGE}" ] ; then package=${GITPACKAGE} ; fi \
+	 && homedir=$$( make --no-print-directory homedir \
+	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && reportnonzero homedir "Start downloading in" \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
 	 && echo "Establishing package=${PACKAGE}, version=${PACKAGEVERSION} into $${package}" \
 	 \
-	 && if [ ! -d $${downloaddir} ] ; then \
-	        echo " .. first creating downloaddir=$${downloaddir}" \
-	         && mkdir -p $${downloaddir} ; fi \
-	 && if [ ! -d "$${downloaddir}" ] ; then \
-	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \
-	 && cd "$${downloaddir}" \
-	 && if [ -d $${downloaddir}/$${package} ] ; then \
-	    echo ".. repo already in place: $${downloaddir}/$${package}" \
-	    ; \
-	else \
-	    echo ".. cloning repo ${GITREPO} into $${downloaddir}/$${package}" \
-	     && cd $${downloaddir} \
-	     && git clone ${CLONEARGS} ${GITREPO} $${package} \
-	     && if [ ! -z "${BRANCH}" ] ; then \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
+	 && echo " .. cloning in $$( pwd )" \
+	 && git clone ${CLONEARGS} ${GITREPO} $${package} \
+	 && if [ ! -z "${BRANCH}" ] ; then \
 	            echo ".. switching to branch ${BRANCH}" \
 	             && ( cd $${package} && git checkout ${BRANCH} ) \
-	        ; fi \
-	     && if [ ! -z "${SUBMODULE}" ] ; then \
+	    ; fi \
+	 && if [ ! -z "${SUBMODULE}" ] ; then \
 	            echo ".. loading submodules" \
 	             && ( cd $${package} \
 	                   && git submodule update --init --recursive \
 	                ) \
-	        ; fi \
-	     && if [ ! -z "${BOOTSTRAP}" ] ; then \
+	    ; fi \
+	 && if [ ! -z "${BOOTSTRAP}" ] ; then \
 	            echo ".. bootstrapping" \
 	             && ( cd $${package} && eval ${BOOTSTRAP} ) \
-	        ; fi \
-	    ; \
-	fi
+	    ; fi
 
 newclone ::
 	@if [ -z "${GITREPO}" ] ; then \
