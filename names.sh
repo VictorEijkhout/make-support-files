@@ -12,8 +12,10 @@ function systemnames () {
 	  export taccsystemcode=milan \
 	; elif [ ! -z "${TACC_SYSTEM_CODE}" ] ; then \
 	  export taccsystemcode=${TACC_SYSTEM_CODE} \
-	; else \
+	; elif [ ! -z "${TACC_SYSTEM}" ] ; then \
 	  export taccsystemcode=${TACC_SYSTEM} \
+	; else \
+	  export taccsystemcode=system \
 	; fi
 }
 
@@ -21,6 +23,8 @@ function compilernames () {
 	if [ ! -z "${TACC_FAMILY_COMPILER}" ] ; then \
 	    export compilercode="${TACC_FAMILY_COMPILER}" \
 	     && export compilerversion="${TACC_FAMILY_COMPILER_VERSION}" \
+	; else \
+	    export compilercode=compiler && export compilerversion=cversion \
 	; fi 
 	export compilershortversion=${compilerversion%%.*}
 	if [ ! -z "${TACC_FAMILY_MPI}" ] ; then \
@@ -62,8 +66,9 @@ function modulenames () {
 	 && requirenonzero packageversion \
 	 && requirenonzero compilercode \
 	 && requirenonzero compilerversion \
-	 && if [ ! -z "$1" ] ; then \
-	      export modulename=$1 ; else export modulename=${package} ; fi \
+	 && mode=$1 \
+	 && if [ ! -z "$2" ] ; then \
+	      export modulename=$2 ; else export modulename=${package} ; fi \
 	 && requirenonzero modulename \
 	 && if [ ! -z "${MODULEDIRSET}" ] ; then \
 	        export moduledir=${MODULEDIRSET} \
