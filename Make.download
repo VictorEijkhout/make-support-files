@@ -50,8 +50,9 @@ unpack untar ::
 	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
 	 && echo "Unpacking file for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-	      requirenonzeropath "${DOWNLOADPATH}" \
-	       && cd "${DOWNLOADPATH}" \
+	      downloadpath="${DOWNLOADPATH}" \
+	       && requirenonzeropath downloadpath \
+	       && cd "$${downloadpath}" \
 	    ; else cd $$homedir ; fi \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
