@@ -62,7 +62,13 @@ function lognames () {
 #     packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" 
 # then this only needs MODULENAME parameter
 function modulenames () {
-	TACC_SYSTEM=${TACC_SYSTEM} systemnames && compilernames \
+	setnames \
+	    "${PACKAGE}"  "${PACKAGEVERSION}"  "${PACKAGEBASENAME}" \
+	    "${DOWNLOADPATH}" "${SRCPATH}" \
+	    "${INSTALLPATH}"  "${INSTALLROOT}"  "${INSTALLEXT}"  "${INSTALLVARIANT}" \
+	    "${HOMEDIR}"  "${BUILDDIRROOT}"  "${MODE}" \
+	    "${PREFIXOPTION}"  "${PREFIXEXTRA}" \
+	 && systemnames && compilernames \
 	 && requirenonzero packageversion \
 	 && requirenonzero compilercode \
 	 && requirenonzero compilerversion \
