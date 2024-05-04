@@ -46,7 +46,7 @@ configure : modules
 	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
 	     && if [ "${MODE}" = "mpi" ] ; then \
-	      setmpicompilers ; else setcompilers ; fi \
+	          setmpicompilers ; else setcompilers ; fi \
 	     && reportcompilers \
 	     \
 	     && rm -rf $$builddir && mkdir -p $$builddir \

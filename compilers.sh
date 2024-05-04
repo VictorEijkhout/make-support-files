@@ -57,7 +57,7 @@ function reportcompilers () {
     echo "Using compilers:" \
      && echo " .. CC=${CC}" \
      && echo "    where ${CC}=$( which ${CC} )" \
-     && echo " .. CXX=${CXXf}" \
+     && echo " .. CXX=${CXX}" \
      && echo "    where ${CXX}=$( which ${CXX} )" \
      && echo " .. FC=${FC}" \
      && echo "    where ${FC}=$( which ${FC} )" \

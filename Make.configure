@@ -49,10 +49,9 @@ configure :: modules
 	             && prefixdir=$${prefixdir}-${PREFIXEXTRA} ; fi \
 	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
-	     && if [ "$${mode}" = "mpi" ] ; then \
+	     && if [ "${MODE}" = "mpi" ] ; then \
 	            setmpicompilers ; else setcompilers ; fi \
 	     && reportcompilers \
-	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
 	     && export LIBS=${LIBS} \
 	     \
 	     && requirenonzero srcdir \
