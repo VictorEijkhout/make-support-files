@@ -69,12 +69,14 @@ configure :: modules
 	             && ./autogen.sh ; fi \
 	     && if [ ! -f "configure" -o ! -z "${FORCERECONF}" ] ; then \
 	          if [ ! -f configure.ac ] ; then \
-	            echo "ERROR missing configure.ac" \
+	            echo "ERROR missing configure.ac" && exit 1 \
 	          ; else \
-	            echo "First autoreconf" \
-	             && if [ ! -z "${AUTORECONF}" ] ; then \
-	                  eval ${AUTORECONF} \
-	                ; else aclocal && autoconf ; fi \
+	            if [ ! -z "${AUTORECONF}" ] ; then \
+	              cmdline="${AUTORECONF}" \
+	            ; else \
+	              cmdline="aclocal \
+&& $$( if [ ! -z ${AUTOCONF} ] ; then echo ${AUTOCONF} ; else echo autoconf ; fi )" \
+	            ; fi && echo "auto conf/reconf: $$cmdline" && eval $$cmdline \
 	          ; fi \
 	        ; fi \
 	     && if [ ! -z "${CFLAGS}" ] ; then \
