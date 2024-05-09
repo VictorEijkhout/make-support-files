@@ -72,7 +72,7 @@ configure :: modules
 	            echo "ERROR missing configure.ac" && exit 1 \
 	          ; else \
 	            if [ ! -z "${AUTORECONF}" ] ; then \
-	              cmdline="${AUTORECONF}" \
+	              cmdline="${AUTORECONF} -i" \
 	            ; else \
 	              cmdline="aclocal \
 && $$( if [ ! -z ${AUTOCONF} ] ; then echo ${AUTOCONF} ; else echo autoconf ; fi )" \
