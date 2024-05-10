@@ -34,7 +34,8 @@ clone oneclone ::
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
 	 && echo " .. cloning in $$( pwd )" \
-	 && git clone ${CLONEARGS} ${GITREPO} $${package} \
+	 && if [ ! -d $${package} ] ; then \
+	      git clone ${CLONEARGS} ${GITREPO} $${package} ; fi \
 	 && if [ ! -z "${BRANCH}" ] ; then \
 	            echo ".. switching to branch ${BRANCH}" \
 	             && ( cd $${package} && git checkout ${BRANCH} ) \
