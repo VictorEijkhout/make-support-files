@@ -87,6 +87,8 @@ function modulenames () {
 	                 && modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
 	            ; elif [ "${mode}" = "seq" ] ; then \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
+	            ; elif [ "${mode}" = "core" ] ; then \
+	                modulepath=${modulepath}/Core \
 	            ; elif [ ! -z "${mode}" ] ; then \
 	                echo "ERROR: unknown mode: ${mode}" && exit 1 \
 	            ; fi \
