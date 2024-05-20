@@ -50,7 +50,7 @@ function setmpicompilers () {
      && setcompilers \
      && export cc=mpicc && export cxx=mpicxx && export fc=mpif90 \
      && export CC=$cc && export CXX=$cxx && export FC=$fc \
-
+     && reportcompilers
 }
 
 function reportcompilers () {
