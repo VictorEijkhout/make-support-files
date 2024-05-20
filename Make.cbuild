@@ -36,7 +36,8 @@ build ::
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
 	        ) \
 	 && ( \
-	    reportnonzero builddir \
+	    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start build" \
+	     && reportnonzero builddir \
 	     && reportnonzero prefixdir \
 	     \
 	     && cd $$builddir \
@@ -58,6 +59,8 @@ build ::
 	     && if [ ! -z "${EXTRABUILDTARGETS}" ] ; then \
 	          make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
 	        ; fi \
+	     && echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< VLE done build" \
+	     && echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start install" \
 	     && echo "Installing in $${prefixdir}" \
 	     && if [ -z "${NOINSTALL}" ] ; then \
 	            ${SUDO} make --no-print-directory install \
@@ -65,13 +68,14 @@ build ::
 	     && if [ ! -z "${CPTOINSTALLDIR}" ] ; then \
 	            echo " .. additional copies: ${CPTOINSTALLDIR}" \
 	             && ( cd $$srcdir && cp -r ${CPTOINSTALLDIR} $$prefixdir ) ; fi \
-	) 2>&1 | tee $$installlog \
+	     && echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< VLE doneinstall" \
+	    ) 2>&1 | tee $$installlog \
 	 && ( if [ -z "${NOMODULE}" ] ; then \
-	          echo "generating module file" \
-	           && make FAMILY=${FAMILY} --no-print-directory module \
-	         ; fi \
-	      && echo && echo "CMake installation finished at $$( date ) " \
-	      && echo " .. in: $$prefixdir" && echo \
+	        echo ">>>>>>>>>>>>>>>> VLE generating module file" \
+	         && make FAMILY=${FAMILY} --no-print-directory module \
+	       ; fi \
+	       && echo && echo "CMake installation finished at $$( date ) " \
+	       && echo " .. in: $$prefixdir" && echo \
 	) 2>&1 | tee -a $$installlog \
 
 include ${MAKEINCLUDES}/Make.vars
