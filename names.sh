@@ -62,12 +62,7 @@ function lognames () {
 #     packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" 
 # then this only needs MODULENAME parameter
 function modulenames () {
-	setnames \
-	    "${PACKAGE}"  "${PACKAGEVERSION}"  "${PACKAGEBASENAME}" \
-	    "${DOWNLOADPATH}" "${SRCPATH}" \
-	    "${INSTALLPATH}"  "${INSTALLROOT}"  "${INSTALLEXT}"  "${INSTALLVARIANT}" \
-	    "${HOMEDIR}"  "${BUILDDIRROOT}"  "${MODE}" \
-	    "${PREFIXOPTION}"  "${PREFIXEXTRA}" \
+	echo "Determining module file path and name" \
 	 && systemnames && compilernames \
 	 && requirenonzero packageversion \
 	 && requirenonzero compilercode \
@@ -164,13 +159,22 @@ function reportnonzero () {
 	      echo "Please no colons in paths / directory names" && exit 1 \
 	    ; fi \
 	 && if [ ! -z "$2" ] ; then \
-	      echo "$2 $1: $r" ; else echo "$1: $r" ; fi
+	      echo "$2 $1: $r" ; else echo "Using $1=$r" ; fi
 }
 
 function requirenonzeropath () {
 	requirenonzero "$1" \
 	 && eval r=\${$1} \
 	 && if [ ! -d "$r" ] ; then \
+	      echo "Non-existing path: $1=$r" && exit 1 ; fi
+}
+
+function reportnonzeropath () {
+	requirenonzero "$1" \
+	 && eval r=\${$1} \
+	 && if [ -d "$r" ] ; then \
+	      echo "Using $1=$r" \
+	    ; else \
 	      echo "Non-existing path: $1=$r" && exit 1 ; fi
 }
 
