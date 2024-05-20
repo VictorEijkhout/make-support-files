@@ -55,7 +55,7 @@ build ::
 	          ) 2>&1 | tee $$installlog \
 	       && ( \
 	          if [ -z "${NOMODULE}" ] ; then \
-	            echo " .. generating module file" \
+	            echo ">>>>>>>>>>>>>>>>" && echo "generating module file" \
 	             && make FAMILY=${FAMILY} --no-print-directory module \
 	          ; fi \
 	          ) 2>&1 | tee -a $$installlog \
