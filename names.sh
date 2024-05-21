@@ -180,9 +180,6 @@ function reportnonzeropath () {
 
 function reportnames () {
 	echo "Installing package=${PACKAGE} version=${packageversion} at $(date)" \
-	 && echo " .. using compiler:" \
-	 && echo "    compiler=${compilercode}/${compilerversion} (short: ${comilershortversion})" \
-	 && echo "    mpi=${mpicode}/${mpiversion}" \
 	 && echo " .. using names:" \
 	 && echo "    srcdir=${srcdir}" \
 	 && echo "    builddir=${builddir}" \

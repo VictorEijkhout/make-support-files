@@ -45,7 +45,7 @@ configure : modules
 	     && reportnonzero prefixdir \
 	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
-	     && if [ "${MODE}" = "mpi" ] ; then \
+	     && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
 	          setmpicompilers ; else setcompilers ; fi \
 	     && reportcompilers \
 	     \
@@ -75,9 +75,9 @@ configure : modules
 	     \
 	     && if [ ! -z "${CMAKECOMPILERFLAGS}" ] ; then \
 	            echo "Exporting compiler flags to <<${CMAKECOMPILERFLAGS}>>" \
-	             && export CXXFLAGS="${CMAKECOMPILERFLAGS}" \
-	             && export CFLAGS="${CMAKECOMPILERFLAGS}" \
-	             && export FFLAGS="${CMAKECOMPILERFLAGS}" \
+	             && export CXXFLAGS="$${CXXFLAGS} ${CMAKECOMPILERFLAGS}" \
+	             && export CFLAGS="$${CFLAGS} ${CMAKECOMPILERFLAGS}" \
+	             && export FFLAGS="$${FFLAGS} ${CMAKECOMPILERFLAGS}" \
 	        ; fi \
 	     \
 	     && if [ -z "${CMAKENAME}" ] ; then \

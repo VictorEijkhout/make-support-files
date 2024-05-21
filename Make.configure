@@ -49,7 +49,7 @@ configure :: modules
 	             && prefixdir=$${prefixdir}-${PREFIXEXTRA} ; fi \
 	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
-	     && if [ "${MODE}" = "mpi" ] ; then \
+	     && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
 	            setmpicompilers ; else setcompilers ; fi \
 	     && reportcompilers \
 	     && export LIBS=${LIBS} \
