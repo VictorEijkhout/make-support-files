@@ -77,9 +77,9 @@ function modulenames () {
 	        if [ -z "${MODULEROOT}" ] ; then
 	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
 	         && modulepath=${MODULEROOT} \
-	         && if [ "${mode}" = "mpi" ] ; then \
-	                requirenonzero mpicode \
-	                 && modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
+	         && if [ "${mode}" = "mpi" -o "${mode}" = "hybrid" ] ; then \
+	              requirenonzero mpicode \
+	               && modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
 	            ; elif [ "${mode}" = "seq" ] ; then \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
 	            ; elif [ "${mode}" = "core" ] ; then \

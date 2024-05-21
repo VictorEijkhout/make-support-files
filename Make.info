@@ -119,7 +119,7 @@ installext :
 	 && if [ ! -z "${INSTALLEXT}" -a ! "${INSTALLEXT}" = "keep" ] ; then \
 	       installext=$${installext}-${INSTALLEXT} \
 	    ; fi \
-	 && if [ "${MODE}" = "mpi" ] ; then \
+	 && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
 	      mpiext=$${mpicode}$${mpiversion} \
 	       && requirenonzero mpiext \
 	       && installext=$${installext}-$${mpiext} \
