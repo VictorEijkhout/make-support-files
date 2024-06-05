@@ -115,7 +115,7 @@ config-help :
 	        PACKAGEBASENAME=${PACKAGEBASENAME} \
 	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
 	        ) \
-	 && reportnonzero $$srcdir \
+	 && reportnonzero srcdir \
 	 && cd $$srcdir \
 	 && ./configure --help \
 	) 
