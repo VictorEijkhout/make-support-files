@@ -195,7 +195,8 @@ modules ::
 	    make --no-print-directory moduletest MODULE=$$m \
 	 ; done
 	@for m in ${NONMODULES} ; do \
-	    M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
+	    v=$${m##*/} && m=$${m%%/*} \
+	     && M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
 	     && vt=`env | grep $${tmd} | cut -d = -f 2` \
 	     && vl=`env | grep $${lmd} | cut -d = -f 2` \
 	     && if [ ! -z "$${vl}" -o ! -z "$${vt}" ] ; then \
@@ -206,7 +207,9 @@ modules ::
 moduletest :
 	@if [ -z "${MODULE}" ] ; then \
 	    echo "Please specify MODULE=..." && exit 1 ; fi 
-	@m=${MODULE} && M=$$( echo $$m | tr a-z A-Z | tr -d '-' ) \
+	@m=${MODULE} \
+	 && v=$${m##*/} && m=$${m%%/*} \
+	 && M=$$( echo $$m | tr a-z A-Z | tr -d '-' ) \
 	 && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
 	 && vt=`env | grep $${tmd} | cut -d = -f 2` \
 	 && vl=`env | grep $${lmd} | cut -d = -f 2` \

@@ -10,21 +10,22 @@ info ::
 	@echo "make public : install dir"
 .PHONY: public
 public ::
+	@echo && echo "================================ Making installation public"
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
-	        "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
-	 \
-	 && export homedir=$$( make homedir \
+	 && setnames \
+	    "${PACKAGE}"  "${PACKAGEVERSION}"  "${PACKAGEBASENAME}" \
+	    "${DOWNLOADPATH}" "${SRCPATH}" \
+	    "${INSTALLPATH}"  "${INSTALLROOT}"  "${INSTALLEXT}"  "${INSTALLVARIANT}" \
+	    "${HOMEDIR}"  "${BUILDDIRROOT}"  "${MODE}" \
+	    "${PREFIXOPTION}"  "${PREFIXEXTRA}" \
+	 && export homedir=$$( make --no-print-directory homedir \
 	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
 	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	        HOMEDIR=${HOMEDIR} \
 	                ) \
 	 && requirenonzero homedir \
-	 && export prefixdir=$$( make --no-print-directory prefixdir \
-	        INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
-	        INSTALLVARIANT=${INSTALLVARIANT} \
-	                        ) \
 	 && requirenonzero prefixdir \
 	 && echo "opening $$homedir , $$prefixdir" \
 	 && ${SUDO} chmod    g+rX,o+rX $$homedir \
-	 && ${SUDO} chmod -R g+rX,o+rX $$prefixdir
+	 && ${SUDO} chmod -R g+rX,o+rX $$prefixdir \
+	 && echo "................................ made installation public"

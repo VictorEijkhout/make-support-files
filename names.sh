@@ -63,11 +63,11 @@ function lognames () {
 # then this only needs MODULENAME parameter
 function modulenames () {
 	echo "Determining module file path and name" \
-	 && systemnames && compilernames \
+	 && systemnames && compilernames && packagenames "${PACKAGE}" "${PACKAGEVERSION}" \
 	 && requirenonzero packageversion \
 	 && requirenonzero compilercode \
 	 && requirenonzero compilerversion \
-	 && mode=$1 \
+	 && mode="$1" \
 	 && if [ ! -z "$2" ] ; then \
 	      export modulename=$2 ; else export modulename=${package} ; fi \
 	 && requirenonzero modulename \
