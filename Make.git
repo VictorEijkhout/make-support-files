@@ -36,22 +36,23 @@ clone oneclone ::
 	 \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
-	 && echo " .. cloning in $$( pwd )" \
+	 && clonedir=$${package}-${PACKAGEVERSION} \
+	 && echo " .. cloning in $$( pwd ) into $${clonedir}" \
 	 && if [ ! -d $${package} ] ; then \
-	      git clone ${CLONEARGS} ${GITREPO} $${package} ; fi \
+	      git clone ${CLONEARGS} ${GITREPO} $${clonedir} ; fi \
 	 && if [ ! -z "${BRANCH}" ] ; then \
 	            echo ".. switching to branch ${BRANCH}" \
-	             && ( cd $${package} && git checkout ${BRANCH} ) \
+	             && ( cd $${clonedir} && git checkout ${BRANCH} ) \
 	    ; fi \
 	 && if [ ! -z "${SUBMODULE}" ] ; then \
 	            echo ".. loading submodules" \
-	             && ( cd $${package} \
+	             && ( cd $${clonedir} \
 	                   && git submodule update --init --recursive \
 	                ) \
 	    ; fi \
 	 && if [ ! -z "${BOOTSTRAP}" ] ; then \
 	            echo ".. bootstrapping" \
-	             && ( cd $${package} && eval ${BOOTSTRAP} ) \
+	             && ( cd $${clonedir} && eval ${BOOTSTRAP} ) \
 	    ; fi
 
 newclone ::
@@ -78,12 +79,18 @@ moreinfo :: pull_info
 	@echo "    [ PULLAFTERACTIONS= (mods inside the repo) ]"
 
 .PHONY: pull 
-pull :: clone
+pull :: 
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && setnames \
+	    "${PACKAGE}"  "${PACKAGEVERSION}"  "${PACKAGEBASENAME}" \
+	    "${DOWNLOADPATH}" "${SRCPATH}" \
+	    "${INSTALLPATH}"  "${INSTALLROOT}"  "${INSTALLEXT}"  "${INSTALLVARIANT}" \
+	    "${HOMEDIR}"  "${BUILDDIRROOT}"  "${MODE}" \
+	    "${PREFIXOPTION}"  "${PREFIXEXTRA}" \
 	 \
+	 && requirenonzeropath srcdir \
 	 && echo "Updating repo: $${srcdir}" \
 	 && cd $${srcdir} \
 	 && git pull \
@@ -102,7 +109,14 @@ clone pull ::
 	@if [ "${CHMODR}" = "1" ] ; then \
 	    echo "setting permissions open" \
 	     && source ${MAKEINCLUDES}/names.sh \
-	     && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	     && setnames \
+	    "${PACKAGE}"  "${PACKAGEVERSION}"  "${PACKAGEBASENAME}" \
+	    "${DOWNLOADPATH}" "${SRCPATH}" \
+	    "${INSTALLPATH}"  "${INSTALLROOT}"  "${INSTALLEXT}"  "${INSTALLVARIANT}" \
+	    "${HOMEDIR}"  "${BUILDDIRROOT}"  "${MODE}" \
+	    "${PREFIXOPTION}"  "${PREFIXEXTRA}" \
+	     && requirenonzeropath downloaddir \
+	     && requirenonzero package \
 	     && chmod -R g+rX,o+rX $${downloaddir}/$${package}-git \
 	 ; fi
 
