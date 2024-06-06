@@ -4,6 +4,7 @@
 git_info :: 
 	@echo "================ Repository rules"
 	@echo "make clone GITREPO=.... "
+	@echo "make gitrepo ( list repo URL)"
 info :: git_info
 moreinfo :: git_info
 	@echo "    [ GITPACKAGE=... for nonstandard unpack ]"
@@ -17,7 +18,9 @@ moreinfo :: git_info
 	@echo "     oneclone : non-recursive rule"
 	@echo "     newclone : delete and reclone"
 
-.PHONY: clone oneclone
+.PHONY: clone oneclone gitrepo
+gitrepo :
+	@echo "${GITREPO}"
 clone oneclone ::
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
