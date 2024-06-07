@@ -28,6 +28,8 @@ download :: homedir
 	 && echo " .. cleanup: $${cmdline}" && eval $${cmdline} \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
 	        url=${ZIPURL} \
+	    ; elif [ ! -z "${TXZURL}" ] ; then \
+	        url=${TXZURL} \
 	    ; else \
 	        url=$$( echo ${TGZURL} | sed 's/ //g' ) \
 	    ; fi \
@@ -54,20 +56,36 @@ unpack untar ::
 	       && requirenonzeropath downloadpath \
 	       && cd "$${downloadpath}" \
 	    ; else cd $$homedir ; fi \
+	 && echo " .. unpacking in downloadpath=$${downloadpath}" \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
 	    ; else \
-	        if [ ! -z "${ZIPURL}" ] ; then tgz=${ZIPURL} ; else tgz=${TGZURL} ; fi \
+	        if [ ! -z "${ZIPURL}" ] ; then \
+	            tgz=${ZIPURL} \
+	        ; elif [ ! -z "${TXZURL}" ] ; then \
+	            tgz=${TXZURL} \
+	        ; else tgz=${TGZURL} \
+	        ; fi \
 	         && tgz=$${tgz##*/} \
 	    ; fi \
+	 && echo " .. using compressed file: $${tgz}" \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
-	        unpackdir=$$( unzip -l $$tgz | sed -n -e '5p' | awk '{print $$4}' ) \
+	        echo " .. unzipping $$tgz" \
+	         && unpackdir=$$( unzip -l $$tgz | sed -n -e '5p' | awk '{print $$4}' ) \
 	         && unpackdir=$${unpackdir%%/*} \
 	         && echo " .. zip file <<$$tgz>> contains: $$unpackdir; unpacking" \
 	         && rm -rf $$unpackdir \
 	         && unzip $$tgz \
+	    ; elif [ ! -z "${TXZURL}" ] ; then \
+	        echo " .. un-xzip'ing $$tgz" \
+	         && unpackdir=$$( xzcat $$tgz | head -n 1 | sed -e 's?/.*??' ) \
+	         && unpackdir=$${unpackdir%%/*} \
+	         && echo " .. xz file <<$$tgz>> contains: $$unpackdir; unpacking" \
+	         && rm -rf $$unpackdir $${unpackdir}.tar \
+	         && xz --decompress $$tgz && tar fx $${unpackdir}.tar \
 	    ; else \
-	        unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
+	        echo " .. un-targz'ing $$tgz" \
+	         && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
 	         && unpackdir=$${unpackdir%/*} \
 	         && unpackdir=$${unpackdir#./} \
 	         && echo " .. tar file <<$$tgz>> contains: $$unpackdir; unpacking" \
