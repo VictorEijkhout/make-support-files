@@ -12,6 +12,10 @@ clean ::
 totalclean :: clean
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
-	 && rm -rf $$installdir \
+	 && export prefixdir=$$( make --no-print-directory prefixdir \
+	        INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+	        INSTALLVARIANT=${INSTALLVARIANT} \
+	                        ) \
+	 && requirenonzero prefixdir \
+	 && rm -rf $$prefixdir \
 	) 

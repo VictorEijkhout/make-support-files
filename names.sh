@@ -12,8 +12,10 @@ function systemnames () {
 	  export taccsystemcode=milan \
 	; elif [ ! -z "${TACC_SYSTEM_CODE}" ] ; then \
 	  export taccsystemcode=${TACC_SYSTEM_CODE} \
-	; else \
+	; elif [ ! -z "${TACC_SYSTEM}" ] ; then \
 	  export taccsystemcode=${TACC_SYSTEM} \
+	; else \
+	  export taccsystemcode=system \
 	; fi
 }
 
@@ -21,6 +23,8 @@ function compilernames () {
 	if [ ! -z "${TACC_FAMILY_COMPILER}" ] ; then \
 	    export compilercode="${TACC_FAMILY_COMPILER}" \
 	     && export compilerversion="${TACC_FAMILY_COMPILER_VERSION}" \
+	; else \
+	    export compilercode=compiler && export compilerversion=cversion \
 	; fi 
 	export compilershortversion=${compilerversion%%.*}
 	if [ ! -z "${TACC_FAMILY_MPI}" ] ; then \
@@ -29,64 +33,57 @@ function compilernames () {
 	; fi 
 }
 
-function setnames () {
-    if [ -z "${TACC_SYSTEM}" ] ; then \
-	echo "WARNING: variable TACC_SYSTEM not set" ; \
-	fi \
-    && if [ -z "${LMOD_FAMILY_COMPILER}" -a -z "${TACC_FAMILY_COMPILER}" ] ; then \
-	echo "WARNING: variable LMOD/TACC_FAMILY_COMPILER not set" ; \
-	fi \
-    && if [ -z "$1" ] ; then \
-	echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
-     && TACC_SYSTEM=${TACC_SYSTEM} systemnames \
-     && PACKAGE=$2 && PACKAGEVERSION=$3 \
+# $1 = package, $2 = packageversion, $3 = packagebasename 
+function packagenames () {
+    if [ -z "$2" -o ! -z "$4" ] ; then \
+	echo "function packagenames needs 2 parameters, 3rd optional" ; fi \
+     && PACKAGE=$1 \
+     && if [ -z "${PACKAGE}" ] ; then \
+          echo "packagenames called with null package" && exit 1 ; fi \
      && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
      && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
+     && PACKAGEVERSION=$2 \
      && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
-     && if [ -z "${HOMEDIR}" ] ; then \
-          export homedir=$1/$package \
-        ; else \
-          export homedir="${HOMEDIR}" \
-        ; fi \
      && requirenonzero packageversion \
-     && if [ ! -z "$5" ] ; then \
-          export packagebasename=$5 \
+     && if [ ! -z "$3" ] ; then \
+          export packagebasename=$3 \
         ; else \
           export packagebasename=$package \
-        ; fi \
-     && export variant="$6" \
-     && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-            export downloaddir="${DOWNLOADPATH}" \
-        ; else \
-            export downloaddir=$homedir \
-        ; fi \
-     && if [ ! -z "${SRCPATH}" ] ; then
-          export srcdir="${SRCPATH}" \
-        ; else \
-          export srcdir=${downloaddir}/${packagebasename}-${packageversion} \
-        ; fi \
-     && if [ ! -z "$7" ] ; then 
-          export modulename=$7 ; else export modulename=${package} ; fi \
-     && requirenonzero modulename \
-     && export mode=$8
+        ; fi
 }
 
-function setmodulenames () {
-	TACC_SYSTEM=${TACC_SYSTEM} systemnames && compilernames \
+function lognames () {
+    installext=$1 \
+     && export configurelog=configure-${installext}.log \
+     && export installlog=install-${installext}.log
+}
+
+# This probably assumes that you have done 
+#     packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" 
+# then this only needs MODULENAME parameter
+function modulenames () {
+	echo "Determining module file path and name" \
+	 && systemnames && compilernames && packagenames "${PACKAGE}" "${PACKAGEVERSION}" \
 	 && requirenonzero packageversion \
 	 && requirenonzero compilercode \
 	 && requirenonzero compilerversion \
+	 && mode="$1" \
+	 && if [ ! -z "$2" ] ; then \
+	      export modulename=$2 ; else export modulename=${package} ; fi \
+	 && requirenonzero modulename \
 	 && if [ ! -z "${MODULEDIRSET}" ] ; then \
 	        export moduledir=${MODULEDIRSET} \
 	    ; else \
 	        if [ -z "${MODULEROOT}" ] ; then
 	          echo "Please set MODULEROOT variable" && exit 1 ; fi \
 	         && modulepath=${MODULEROOT} \
-	         && if [ "${mode}" = "mpi" ] ; then \
-	                requirenonzero mpicode \
-	                 && modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
+	         && if [ "${mode}" = "mpi" -o "${mode}" = "hybrid" ] ; then \
+	              requirenonzero mpicode \
+	               && modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
 	            ; elif [ "${mode}" = "seq" ] ; then \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
+	            ; elif [ "${mode}" = "core" ] ; then \
+	                modulepath=${modulepath}/Core \
 	            ; elif [ ! -z "${mode}" ] ; then \
 	                echo "ERROR: unknown mode: ${mode}" && exit 1 \
 	            ; fi \
@@ -104,55 +101,43 @@ function setmodulenames () {
 	   ; fi \
 }
 
-function setdirlognames() {
-	export scriptdir=`pwd` \
-	 && systemnames && compilernames \
-	 && setnames       "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" \
-	 && setmodulenames "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" \
-	 && requirenonzero taccsystemcode \
-	 && requirenonzero compilercode \
-	 &&  export \
-               installext=${packageversion}-${taccsystemcode}-${compilercode}${compilershortversion} \
-	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
-	       export installext=${installext}-$4 \
-	    ; fi \
-	 && if [ "${mode}" = "mpi" ] ; then \
-	      requirenonzero mpicode \
-	       && export installext=${installext}-${mpicode} \
-	   ; fi \
-	 && if [ ! -z "${variant}" ] ; then \
-	      export installext=${installext}-${variant} ; fi \
-	 && export configurelog=configure-${installext}.log \
-	 && export installlog=install-${installext}.log \
-         && if [ ! -z "${BUILDDIRROOT}" ] ; then \
-              export builddir=${BUILDDIRROOT}/build-${installext} \
-            ; else \
-              export builddir=${homedir}/build-${installext} \
-            ; fi \
-	 && if [ -z "$package" ] ; then \
-	      echo "No package name for dirlog" && exit 1 ; fi \
-	 && if [ ! -z "${INSTALLPATH}" ] ; then \
-	      export installdir=${INSTALLPATH} \
-	    ; else \
-	      if [ -z "${INSTALLROOT}" ] ; then \
-	         export installdir=${homedir}/installation \
-	      ; else \
-	         export installdir=${INSTALLROOT}/installation \
-	      ; fi \
-	      && requirenonzero package \
-	      && if [ ! -z "${modulename}" -a "${modulename}" != "${package}" ] ; then \
-	           export installdir=${installdir}-${modulename} \
-	         ; else \
-	           export installdir=${installdir}-${package} \
-	         ; fi \
-	       && export installdir=${installdir}-${installext} \
-	    ; fi \
-	 && if [ ! -z "${variant}" ] ; then \
-	        export installdir=${installdir}/${variant} \
-	    ; fi \
-	 && if [ ! -z "${INSTALLVARIANT}" ] ; then \
-	        export installdir=${installdir}/${INSTALLVARIANT} \
-	    ; fi
+function setnames () {
+    PACKAGE=${1} && PACKAGEVERSION=${2} && PACKAGEBASENAME=${3} \
+     && DOWNLOADPATH=${4} && SRCPATH=${5} \
+     && INSTALLPATH=${6} && INSTALLROOT=${7} && INSTALLEXT=${8} && INSTALLVARIANT=${9} \
+     && HOMEDIR=${10} && BUILDDIRROOT=${11} && MODE=${12} \
+     && PREFIXOPTION=${13} && PREFIXEXTRA=${14} \
+     && installext=$( make --no-print-directory installext \
+        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+        ) \
+     && requirenonzero installext \
+     && lognames $installext \
+     && requirenonzero configurelog \
+     && requirenonzero installlog \
+     && export srcdir=$( make --no-print-directory srcdir \
+            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+            PACKAGEBASENAME=${PACKAGEBASENAME} \
+            DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+            ) \
+     && reportnonzero srcdir \
+     && export builddir=$( make --no-print-directory builddir \
+            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+            HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
+            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+            ) \
+     && reportnonzero builddir \
+     && export prefixdir=$( make --no-print-directory prefixdir \
+            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+            INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+            ) \
+     && reportnonzero prefixdir \
+     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
+            echo "prefix: attaching PREFIXEXTRA=${PREFIXEXTRA}" \
+             && export prefixdir=${prefixdir}-${PREFIXEXTRA} ; fi
 }
 
 function requirenonzero () {
@@ -165,14 +150,43 @@ function requirenonzero () {
 	    ; fi 
 }
 
+function reportnonzero () {
+	eval r=\${$1} \
+	 && if [ -z "$r" ] ; then \
+	      echo "Internal Error: zero variable <<$1>>" && exit 1 \
+	    ; fi \
+	 && if [ $( echo $1 | grep ":" | wc -l ) -gt 0 ] ; then \
+	      echo "Please no colons in paths / directory names" && exit 1 \
+	    ; fi \
+	 && if [ ! -z "$2" ] ; then \
+	      echo "$2 $1: $r" ; else echo "Using $1=$r" ; fi
+}
+
+function requirenonzeropath () {
+	requirenonzero "$1" \
+	 && eval r=\${$1} \
+	 && if [ ! -d "$r" ] ; then \
+	      echo "Non-existing path: $1=$r" && exit 1 ; fi
+}
+
+function reportnonzeropath () {
+	requirenonzero "$1" \
+	 && eval r=\${$1} \
+	 && if [ -d "$r" ] ; then \
+	      echo "Using $1=$r" \
+	    ; else \
+	      echo "Non-existing path: $1=$r" && exit 1 ; fi
+}
+
 function reportnames () {
 	echo "Installing package=${PACKAGE} version=${packageversion} at $(date)" \
-	 && echo " .. using compiler:" \
-	 && echo "    compiler=${compilercode}/${compilerversion} (short: ${comilershortversion})" \
-	 && echo "    mpi=${mpicode}/${mpiversion}" \
 	 && echo " .. using names:" \
 	 && echo "    srcdir=${srcdir}" \
 	 && echo "    builddir=${builddir}" \
-	 && echo "    installdir=${installdir}" \
+	 && echo "    prefixdir=${prefixdir}" \
 	 && echo "    logfiles: ${configurelog} ${installlog}"
 }
+
+##
+## old stuff
+##

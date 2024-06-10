@@ -12,20 +12,46 @@ moreinfo :: conf_info
 .PHONY: configure config-help
 configure :: modules
 	@source ${MAKEINCLUDES}/names.sh \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && lognames $$installext \
+	 && requirenonzero configurelog \
 	 && if [ ! -z "${PREFIXOPTION}" ] ; then \
 	      export prefixoption=${PREFIXOPTION} \
 	    ; else export prefixoption=--prefix ; fi \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
 	  && ( \
 	    echo "Start autotools-based configuration" \
+	     && export srcdir=$$( make --no-print-directory srcdir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} \
+	            DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	            ) \
+	     && reportnonzero srcdir \
+	     && export builddir=$$( make --no-print-directory builddir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	            HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	            ) \
+	     && reportnonzero builddir \
+	     && export prefixdir=$$( make --no-print-directory prefixdir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	            INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	            ) \
+	     && reportnonzero prefixdir \
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
-	            echo "prefix: attaching PREFIXEXTRA=$F{PREFIXEXTRA}" \
-	             && installdir=$${installdir}-${PREFIXEXTRA} ; fi \
+	            echo "prefix: attaching PREFIXEXTRA=${PREFIXEXTRA}" \
+	             && prefixdir=$${prefixdir}-${PREFIXEXTRA} ; fi \
+	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
-	     && if [ "$${mode}" = "mpi" ] ; then \
+	     && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
 	            setmpicompilers ; else setcompilers ; fi \
-	     && reportnames && reportcompilers \
-	     && export CC=$$cc && export CXX=$$cxx && export FC=$$fc \
+	     && reportcompilers \
 	     && export LIBS=${LIBS} \
 	     \
 	     && requirenonzero srcdir \
@@ -43,12 +69,14 @@ configure :: modules
 	             && ./autogen.sh ; fi \
 	     && if [ ! -f "configure" -o ! -z "${FORCERECONF}" ] ; then \
 	          if [ ! -f configure.ac ] ; then \
-	            echo "ERROR missing configure.ac" \
+	            echo "ERROR missing configure.ac" && exit 1 \
 	          ; else \
-	            echo "First autoreconf" \
-	             && if [ ! -z "${AUTORECONF}" ] ; then \
-	                  eval ${AUTORECONF} \
-	                ; else aclocal && autoconf ; fi \
+	            if [ ! -z "${AUTORECONF}" ] ; then \
+	              cmdline="${AUTORECONF} -i" \
+	            ; else \
+	              cmdline="aclocal \
+&& $$( if [ ! -z ${AUTOCONF} ] ; then echo ${AUTOCONF} ; else echo autoconf ; fi )" \
+	            ; fi && echo "auto conf/reconf: $$cmdline" && eval $$cmdline \
 	          ; fi \
 	        ; fi \
 	     && if [ ! -z "${CFLAGS}" ] ; then \
@@ -66,7 +94,7 @@ configure :: modules
 	             && ( make distclean || echo "no distclean rule" ) ; fi \
 	     && configureline="\
 	            ./configure \
-	                $${prefixoption}=$$installdir --libdir=$${installdir}/lib \
+	                $${prefixoption}=$$prefixdir --libdir=$${prefixdir}/lib \
 	                ${CONFIGUREFLAGS} \
 	            " \
 	     && echo "Configuring as:" && echo $$configureline \
@@ -82,7 +110,12 @@ configure :: modules
 config-help :
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && export srcdir=$$( make --no-print-directory srcdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} \
+	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	        ) \
+	 && reportnonzero srcdir \
 	 && cd $$srcdir \
 	 && ./configure --help \
 	) 

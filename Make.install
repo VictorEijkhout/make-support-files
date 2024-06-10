@@ -14,8 +14,26 @@ info ::
 JCOUNT = 2
 build ::
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && lognames $$installext \
+	 && requirenonzero installlog \
+	 && export srcdir=$$( make --no-print-directory srcdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} \
+	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	        ) \
+	 && export builddir=$$( make --no-print-directory builddir \
+	        ) \
+	 && export prefixdir=$$( make --no-print-directory prefixdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	        INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
 	 && if [ -z "${NOINSTALL}" ] ; then \
 	      ( \
 	      cd $$srcdir \
@@ -30,17 +48,18 @@ build ::
 	          ; else echo "Installing...." ; fi \
 	       && ${SUDO} make --no-print-directory install \
 	            $$( if [ ! -z "${INSTALL_USE_DESTDIR}" ] ; then \
-	                echo DESTDIR=$$installdir ; fi ) \
+	                echo DESTDIR=$$prefixdir ; fi ) \
 	       && if [ ! -z "${CPTOINSTALLDIR}" ] ; then \
 	            echo " .. additional copies: ${CPTOINSTALLDIR}" \
-	             && cp -r ${CPTOINSTALLDIR} $$installdir ; fi \
-	       && if [ -z "${NOMODULE}" ] ; then \
-	            echo " .. generating module file" \
-	             && ( cd $$scriptdir \
-	                    && make FAMILY=${FAMILY} --no-print-directory module ) \
+	             && cp -r ${CPTOINSTALLDIR} $$prefixdir ; fi \
+	          ) 2>&1 | tee $$installlog \
+	       && ( \
+	          if [ -z "${NOMODULE}" ] ; then \
+	            echo ">>>>>>>>>>>>>>>>" && echo "generating module file" \
+	             && make FAMILY=${FAMILY} --no-print-directory module \
 	          ; fi \
-	      ) 2>&1 | tee $$installlog \
-	       && echo && echo "Installation finished in: $$installdir" \
+	          ) 2>&1 | tee -a $$installlog \
+	       && echo && echo "Installation finished in: $$prefixdir" \
 	       && echo "See $$installlog" && echo \
 	    ; fi
 

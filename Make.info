@@ -11,28 +11,24 @@ SHELL = bash
 info :: 
 	@echo && echo "================ General info" 
 	@echo "(make moreinfo for options)" && echo 
-	@echo "make targets for ${PACKAGE}"
+	@echo "make targets for package=${PACKAGE} version=${PACKAGEVERSION}"
 	@if [ -z "${MAKEINCLUDES}" ] ; then \
 	    echo "Set MAKEINCLUDES to location of Make.stuff files" >2 \
 	     && return 1 \
 	 ; fi
 	@if [ ! -z "${URL}" ] ; then echo "  homepage : open URL" ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && export srcdir=$$( make --no-print-directory srcdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} \
+	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	        ) \
 	 && if [ ! -d "$$srcdir" ] ; then \
 	        echo "  source : $$srcdir (missing)" \
 	    ; else \
 	        echo "  source : $$srcdir" \
-	    ; fi \
-	 && sources= \
-	 && for d in $${downloaddir}/$${packagebasename}-* ; do \
-	        if [ -d "$$d" ] ; then sources="$${sources} $${d#*-}" ; fi \
-	    ; done && echo "  available sources:$$sources" \
-	 && if [ ! -z "${PREFIXEXTRA}" ] ; then \
-	        installdir=$${installdir}-${PREFIXEXTRA} ; fi \
-	 && echo "  install: $$installdir" \
-	 && echo "  module dir: $$moduledir" \
-	 && echo "    make list_installations for already present"
+	    ; fi
+
 .PHONY: homepage url
 homepage :
 	@open ${URL}
@@ -42,42 +38,154 @@ url :
 .PHONY: list_installations
 list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && homedir=$$( make --no-print-directory homedir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} HOMEDIR=${HOMEDIR} \
+	        ) \
 	 && echo && echo "Already available installations in $${homedir}:" \
 	 && ls -d $${homedir}/installation* 2>/dev/null || echo >/dev/null \
 	 && make --no-print-directory moduleprint \
 	 && echo
 
-.PHONY: homedir
-moreinfo ::
-	@echo "make homedir : create home dir"
-homedir :
-	@if [ -z "${MAKEINCLUDES}" ] ; then \
-	    echo "Set MAKEINCLUDES to location of Make.stuff files" \
-	     && return 1 \
-	 ; fi
-	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
-	 && requirenonzero homedir \
-	 && if [ ! -d "$$homedir" ] ; then \
-	    echo "First creating home dir for ${PACKAGE}" \
-	     && mkdir -p "$$homedir" \
-	    ; \
-	fi
-.PHONY: installdir
-moreinfo ::
-	@echo "make installdir : name of install dir"
-installdir :
-	@source ${MAKEINCLUDES}/names.sh \
-	 && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
-	 && echo $${installdir}
-
-.PHONY: version packageversion
+.PHONY: package
+package :
+	@if [ -z "${PACKAGE}" ] ; then \
+	      echo "WARNING: variable PACKAGE null" && exit 1 ; fi \
+	 && package=${PACKAGE} \
+	 && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
+	 && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
+	 && echo $${package}
 info :: 
 	@echo "make version packageversion : list current version"
+.PHONY: version packageversion
 version packageversion :
-	@echo ${PACKAGEVERSION}
+	@if [ -z "${PACKAGEVERSION}" ] ; then \
+	      echo "WARNING: variable PACKAGEVERSION null in homedir rule" && exit 1 ; fi \
+	 && packageversion=${PACKAGEVERSION} \
+	 && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
+	 && echo $$packageversion
+moreinfo ::
+	@echo "make homedir, srcdir, builddir, prefixdir : dir names"
+.PHONY: homedir srcdir installext builddir prefixdir
+homedir :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && if [ -z "${TACC_SYSTEM}" ] ; then \
+	      echo "WARNING: variable TACC_SYSTEM not set" ; fi \
+	 && if [ -z "${TACC_FAMILY_COMPILER}" ] ; then \
+	      echo "WARNING: variable TACC_FAMILY_COMPILER not set" ; fi \
+	 && echo "The  -no-print-directory has to be skipped here" >/dev/null \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
+	 && if [ -z "${PACKAGEROOT}" ] ; then \
+	      echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
+	 && if [ -z "${HOMEDIR}" ] ; then \
+	      export homedir=${PACKAGEROOT}/$${package} \
+	    ; else \
+	      export homedir="${HOMEDIR}" \
+	    ; fi \
+	 && if [ ! -d "$${homedir}" ] ; then \
+	      mkdir -p "$${homedir}" \
+	    ; fi \
+	 && echo $${homedir}
+srcdir :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && homedir=$$( make --no-print-directory homedir \
+	        PACKAGE=$${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	      downloaddir="${DOWNLOADPATH}" \
+	    ; else \
+	      downloaddir=$$homedir \
+	    ; fi \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
+	 && if [ ! -z "${SRCPATH}" ] ; then \
+	      srcdir="${SRCPATH}" \
+	    ; else \
+	      srcdir=$${downloaddir}/$${packagebasename}-$${packageversion} \
+	    ; fi \
+	 && echo $$srcdir
+envcode :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && systemnames && compilernames \
+	 && requirenonzero taccsystemcode \
+	 && requirenonzero compilercode \
+	 && echo $${taccsystemcode}-$${compilercode}$${compilershortversion}
+installext :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && systemnames && compilernames \
+	 && envcode=$$( make --no-print-directory envcode ) \
+	 && requirenonzero envcode \
+	 && installext=${PACKAGEVERSION}-$${envcode} \
+	 && if [ ! -z "${INSTALLEXT}" -a ! "${INSTALLEXT}" = "keep" ] ; then \
+	       installext=$${installext}-${INSTALLEXT} \
+	    ; fi \
+	 && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
+	      mpiext=$${mpicode}$${mpiversion} \
+	       && requirenonzero mpiext \
+	       && installext=$${installext}-$${mpiext} \
+	   ; fi \
+	 && if [ ! -z "${INSTALLVARIANT}" ] ; then \
+	      installext=$${installext}-${INSTALLVARIANT} ; fi \
+	 && echo $${installext}
+builddir :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && echo "The  -no-print-directory has to be skipped here" >/dev/null \
+	 && homedir=$$( make --no-print-directory homedir \
+	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+         && if [ ! -z "${BUILDDIRROOT}" ] ; then \
+              builddir=${BUILDDIRROOT}/build-$${installext} \
+            ; else \
+              builddir=$${homedir}/build-$${installext} \
+            ; fi \
+	 && echo $${builddir}
+prefixdir :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && echo 'if [ ! -z "${PREFIXPATH}" ] ; then' >/dev/null \
+	 && echo "The  -no-print-directory has to be skipped here" >/dev/null \
+	 && homedir=$$( make homedir \
+	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
+	 && echo "$$package / $$PACKAGE / $$packageversion" >/dev/null \
+	 && if [ ! -z "${INSTALLPATH}" ] ; then \
+	      prefixdir=${INSTALLPATH} \
+	    ; elif [ ! -z "${NOINSTALL}" ] ; then \
+	      prefixdir=$${builddir} \
+	    ; else \
+	      if [ -z "${INSTALLROOT}" ] ; then \
+	         prefixdir=$${homedir}/installation \
+	      ; else \
+	         prefixdir=${INSTALLROOT}/installation \
+	      ; fi \
+	      && requirenonzero package \
+	      && if [ ! -z "$${modulename}" -a "$${modulename}" != "$${package}" ] ; then \
+	           prefixdir=$${prefixdir}-$${modulename} \
+	         ; else \
+	           prefixdir=$${prefixdir}-$${package} \
+	         ; fi \
+	      && installext=$$( make --no-print-directory installext \
+	            PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	            ) \
+	      && requirenonzero installext \
+	      && prefixdir=$${prefixdir}-$${installext} \
+	    ; fi \
+	 && requirenonzero prefixdir \
+	 && if [ ! -z "${INSTALLVARIANT}" ] ; then \
+	        prefixdir=$${prefixdir}/${INSTALLVARIANT} \
+	    ; fi \
+	 && echo $${prefixdir}
+
 .PHONY: modules moduletest moduleversion moduleprint
 info ::
 	@echo "================ module stuff"
@@ -87,7 +195,8 @@ modules ::
 	    make --no-print-directory moduletest MODULE=$$m \
 	 ; done
 	@for m in ${NONMODULES} ; do \
-	    M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
+	    v=$${m##*/} && m=$${m%%/*} \
+	     && M=`echo $$m | tr a-z A-Z` && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
 	     && vt=`env | grep $${tmd} | cut -d = -f 2` \
 	     && vl=`env | grep $${lmd} | cut -d = -f 2` \
 	     && if [ ! -z "$${vl}" -o ! -z "$${vt}" ] ; then \
@@ -98,7 +207,9 @@ modules ::
 moduletest :
 	@if [ -z "${MODULE}" ] ; then \
 	    echo "Please specify MODULE=..." && exit 1 ; fi 
-	@m=${MODULE} && M=`echo $$m | tr a-z A-Z` \
+	@m=${MODULE} \
+	 && v=$${m##*/} && m=$${m%%/*} \
+	 && M=$$( echo $$m | tr a-z A-Z | tr -d '-' ) \
 	 && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
 	 && vt=`env | grep $${tmd} | cut -d = -f 2` \
 	 && vl=`env | grep $${lmd} | cut -d = -f 2` \
@@ -107,6 +218,10 @@ moduletest :
 	    ; fi \
 	 && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
 	        echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
+	    ; fi \
+	 && eval tmdir=\$${$${tmd}} \
+	 && if [ ! -d "$${tmdir}" ] ; then \
+	        echo "Module <<$$m>> loaded but directory not found: $${tmdir}" && exit 1 \
 	    ; fi
 
 info ::
@@ -150,29 +265,38 @@ info ::
 	@echo "    make less [ LSPATH=.... relative to src ] [ FILE= ..."
 	@echo "    make findfile   FILE=...: find in all src/build/install"
 	@echo "    make findstring STRING=...: search through all src/build/install"
-	@echo "    make installext"
 ls :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && export srcdir=$$( make --no-print-directory srcdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} \
+	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	        ) \
 	 && echo "ls $${srcdir}/${LSPATH} :" \
 	 && ls $${srcdir}/${LSPATH}/${PATTERN}
 less :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && export srcdir=$$( make --no-print-directory srcdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} \
+	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	        ) \
 	 && echo "less $${srcdir}/${LSPATH}/${FILE} :" \
 	 && less $${srcdir}/${LSPATH}/${FILE}
 findfile :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && homedir=$$( make --no-print-directory homedir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} HOMEDIR=${HOMEDIR} \
+	        ) \
 	 && find $$homedir -name \*${FILE}\*
 findstring :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && homedir=$$( make --no-print-directory homedir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} HOMEDIR=${HOMEDIR} \
+	        ) \
 	 && find $$homedir -type f -exec grep -i "${STRING}" {} \; -print
-installext :
-	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
-	 && echo $$installext
 
 ##
 ## zip up logs for github tickets
@@ -182,8 +306,13 @@ info ::
 .PHONY: ziplog
 ziplog :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && lognames $$installext \
 	 && cmdline="zip $${packagebasename}_logs.zip $${configurelog} $${installlog}" \
 	 && echo $$cmdline \
 	 && eval $$cmdline
@@ -198,11 +327,18 @@ info ::
 .PHONY: lognames
 lognames :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && lognames $$installext \
 	 && echo "$${configurelog} $${installlog}"
 
 
 .PHONY: clean
 clean ::
 	@rm -f *.log *~
+
+#	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
+#	        "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \

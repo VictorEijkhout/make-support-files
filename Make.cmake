@@ -14,14 +14,40 @@ moreinfo :: cmake_info
 .PHONY: configure 
 configure : modules
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && lognames $$installext \
+	 && requirenonzero configurelog \
 	 && ( \
-	    echo "Start of CMake configure" \
+	    echo "CMake configure stage" \
+	     && export srcdir=$$( make --no-print-directory srcdir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} \
+	            DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	            ) \
+	     && reportnonzero srcdir \
+	     && export builddir=$$( make --no-print-directory builddir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	            HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	            ) \
+	     && reportnonzero builddir \
+	     && export prefixdir=$$( make --no-print-directory prefixdir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	            INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	            ) \
+	     && reportnonzero prefixdir \
+	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
-	     && if [ "$${mode}" = "mpi" ] ; then \
-	      setmpicompilers ; else setcompilers ; fi \
-	     && reportnames && reportcompilers \
+	     && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
+	          setmpicompilers ; else setcompilers ; fi \
+	     && reportcompilers \
 	     \
 	     && rm -rf $$builddir && mkdir -p $$builddir \
 	     && find $$builddir -name CMakeCache.txt -exec rm {} \; \
@@ -49,18 +75,15 @@ configure : modules
 	     \
 	     && if [ ! -z "${CMAKECOMPILERFLAGS}" ] ; then \
 	            echo "Exporting compiler flags to <<${CMAKECOMPILERFLAGS}>>" \
-	             && export CXXFLAGS="${CMAKECOMPILERFLAGS}" \
-	             && export CFLAGS="${CMAKECOMPILERFLAGS}" \
-	             && export FFLAGS="${CMAKECOMPILERFLAGS}" \
+	             && export CXXFLAGS="$${CXXFLAGS} ${CMAKECOMPILERFLAGS}" \
+	             && export CFLAGS="$${CFLAGS} ${CMAKECOMPILERFLAGS}" \
+	             && export FFLAGS="$${FFLAGS} ${CMAKECOMPILERFLAGS}" \
 	        ; fi \
 	     \
-	     && echo "Cmaking with src=$$srcdir build=$$builddir" \
-	     && cmake --version | head -n 1 \
-	     && reportcompilers && echo \
 	     && if [ -z "${CMAKENAME}" ] ; then \
 	          cmake=cmake ; else cmake=${CMAKENAME} ; fi \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
-	            $${cmake} -D CMAKE_INSTALL_PREFIX=$$installdir \
+	            $${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
 	                -D CMAKE_COLOR_DIAGNOSTICS=OFF \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                -D BUILD_SHARED_LIBS=ON \
@@ -68,7 +91,7 @@ configure : modules
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
 	            ( cd $$builddir \
-	             && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$installdir \
+	             && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
 	                    -D CMAKE_COLOR_DIAGNOSTICS=OFF \
 	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                    -D BUILD_SHARED_LIBS=ON \

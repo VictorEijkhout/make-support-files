@@ -17,7 +17,6 @@ function setcompilers () {
 	       ; else \
 	       export cc=icx && export cxx=icpx && export fc=ifx \
 	       ; fi \
-	       && export ompflag=-qopenmp \
 	; elif [ "${TACC_FAMILY_COMPILER}" = "clang" ] ; then \
 	     if [ "${TACC_SYSTEM}" = "macbookair" ] ; then \
 		 export cc=clang-mp-16 \
@@ -28,14 +27,14 @@ function setcompilers () {
 		     && export cxx=clang++ \
 		     && export fc=gfortran \
 		 ; fi \
-		 && export ompflag=-fopenmp \
 	; elif [ "${TACC_FAMILY_COMPILER}" = "gcc" ] ; then \
              export cc=gcc && export cxx=g++ && export fc=gfortran \
-		 && export ompflag=-fopenmp \
 	; else \
              export cc=mpicc && export cxx=mpicxx && export fc=mpif90 \
-		 && export ompflag=-fopenmp \
         ; fi \
+    && if [ "${TACC_FAMILY_COMPILER}" = "intel" ] ; then \
+	 export ompflag=-qopenmp \
+       ; else export ompflag=-fopenmp ; fi \
     && if [ ! -z "${EXPLICITCOMPILERS}" ] ; then \
          export cc=$( which ${cc} ) \
 	  && export cxx=$( which ${cxx} ) \
@@ -50,18 +49,24 @@ function setmpicompilers () {
      && setcompilers \
      && export cc=mpicc && export cxx=mpicxx && export fc=mpif90 \
      && export CC=$cc && export CXX=$cxx && export FC=$fc \
-
+     && if [ "${MODE}" = "hybrid" ] ; then
+	  export CFLAGS="${ompflag}" && export CXXFLAGS="${ompflag}" \
+	   && export FFLAGS="${ompflag}" \
+	; fi
 }
 
 function reportcompilers () {
-    echo "Using compilers:" \
+    echo "Using compilers for mode ${MODE}:" \
      && echo " .. CC=${CC}" \
      && echo "    where ${CC}=$( which ${CC} )" \
-     && echo " .. CXX=${CXXf}" \
+     && echo "    and CFLAGS=${CFLAGS}" \
+     && echo " .. CXX=${CXX}" \
      && echo "    where ${CXX}=$( which ${CXX} )" \
+     && echo "    and CXXFLAGS=${CXXFLAGS}" \
      && echo " .. FC=${FC}" \
      && echo "    where ${FC}=$( which ${FC} )" \
-     && if [ "${MODE}" = "mpi" ] ; then \
+     && echo "    and FFLAGS=${FFLAGS}" \
+     && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
 	    echo "  where:" \
 	     && testcompiler=$( mpicc -show ) \
 	     && echo "    mpicc=$( which mpicc )" \

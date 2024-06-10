@@ -15,11 +15,41 @@ JCOUNT = 2
 build ::
 	@echo && echo "CMake build started: $$( date )" && echo 
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export MODE=${MODE} && export INSTALLROOT=${INSTALLROOT} \
-	 && setdirlognames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && lognames $$installext \
+	 && requirenonzero installlog \
+	 && export srcdir=$$( make --no-print-directory srcdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} \
+	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	        ) \
+	 && export builddir=$$( make --no-print-directory builddir \
+	        ) \
+	 && export prefixdir=$$( make --no-print-directory prefixdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	        INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
 	 && ( \
-	    cd $$builddir \
+	    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start build" \
+	     && reportnonzero builddir \
+	     && reportnonzero prefixdir \
+	     \
+	     && cd $$builddir \
 	     && echo "Building in $${builddir} with ${JCOUNT} threads" \
+	     && if [ ! -z "${CPTOSOURCE}" ] ; then \
+	            sourcetgt=${CPTOSOURCE} && sourcetgt=$${sourcetgt%%,*} \
+	             && sourcesrc=${CPTOSOURCE} && sourcesrc=$${sourcesrc##*,} \
+	             && cmdline="cp $$sourcesrc $${srcdir}/$${sourcetgt}" \
+	             && if [ "${ECHO}" = "1" ] ; then \
+	                  echo "Copying to source: <<$$cmdline>>" ; fi \
+	             && eval $$cmdline \
+	        ; fi \
 	     && retcode=0 \
 	     && make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} \
 	        || retcode=$$? \
@@ -29,22 +59,24 @@ build ::
 	     && if [ ! -z "${EXTRABUILDTARGETS}" ] ; then \
 	          make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
 	        ; fi \
-	     && echo "Installing in $${installdir}" \
+	     && echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< VLE done build" \
+	     && echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start install" \
+	     && echo "Installing in $${prefixdir}" \
 	     && if [ -z "${NOINSTALL}" ] ; then \
 	            ${SUDO} make --no-print-directory install \
 	        ; fi \
 	     && if [ ! -z "${CPTOINSTALLDIR}" ] ; then \
 	            echo " .. additional copies: ${CPTOINSTALLDIR}" \
-	             && ( cd $$srcdir && cp -r ${CPTOINSTALLDIR} $$installdir ) ; fi \
-	     && if [ -z "${NOMODULE}" ] ; then \
-	            echo "generating module file" \
-	             && ( cd $$scriptdir \
-	                    && make FAMILY=${FAMILY} --no-print-directory module \
-	                ) \
-	        ; fi \
+	             && ( cd $$srcdir && cp -r ${CPTOINSTALLDIR} $$prefixdir ) ; fi \
+	     && echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< VLE doneinstall" \
 	    ) 2>&1 | tee $$installlog \
-	 && echo && echo "CMake installation finished at $$( date ) " \
-	 && echo " .. in: $$installdir" && echo
+	 && ( if [ -z "${NOMODULE}" ] ; then \
+	        echo ">>>>>>>>>>>>>>>> VLE generating module file" \
+	         && make FAMILY=${FAMILY} --no-print-directory module \
+	       ; fi \
+	       && echo && echo "CMake installation finished at $$( date ) " \
+	       && echo " .. in: $$prefixdir" && echo \
+	) 2>&1 | tee -a $$installlog \
 
 include ${MAKEINCLUDES}/Make.vars
 include ${MAKEINCLUDES}/Make.public
