@@ -338,7 +338,7 @@ Setting `CMAKEPREFIXPATHSET` to non-null causes the install prefix to be added t
 
 Set the variable `HASBIN` to anything nonero to include a bin directory.  Otherwise the installation will assume that only `DIR/LIB/INC` apply.
 
-Conversely `NOLIB` (for instance for C++ header-only libraries) prevents a `TACC_PACKAGE_LIB` variable being generated.
+	Conversely `NOLIB` (for instance for C++ header-only libraries) prevents a `TACC_PACKAGE_LIB` variable being generated. Likewise, `NOINC` prevents `TACC_PACKAGE_INC` from being generated. 
 
 If the include directory is not immediately under the install directory, specify the relative path, including the `include` part:
 
