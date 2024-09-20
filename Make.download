@@ -86,7 +86,7 @@ unpack untar ::
 	    ; else \
 	        echo " .. un-targz'ing $$tgz" \
 	         && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
-	         && unpackdir=$${unpackdir%/*} \
+	         && unpackdir=$${unpackdir%%/*} \
 	         && unpackdir=$${unpackdir#./} \
 	         && echo " .. tar file <<$$tgz>> contains: $$unpackdir; unpacking" \
 	         && rm -rf $$unpackdir \
