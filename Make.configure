@@ -2,7 +2,7 @@
 .PHONY: conf_info
 conf_info :
 	@echo "================ autotools configure:"
-	@echo "make configure config-help"
+	@echo "make configure config-help config-log"
 info :: conf_info
 moreinfo :: conf_info
 	@echo "    [ CONFIGUREFLAGS=... ]"
@@ -92,6 +92,9 @@ configure :: modules
 	     && if [ -f Makefile ] ; then \
 	            echo " .. distcleaning" \
 	             && ( make distclean || echo "no distclean rule" ) ; fi \
+	     && for e in ${CONFIGUREENV} ; do \
+	          echo "set environment: $$e" && eval "export $$e" \
+	        ; done \
 	     && configureline="\
 	            ./configure \
 	                $${prefixoption}=$$prefixdir --libdir=$${prefixdir}/lib \
@@ -120,3 +123,16 @@ config-help :
 	 && ./configure --help \
 	) 
 
+config-log :: modules
+	@source ${MAKEINCLUDES}/names.sh \
+	 && installext=$$( make --no-print-directory installext \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	        ) \
+	 && requirenonzero installext \
+	 && export srcdir=$$( make --no-print-directory srcdir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} \
+	            DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
+	            ) \
+	 && echo $${srcdir}/config.log
