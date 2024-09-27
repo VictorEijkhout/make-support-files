@@ -47,7 +47,17 @@ function setcompilers () {
 function setmpicompilers () {
     echo "Setting MPI compilers for ${TACC_FAMILY_COMPILER}" >/dev/null \
      && setcompilers \
-     && export cc=mpicc && export cxx=mpicxx && export fc=mpif90 \
+     && if [ ! -z "${TACC_MPICC}" ]; then \
+          export cc="${TACC_MPICC}" \
+	; else \
+	  export cc=mpicc \
+	; fi \
+     && if [ ! -z "${TACC_MPIFC}" ]; then \
+          export fc="${TACC_MPIFC}" \
+	; else \
+	  export fC=mpif90 \
+	; fi \
+     && export cxx=mpicxx \
      && export CC=$cc && export CXX=$cxx && export FC=$fc \
      && if [ "${MODE}" = "hybrid" ] ; then
 	  export CFLAGS="${ompflag}" && export CXXFLAGS="${ompflag}" \
