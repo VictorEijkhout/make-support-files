@@ -36,7 +36,8 @@ build ::
 	        ) \
 	 && if [ -z "${NOINSTALL}" ] ; then \
 	      ( \
-	      cd $$srcdir \
+	      echo ">>>>>>>>>>>>>>>> Package <<${PACKAGE}>> start autotools build" \
+	       && cd $$srcdir \
 	       && if [ ! -z "${MAKESUBDIR}" ] ; then \
 	            cd ${MAKESUBDIR} ; fi \
 	       && echo " .. building in $$(pwd) with ${JCOUNT} threads" \

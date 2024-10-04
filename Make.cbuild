@@ -13,7 +13,7 @@ info ::
 .PHONY: build install
 JCOUNT = 2
 build ::
-	@echo && echo "CMake build started: $$( date )" && echo 
+	@echo && echo "CMake build of <<${PACKAGE}>> started: $$( date )" && echo 
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export scriptdir=$$(pwd) \
 	 && installext=$$( make --no-print-directory installext \
@@ -37,7 +37,7 @@ build ::
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
 	        ) \
 	 && ( \
-	    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start build" \
+	    echo ">>>>>>>>>>>>>>>> Package <<${PACKAGE}>> start cmake build" \
 	     && reportnonzero builddir \
 	     && reportnonzero prefixdir \
 	     \
