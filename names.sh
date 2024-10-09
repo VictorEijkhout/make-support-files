@@ -26,12 +26,13 @@ function compilernames () {
 	; else \
 	    export compilercode=compiler && export compilerversion=cversion \
 	; fi 
-	export compilershortversion=${compilerversion%%.*}
+	export compilershortversion=$( echo ${compilerversion} | cut -d "." -f 1,2 )
 	if [ ! -z "${TACC_FAMILY_MPI}" ] ; then \
 	    export mpicode="${TACC_FAMILY_MPI}" \
 	     && export mpiversion="${TACC_FAMILY_MPI_VERSION}" \
 	; fi 
 }
+#${compilerversion%%.*}
 
 # $1 = package, $2 = packageversion, $3 = packagebasename 
 function packagenames () {
