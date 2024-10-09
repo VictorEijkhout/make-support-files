@@ -260,7 +260,7 @@ moduleprint ::
 	         ; done \
 	 ; fi
 
-.PHONY: ls less findfile findstring installext
+.PHONY: ls less findfile findstring sourcestring installext
 info ::
 	@echo "================ utility stuff"
 	@echo "    make ls [ LSPATH=.... relative to src ] [ PATTERN=... ( ls in src dir ) ]"
@@ -299,7 +299,13 @@ findstring :
 	        PACKAGEBASENAME=${PACKAGEBASENAME} HOMEDIR=${HOMEDIR} \
 	        ) \
 	 && find $$homedir -type f -exec grep -i "${STRING}" {} \; -print
-
+sourcestring :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && srcdir=$$( make --no-print-directory srcdir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && find $${srcdir} -type f -exec grep -i "${STRING}" {} \; -print
 ##
 ## zip up logs for github tickets
 ##
