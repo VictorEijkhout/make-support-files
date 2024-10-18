@@ -13,7 +13,7 @@ info ::
 .PHONY: build install
 JCOUNT = 2
 build ::
-	@echo && echo "CMake build started: $$( date )" && echo 
+	@echo && echo "CMake build of <<${PACKAGE}>> started: $$( date )" && echo 
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export scriptdir=$$(pwd) \
 	 && installext=$$( make --no-print-directory installext \
@@ -37,7 +37,7 @@ build ::
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
 	        ) \
 	 && ( \
-	    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start build" \
+	    echo ">>>>>>>>>>>>>>>> Package <<${PACKAGE}>> start cmake build" \
 	     && reportnonzero builddir \
 	     && reportnonzero prefixdir \
 	     \
@@ -60,7 +60,7 @@ build ::
 	     && if [ ! -z "${EXTRABUILDTARGETS}" ] ; then \
 	          make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${EXTRABUILDTARGETS} \
 	        ; fi \
-	     && echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< VLE done build" \
+	     && echo "................................ VLE done build" \
 	     && echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start install" \
 	     && echo "Installing in $${prefixdir}" \
 	     && if [ -z "${NOINSTALL}" ] ; then \
@@ -69,12 +69,19 @@ build ::
 	     && if [ ! -z "${POSTINSTALLinLIB}" ] ; then  \
 	          libdir=$$( make --no-print-directory -f $${scriptdir}/Makefile \
 	                    findlibdir PREFIXDIR=$${prefixdir} ) \
-	           && ( cd $${libdir} && eval ${SUDO} ${POSTINSTALLinLIB} ) \
+	           && ( cd $${prefixdir}/$${libdir} && eval ${SUDO} ${POSTINSTALLinLIB} ) \
+	        ; fi \
+	     && if [ ! -z "${LINKLIB64toLIB}" ] ; then \
+	          libdir=$$( make --no-print-directory -f $${scriptdir}/Makefile \
+	                    findlibdir PREFIXDIR=$${prefixdir} ) \
+	           && if [ "$${libdir}" = "lib64" ] ; then \
+	                ( cd $$prefixdir && ${SUDO} ln -s lib64 lib ) \
+	              ; fi \
 	        ; fi \
 	     && if [ ! -z "${CPTOINSTALLDIR}" ] ; then \
 	            echo " .. additional copies: ${CPTOINSTALLDIR}" \
 	             && ( cd $$srcdir && cp -r ${CPTOINSTALLDIR} $$prefixdir ) ; fi \
-	     && echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< VLE doneinstall" \
+	     && echo "................................ VLE done install" \
 	    ) 2>&1 | tee $$installlog \
 	 && ( if [ -z "${NOMODULE}" ] ; then \
 	        echo ">>>>>>>>>>>>>>>> VLE generating module file" \
@@ -85,13 +92,17 @@ build ::
 	) 2>&1 | tee -a $$installlog \
 
 .PHONY: findlibdir
+#
+# return lib or lib64 depending on what's there
+#
 findlibdir :
 	@if [ -z "${PREFIXDIR}" ] ; then \
 	    echo "Needs non-null PREFIXDIR variable" ; fi \
 	 && if [ -d "${PREFIXDIR}/lib64" ] ; then \
-	      echo "${PREFIXDIR}/lib64" \
-	    ; else \
-	      echo "${PREFIXDIR}/lib" \
+	      echo "lib64" \
+	    ; elif [ -d "${PREFIXDIR}/lib" ] ; then \
+	      echo "lib" \
+	    ; else echo "ERROR can not find lib or lib64" \
 	    ; fi
 
 include ${MAKEINCLUDES}/Make.vars

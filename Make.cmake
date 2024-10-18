@@ -81,7 +81,11 @@ configure : modules
 	        ; fi \
 	     \
 	     && if [ -z "${CMAKENAME}" ] ; then \
-	          cmake=cmake ; else cmake=${CMAKENAME} ; fi \
+	          cmake=cmake \
+	           && echo "Using cmake=$$( which cmake )" \
+	        ; else cmake=${CMAKENAME} \
+	           && echo "Using cmake=$$(cmake)" \
+	        ; fi \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            $${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
 	                -D CMAKE_COLOR_DIAGNOSTICS=OFF \

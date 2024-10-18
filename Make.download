@@ -86,7 +86,7 @@ unpack untar ::
 	    ; else \
 	        echo " .. un-targz'ing $$tgz" \
 	         && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
-	         && unpackdir=$${unpackdir%/*} \
+	         && unpackdir=$${unpackdir%%/*} \
 	         && unpackdir=$${unpackdir#./} \
 	         && echo " .. tar file <<$$tgz>> contains: $$unpackdir; unpacking" \
 	         && rm -rf $$unpackdir \
@@ -106,7 +106,6 @@ unpack untar ::
 	         && ( cd $${srcdir} && eval ${BOOTSTRAP} ) \
 	    ; fi \
 	 && echo "unpacked: $${srcdir}" \
-	 && ls \
 	) 2>&1 | tee untar.log
 
 retar :
@@ -121,10 +120,16 @@ retar :
 	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
-	 && if [ ! -z "${ZIPURL}" ] ; then tgz=${ZIPURL} ; else tgz=${TGZURL} ; fi \
+	 && if [ ! -z "${ZIPURL}" ] ; then \
+	      tgz=${ZIPURL} \
+	    ; elif [ ! -z "${TXZURL}" ] ; then \
+	      tgz=${TXZURL} \
+	    ; else \
+	      tgz=${TGZURL} \
+	    ; fi \
 	 && tgz=$${tgz##*/} \
 	 && export srcdir=$${packagebasename}-$${packageversion} \
-	 && if [ $$tgz != $$srcdir ] ; then \
+	 && if [ "$$tgz" != "$$srcdir" ] ; then \
 	      tgzname=$${srcdir}.tgz \
 	       && echo "repacking $$srcdir to: $$tgzname" \
 	       && tar fcz $${tgzname} $$srcdir \
