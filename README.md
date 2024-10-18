@@ -250,6 +250,16 @@ CPTOINSTALLDIR = path1 path2
 ```
 where the paths are relative to the source directory.
 
+Sometimes CMake generates a `lib64` dir, but other packages rely on an 
+older installation into `lib`. Set
+
+```
+LINKLIB64toLIB = 1
+```
+to let `lib` be a symlink to `lib64`. 
+If no `lib64` exists, this is a no-op, but I hesitate to make
+it a default.
+
 ### Configure customization
 
 The scripts try to detect the need for `autoconf` and `autogen`, but you can force preliminary actions in the source directory by setting
