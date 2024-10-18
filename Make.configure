@@ -64,6 +64,11 @@ configure :: modules
 	          echo " .. configure in subdir: ${CONFIGURESUBDIR}" \
 	           && cd "${CONFIGURESUBDIR}" ; fi \
 	     && echo " .. configuring in $$(pwd)" \
+	     && if [ ! -z "${DEFUNPROGFC}" ] ; then \
+	          echo " .. patch configure.ac" \
+	           && sed -i configure.ac \
+	                -e '/AC_INIT/aAC_DEFUN([_AC_PROG_FC_V],[])' \
+	        ; fi \
 	     && if [ ! -f "configure" -a -f autogen.sh ] ; then \
 	            echo "First autogen" \
 	             && ./autogen.sh ; fi \
@@ -71,12 +76,15 @@ configure :: modules
 	          if [ ! -f configure.ac ] ; then \
 	            echo "ERROR missing configure.ac" && exit 1 \
 	          ; else \
-	            if [ ! -z "${AUTORECONF}" ] ; then \
-	              cmdline="${AUTORECONF} -i" \
-	            ; else \
-	              cmdline="aclocal \
-&& $$( if [ ! -z ${AUTOCONF} ] ; then echo ${AUTOCONF} ; else echo autoconf ; fi )" \
-	            ; fi && echo "auto conf/reconf: $$cmdline" && eval $$cmdline \
+	            echo " .. auto reconf" \
+	             && if [ ! -z "${AUTORECONF}" ] ; then \
+	                  cmdline="${AUTORECONF} -i" \
+	                ; else \
+	                  cmdline="aclocal \
+	                   && $$( if [ ! -z ${AUTOCONF} ] ; then echo ${AUTOCONF} ; else echo autoconf ; fi )" \
+	                ; fi \
+	             && echo " .. auto conf/reconf: $$cmdline" \
+	             && eval $$cmdline \
 	          ; fi \
 	        ; fi \
 	     && if [ ! -z "${CFLAGS}" ] ; then \
