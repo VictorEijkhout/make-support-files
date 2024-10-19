@@ -91,6 +91,7 @@ configure : modules
 	                -D CMAKE_COLOR_DIAGNOSTICS=OFF \
 	                -D CMAKE_VERBOSE_MAKEFILE=ON \
 	                -D BUILD_SHARED_LIBS=ON \
+	                -D CMAKE_BUILD_TYPE=RelWithDebInfo \
 	                ${CMAKEFLAGS} $${CMAKEFLAGSPLATFORM} $$cppstandard \
 	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
 	        ; else \
