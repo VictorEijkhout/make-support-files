@@ -1,5 +1,6 @@
-- [Make support files](#Make support files)
-- [Module file](#Module file)
+- [Make support files](#Makesupportfiles)
+- [Configure and install](#Configureinstall)
+- [Module file](#Modulefile)
 - [Customizations](#Customizations)
 
 # Make support files
@@ -179,7 +180,7 @@ untar ::
          && wget http://tau.uoregon.edu/ext.tgz && tar fxz ext.tgz
 ```
 
-## Configure and install
+# Configure and install
 
 There is support for autotools and CMake based packages.
 For both types of packages, the configure/install proceeds by
@@ -201,7 +202,7 @@ You can set a totally explicit installpath with `INSTALLPATH=...` or replace the
 
 The installation stage also generates a modulefile; see below.
 
-### The build/install process
+## The build/install process
 
 For autotools installations, add these lines to your makefile:
 
@@ -224,7 +225,7 @@ The  `make` is parallel: specify
 ```JCOUNT=24```
 in your makefile (or better: on your make commandline) to use 24 threads, et cetera.
 
-### Customization
+## Customization
 
 If the package does not generate a `lib` (or `lib64`) directory, set the variable `NOLIB` to anything nonzero.
 
@@ -260,7 +261,7 @@ to let `lib` be a symlink to `lib64`.
 If no `lib64` exists, this is a no-op, but I hesitate to make
 it a default.
 
-### Configure customization
+## Configure customization
 
 The scripts try to detect the need for `autoconf` and `autogen`, but you can force preliminary actions in the source directory by setting
 
@@ -269,7 +270,7 @@ BEFORECONFIGURECMDS = autoreconf -i
 ```
 et cetera.
 
-### Permissions
+## Permissions
 
 The installation pass by default opens the install directory to the world.
 If you write your own installation, do
@@ -307,7 +308,9 @@ Two customizations:
  * Setting `MODULENAME` uses that instead of the package name (see for instance `phdf5` for the `hdf5` package);
  * Setting `MODULEVERSIONEXTRA` appends that to the package version with a dash; see the multiple petsc variants.
 
-The `DIR,INC,LIB` variables are generated both with `TACC_`  and `LMOD_` prefix.
+The `DIR,INC,LIB` variables are generated both with `TACC_`  and `LMOD_` prefix. Set `NOINC` or `NOLIB` to nonzero if the corresponding directory is missing; set `HASBIN` to nonzero if there is a `bin` directory.
+
+If the makefile has a `URL` defined, this is listed as "Software" in the modulefile; if `DOCURL` is defined, this listed as "Documentation".
 
 Setting `MODULEDIRSET` completely overrides this mechanism: this is the fully explicit location for the `.lua` file.
 
@@ -428,6 +431,11 @@ CMAKECOMPILERFLAGS=-Wno-whatever
 to add identical flags to all three compilers.
 
 Set `CPPSTANDARD=20` (et cetera) to dictate a specific C++ standard to CMake.
+
+Set `BUILDSTATICLIBS` to nonzero in order to build static libraries,
+rather than shared, which is the default.
+
+Set `CMAKEBUILDDEBUG` to nonzero to get a `Debug` build; otherwise `RelWithDebInfo` is the default.
 
 Set `CMAKEPREFIXLIB` to define the path to `.cmake` files, relative to the lib directory.
 
