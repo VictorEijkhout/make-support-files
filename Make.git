@@ -140,7 +140,13 @@ info ::
 betar :
 	@\
 	source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	    && setnames \
+	   "${PACKAGE}"  "${PACKAGEVERSION}"  "${PACKAGEBASENAME}" \
+	   "${DOWNLOADPATH}" "${SRCPATH}" \
+	   "${INSTALLPATH}"  "${INSTALLROOT}"  "${INSTALLEXT}"  "${INSTALLVARIANT}" \
+	   "${HOMEDIR}"  "${BUILDDIRROOT}"  "${MODE}" \
+	   "${PREFIXOPTION}"  "${PREFIXEXTRA}" \
+	 && requirenonzeropath downloaddir \
 	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -d "$${downloaddir}" ] ; then \
 	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \
