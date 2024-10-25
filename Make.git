@@ -59,12 +59,18 @@ newclone ::
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
-	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "" "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
+	 && homedir=$$( make --no-print-directory homedir \
+	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && reportnonzero homedir "Making new clone in" \
+	 && if [ ! -d "$${homedir}" ] ; then \
+	        echo "Invalid home dir: $$homedir" && exit 1 ; fi \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
 	 \
-	 && if [ ! -d "$${downloaddir}" ] ; then \
-	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \
-	 \
-	 && rm -rf $${downloaddir}/$${package}-git \
+	 && echo " .. rm previous $${homedir}/$${package}-git" \
+	 && rm -rf $${homedir}/$${package}-git \
 	 && echo "recloning...." \
 	 && make --no-print-directory clone \
 	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
