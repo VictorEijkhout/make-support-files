@@ -231,6 +231,8 @@ If the package does not generate a `lib` (or `lib64`) directory, set the variabl
 
 If the package generates a `bin` directory, set `HASBIN` to something non-null. If the bin directory is other than `TACC_PACKAGE_DIR/bin`, set `BINDIR` to the location relative to `TACC_PACKAGE_DIR`.
 
+By default, shared libraries are built. Set `BUILDSTATICLIBS` to nonnull to get static.
+
 If the `configure` program or the `CMakeLists.txt` is hidden in a subdirectory, for instance `src`, set
 
 ```
