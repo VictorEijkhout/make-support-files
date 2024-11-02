@@ -75,7 +75,7 @@ build ::
 	          libdir=$$( make --no-print-directory -f $${scriptdir}/Makefile \
 	                    findlibdir PREFIXDIR=$${prefixdir} ) \
 	           && if [ "$${libdir}" = "lib64" ] ; then \
-	                ( cd $$prefixdir && ${SUDO} ln -s lib64 lib ) \
+	                ( cd $$prefixdir && ${SUDO} rm -rf lib && ${SUDO} ln -s lib64 lib ) \
 	              ; fi \
 	        ; fi \
 	     && if [ ! -z "${CPTOINSTALLDIR}" ] ; then \
