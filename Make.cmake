@@ -71,7 +71,13 @@ configure : modules
 	     && if [ $$( uname ) = Darwin ] ; then \
 	          CMAKEFLAGSPLATFORM="-D CMAKE_LINKER_FLAGS=-ld_classic" ; fi \
 	     \
-	     && if [ ! -z "${CMAKEPREP}" ] ; then eval ${CMAKEPREP} ; fi \
+	     && if [ ! -z "${CMAKEPREP}" ] ; then \
+	          echo "Prep command: ${CMAKEPREP}" \
+	           && ( cd $${srcdir} \
+	                 && echo "${CMAKEPREP}" > VLE_prep.sh \
+	                 && source VLE_prep.sh \
+	              ) \
+	        ; fi \
 	     \
 	     && if [ ! -z "${CMAKECOMPILERFLAGS}" ] ; then \
 	            echo "Exporting compiler flags to <<${CMAKECOMPILERFLAGS}>>" \
@@ -86,26 +92,19 @@ configure : modules
 	        ; else cmake=${CMAKENAME} \
 	           && echo "Using cmake=$$(cmake)" \
 	        ; fi \
+	     && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
+	            -D CMAKE_COLOR_DIAGNOSTICS=OFF \
+	            -D CMAKE_VERBOSE_MAKEFILE=ON \
+	            -D BUILD_SHARED_LIBS=$$( if [ -z "${BUILDSTATICLIBS}" ] ; then echo ON; else echo OFF ; fi ) \
+	            -D CMAKE_BUILD_TYPE=$$( if [ ! -z "${CMAKEBUILDDEBUG}" ] ; then echo Debug ; else echo RelWithDebInfo ; fi ) \
+	            ${CMAKEFLAGS} $${CMAKEFLAGSPLATFORM} $$cppstandard" \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
-	            $${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
-	                -D CMAKE_COLOR_DIAGNOSTICS=OFF \
-	                -D CMAKE_VERBOSE_MAKEFILE=ON \
-	                -D BUILD_SHARED_LIBS=ON \
-	                -D CMAKE_BUILD_TYPE=RelWithDebInfo \
-	                ${CMAKEFLAGS} $${CMAKEFLAGSPLATFORM} $$cppstandard \
-	                -S $$srcdir/${CMAKESOURCE} -B $$builddir \
+	            cmdline="$${cmdline} -S $${srcdir}/${CMAKESOURCE} -B $$builddir" \
 	        ; else \
-	            ( cd $$builddir \
-	             && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
-	                    -D CMAKE_COLOR_DIAGNOSTICS=OFF \
-	                    -D CMAKE_VERBOSE_MAKEFILE=ON \
-	                    -D BUILD_SHARED_LIBS=ON \
-	                    ${CMAKEFLAGS} $${CMAKEFLAGSPLATFORM} $$cppstandard \
-	                    $${srcdir}/${CMAKESUBDIR}" \
-	             && echo "cmdline=$$cmdline" \
-	             && eval $$cmdline \
-	            ) \
+	            cmdline="$${cmdline} $${srcdir}/${CMAKESUBDIR}" \
 	        ; fi \
+	     && echo "cmdline=$$cmdline" \
+	     && ( cd $$builddir && eval $$cmdline ) \
 	    ) 2>&1 | tee $$configurelog
 	@echo && echo "CMake configuration ended: $$( date )" && echo 
 
