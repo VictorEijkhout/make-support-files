@@ -15,7 +15,6 @@ JCOUNT = 2
 build ::
 	@echo && echo "CMake build of <<${PACKAGE}>> started: $$( date )" && echo 
 	@source ${MAKEINCLUDES}/names.sh \
-	 && export scriptdir=$$(pwd) \
 	 && installext=$$( make --no-print-directory installext \
 	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
@@ -52,8 +51,9 @@ build ::
 	             && eval $$cmdline \
 	        ; fi \
 	     && retcode=0 \
-	     && make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} \
-	        || retcode=$$? \
+	     && cmdline="make --no-print-directory V=1 VERBOSE=1 -j ${JCOUNT} ${MAKEBUILDTARGET}" \
+	     && echo "make cmdline: $$cmdline" \
+	     && eval $$cmdline || retcode=$$? \
 	     && if [ $${retcode} -ne 0 ] ; then \
 	          echo "ERROR make in $${builddir} failed with code $${retcode}" && exit 1 \
 	        ; fi \
