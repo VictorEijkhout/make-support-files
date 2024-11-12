@@ -15,6 +15,7 @@ JCOUNT = 2
 build ::
 	@echo && echo "CMake build of <<${PACKAGE}>> started: $$( date )" && echo 
 	@source ${MAKEINCLUDES}/names.sh \
+	 && export scriptdir=$$( pwd ) \
 	 && installext=$$( make --no-print-directory installext \
 	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
@@ -67,12 +68,16 @@ build ::
 	            ${SUDO} make --no-print-directory install \
 	        ; fi \
 	     && if [ ! -z "${POSTINSTALLinLIB}" ] ; then  \
-	          libdir=$$( make --no-print-directory -f $${scriptdir}/Makefile \
+	          echo " .. Post install: <<${POSTINSTALLinLIB}>>" \
+	           && requirenonzero scriptdir \
+	           && libdir=$$( make --no-print-directory -f $${scriptdir}/Makefile \
 	                    findlibdir PREFIXDIR=$${prefixdir} ) \
 	           && ( cd $${prefixdir}/$${libdir} && eval ${SUDO} ${POSTINSTALLinLIB} ) \
 	        ; fi \
 	     && if [ ! -z "${LINKLIB64toLIB}" ] ; then \
-	          libdir=$$( make --no-print-directory -f $${scriptdir}/Makefile \
+	          echo " .. link lib64 to lib" \
+	           &&requirenonzero scriptdir \
+	           && libdir=$$( make --no-print-directory -f $${scriptdir}/Makefile \
 	                    findlibdir PREFIXDIR=$${prefixdir} ) \
 	           && if [ "$${libdir}" = "lib64" ] ; then \
 	                ( cd $$prefixdir && ${SUDO} rm -rf lib && ${SUDO} ln -s lib64 lib ) \
