@@ -81,7 +81,7 @@ function modulenames () {
 	         && if [ "${mode}" = "mpi" -o "${mode}" = "hybrid" ] ; then \
 	              requirenonzero mpicode \
 	               && modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
-	            ; elif [ "${mode}" = "seq" -l "${mode}" = "omp" ] ; then \
+	            ; elif [ "${mode}" = "seq" -o "${mode}" = "omp" ] ; then \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
 	            ; elif [ "${mode}" = "core" ] ; then \
 	                modulepath=${modulepath}/Core \
