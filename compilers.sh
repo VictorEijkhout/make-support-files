@@ -74,7 +74,9 @@ function reportcompilers () {
      && echo "    where ${CXX}=$( which ${CXX} )" \
      && echo "    and CXXFLAGS=${CXXFLAGS}" \
      && echo " .. FC=${FC}" \
-     && echo "    where ${FC}=$( which ${FC} )" \
+     && if [ ! -z "${FC}" ] ; then \
+	 echo "    where ${FC}=$( which ${FC} )" \
+	 ; fi \
      && echo "    and FFLAGS=${FFLAGS}" \
      && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
 	    echo "  where:" \
