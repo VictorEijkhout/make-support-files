@@ -3,7 +3,7 @@
 .PHONY: git_info
 git_info :: 
 	@echo "================ Repository rules"
-	@echo "make clone GITREPO=.... "
+	@echo "make clone GITREPO=.... GITDATE=<null>/today/20240101 (or whatever)"
 	@echo "make gitrepo ( list repo URL)"
 info :: git_info
 moreinfo :: git_info
@@ -21,22 +21,31 @@ moreinfo :: git_info
 .PHONY: clone oneclone gitrepo
 gitrepo :
 	@echo "${GITREPO}"
-clone oneclone ::
+clone newclone oneclone ::
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
 	 && homedir=$$( make --no-print-directory homedir \
 	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
-	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=git \
 	        HOMEDIR=${HOMEDIR} \
 	        ) \
-	 && reportnonzero homedir "Start downloading in" \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
-	 && echo "Establishing package=${PACKAGE}, version=${PACKAGEVERSION} into $${package}" \
+	 && reportnonzero homedir && echo "Making clone in" \
+	 && packagenames "${PACKAGE}" "git" "${PACKAGEBASENAME}" \
+	 && echo " .. rm previous $${homedir}/$${package}-git if present" \
+	 && rm -rf $${homedir}/$${package}-git \
+	 && echo "Establishing package=${PACKAGE}, version=git into $${package}" \
 	 \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
-	 && clonedir=$${package}-${PACKAGEVERSION} \
+	 && clonedir=$${package}-git \
+	 && if [ -z "${GITDATE}" ] ; then \
+	      clonedir=$${clonedir} \
+	    ; elif [ "${GITDATE}" = "today" ] ; then \
+	      clonedir=$${clonedir}$$( date +%Y%m%d ) \
+	    ; else \
+	      clonedir=$${clonedir}${GITDATE} \
+	    ; fi \
 	 && echo " .. cloning in $$( pwd ) into $${clonedir}" \
 	 && if [ ! -d $${package} ] ; then \
 	      git clone ${CLONEARGS} ${GITREPO} $${clonedir} ; fi \
@@ -54,27 +63,6 @@ clone oneclone ::
 	            echo ".. bootstrapping" \
 	             && ( cd $${clonedir} && eval ${BOOTSTRAP} ) \
 	    ; fi
-
-newclone ::
-	@if [ -z "${GITREPO}" ] ; then \
-	    echo "Set variable GITREPO" && exit 1 ; fi
-	@source ${MAKEINCLUDES}/names.sh \
-	 && homedir=$$( make --no-print-directory homedir \
-	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
-	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
-	        HOMEDIR=${HOMEDIR} \
-	        ) \
-	 && reportnonzero homedir "Making new clone in" \
-	 && if [ ! -d "$${homedir}" ] ; then \
-	        echo "Invalid home dir: $$homedir" && exit 1 ; fi \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
-	 \
-	 && echo " .. rm previous $${homedir}/$${package}-git" \
-	 && rm -rf $${homedir}/$${package}-git \
-	 && echo "recloning...." \
-	 && make --no-print-directory clone \
-	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
-	        BRANCH=${BRANCH} SUBMODULE=${SUBMODULE} BOOTSTRAP="${BOOTSTRAP}"
 
 .PHONY: pull_info
 pull_info :: 
