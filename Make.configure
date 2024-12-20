@@ -11,7 +11,8 @@ moreinfo :: conf_info
 	@echo "    [ PKG_CONFIG_PATHS / PKG_CONFIG_ADDS = .... ]"
 .PHONY: configure config-help
 configure :: modules
-	@source ${MAKEINCLUDES}/names.sh \
+	@export MODE=${MODE} \
+	 && source ${MAKEINCLUDES}/names.sh \
 	 && installext=$$( make --no-print-directory installext \
 	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
