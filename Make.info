@@ -214,6 +214,8 @@ moduletest :
 	 && M=$$( echo $$m | tr a-z A-Z | tr -d '-' ) \
 	 && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
 	 && vt=`env | grep $${tmd} | cut -d = -f 2` \
+	 && if [ "${MODULE}" = "mkl" ] ; then \
+	      vt="$${vt}$$( env | grep TACC_NVPL_DIR | cut -d = -f 2 )" ; fi \
 	 && vl=`env | grep $${lmd} | cut -d = -f 2` \
 	 && if [ ! -z "${ECHO}" ] ; then \
 	        echo "Testing module: $$M; has $$tmd=<<$$vt>>" \
@@ -221,7 +223,8 @@ moduletest :
 	 && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
 	        echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
 	    ; fi \
-	 && eval tmdir=\$${$${tmd}} \
+	 && echo eval tmdir=\$${$${tmd}} \
+	 && tmdir=$${vt} \
 	 && if [ ! -d "$${tmdir}" ] ; then \
 	        echo "Module <<$$m>> loaded but directory not found: $${tmdir}" && exit 1 \
 	    ; fi
