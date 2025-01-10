@@ -223,7 +223,6 @@ moduletest :
 	 && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
 	        echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
 	    ; fi \
-	 && echo eval tmdir=\$${$${tmd}} \
 	 && tmdir=$${vt} \
 	 && if [ ! -d "$${tmdir}" ] ; then \
 	        echo "Module <<$$m>> loaded but directory not found: $${tmdir}" && exit 1 \
