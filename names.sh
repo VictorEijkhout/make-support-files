@@ -81,7 +81,7 @@ function modulenames () {
 	         && if [ "${mode}" = "mpi" -o "${mode}" = "hybrid" ] ; then \
 	              requirenonzero mpicode \
 	               && modulepath=${modulepath}/MPI/${compilercode}/${compilerversion}/${mpicode}/${mpiversion} \
-	            ; elif [ "${mode}" = "seq" ] ; then \
+	            ; elif [ "${mode}" = "seq" -o "${mode}" = "omp" ] ; then \
 	                modulepath=${modulepath}/Compiler/${compilercode}/${compilerversion} \
 	            ; elif [ "${mode}" = "core" ] ; then \
 	                modulepath=${modulepath}/Core \
@@ -108,6 +108,7 @@ function setnames () {
      && INSTALLPATH=${6} && INSTALLROOT=${7} && INSTALLEXT=${8} && INSTALLVARIANT=${9} \
      && HOMEDIR=${10} && BUILDDIRROOT=${11} && MODE=${12} \
      && PREFIXOPTION=${13} && PREFIXEXTRA=${14} \
+     && export scriptdir=$(pwd) \
      && installext=$( make --no-print-directory installext \
         PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
         INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
