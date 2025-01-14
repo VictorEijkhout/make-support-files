@@ -116,6 +116,7 @@ Note that the downloaded tar file does not necessarily contain a directory with 
 
 * If the download is a `.zip` file, specify `ZIPURL=....`
 instead of `TGZURL`.
+* Compression with `xz` is supported: `TXZURL = package.tar.xz`.
 * You can create a `.tgz` file from the standard name with `make retar`. (This is for instance convenient in TACC build jail.)
 
 ### Clone repositories
@@ -260,8 +261,14 @@ older installation into `lib`. Set
 LINKLIB64toLIB = 1
 ```
 to let `lib` be a symlink to `lib64`. 
+(Any already existing `lib` dir is first erased. 
+This applies to `netcdf-fortran` which generates both `lib`
+containing useless stuff, and `lib64` with the actual lib stuff.)
 If no `lib64` exists, this is a no-op, but I hesitate to make
 it a default.
+
+If `make` needs an explicit target, set `MAKEBUILDTARGET`.
+By default this macro is empty.
 
 ## Configure customization
 
