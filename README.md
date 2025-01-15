@@ -116,9 +116,10 @@ Note that the downloaded tar file does not necessarily contain a directory with 
 
 * If the download is a `.zip` file, specify `ZIPURL=....`
 instead of `TGZURL`.
+* Compression with `xz` is supported: `TXZURL = package.tar.xz`.
 * You can create a `.tgz` file from the standard name with `make retar`. (This is for instance convenient in TACC build jail.)
 
-### Clone repositories
+### Cloned repositories
 
 For git repositories, you would have:
 
@@ -137,6 +138,8 @@ make download PACKAGEVERSION=3.1.4
 make pull PACKAGEVERSION=git
 ```
 
+#### Branches and submodules
+
 To switch branches:
 
 ```
@@ -153,7 +156,23 @@ git submodule init && git submodule update
 ```
 on the clone.
 
-### Tarring the clone
+#### Clone time stamp
+
+Cloning a repository gives a `package-git` source directory. If you want to time-stamp your clone date, set `GITDATE` explicitly.
+
+```
+GITDATE=20250101 # explicit date
+GITDATE=today    # use today's date
+```
+To recompile that clone at a later date, do 
+
+
+```
+make configure build GITDATE=20250101
+```
+
+
+#### Tarring the clone
 
 Remember that we do some directory renaming after the download? It might be convenient have a tar file with the standardized name as above.
 
@@ -260,8 +279,14 @@ older installation into `lib`. Set
 LINKLIB64toLIB = 1
 ```
 to let `lib` be a symlink to `lib64`. 
+(Any already existing `lib` dir is first erased. 
+This applies to `netcdf-fortran` which generates both `lib`
+containing useless stuff, and `lib64` with the actual lib stuff.)
 If no `lib64` exists, this is a no-op, but I hesitate to make
 it a default.
+
+If `make` needs an explicit target, set `MAKEBUILDTARGET`.
+By default this macro is empty.
 
 ## Configure customization
 
