@@ -27,6 +27,7 @@ configure : modules
 	     && export srcdir=$$( make --no-print-directory srcdir \
 	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	            PACKAGEBASENAME=${PACKAGEBASENAME} \
+	            VERSION=${VERSION} GITDATE=${GITDATE} \
 	            DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
 	            ) \
 	     && reportnonzero srcdir \

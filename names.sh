@@ -34,17 +34,17 @@ function compilernames () {
 }
 #${compilerversion%%.*}
 
-# $1 = package, $2 = packageversion, $3 = packagebasename 
+# $1 = package, $2 = packageversion, $3 = packagebasename, $4 = gitdate
 function packagenames () {
-    if [ -z "$2" -o ! -z "$4" ] ; then \
-	echo "function packagenames needs 2 parameters, 3rd optional" ; fi \
-     && PACKAGE=$1 \
+    PACKAGE=$1 && GITDATE=$4 \
      && if [ -z "${PACKAGE}" ] ; then \
           echo "packagenames called with null package" && exit 1 ; fi \
      && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
      && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
      && PACKAGEVERSION=$2 \
      && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
+     && if [ "${packageversion}" = "git" -a ! -z "${GITDATE}" ] ; then \
+	  packageversion=${packageversion}$( make --no-print-directory gitversion GITDATE="${GITDATE}" ) ; fi \
      && requirenonzero packageversion \
      && if [ ! -z "$3" ] ; then \
           export packagebasename=$3 \
@@ -64,7 +64,8 @@ function lognames () {
 # then this only needs MODULENAME parameter
 function modulenames () {
 	echo "Determining module file path and name" \
-	 && systemnames && compilernames && packagenames "${PACKAGE}" "${PACKAGEVERSION}" \
+	 && systemnames && compilernames \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && requirenonzero packageversion \
 	 && requirenonzero compilercode \
 	 && requirenonzero compilerversion \
@@ -119,7 +120,7 @@ function setnames () {
      && requirenonzero installlog \
      && export srcdir=$( make --no-print-directory srcdir \
             PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
-            PACKAGEBASENAME=${PACKAGEBASENAME} \
+            PACKAGEBASENAME=${PACKAGEBASENAME} GITDATE=${GITDATE} \
             DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
             ) \
      && reportnonzero srcdir \
@@ -143,7 +144,9 @@ function setnames () {
 }
 
 function requirenonzero () {
-	eval r=\${$1} \
+	if [ -z "$1" ] ; then \
+	  echo "Internal Error: requirenonzero missing argument" && exit 1 ; fi \
+	 && eval r=\${$1} \
 	 && if [ -z "$r" ] ; then \
 	      echo "Internal Error: zero variable <<$1>>" && exit 1 \
 	    ; fi \
