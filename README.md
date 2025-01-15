@@ -119,7 +119,7 @@ instead of `TGZURL`.
 * Compression with `xz` is supported: `TXZURL = package.tar.xz`.
 * You can create a `.tgz` file from the standard name with `make retar`. (This is for instance convenient in TACC build jail.)
 
-### Clone repositories
+### Cloned repositories
 
 For git repositories, you would have:
 
@@ -138,6 +138,8 @@ make download PACKAGEVERSION=3.1.4
 make pull PACKAGEVERSION=git
 ```
 
+#### Branches and submodules
+
 To switch branches:
 
 ```
@@ -154,7 +156,23 @@ git submodule init && git submodule update
 ```
 on the clone.
 
-### Tarring the clone
+#### Clone time stamp
+
+Cloning a repository gives a `package-git` source directory. If you want to time-stamp your clone date, set `GITDATE` explicitly.
+
+```
+GITDATE=20250101 # explicit date
+GITDATE=today    # use today's date
+```
+To recompile that clone at a later date, do 
+
+
+```
+make configure build GITDATE=20250101
+```
+
+
+#### Tarring the clone
 
 Remember that we do some directory renaming after the download? It might be convenient have a tar file with the standardized name as above.
 
