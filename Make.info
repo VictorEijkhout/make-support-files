@@ -113,7 +113,7 @@ gitversion :
 	      echo "${GITDATE}" \
 	    ; fi
 clonedir :
-	@clonedir=${PACKAGE}-$$( make --no-print-directory gitversion GITDATE="${GITDATE}" ) \
+	@clonedir=${PACKAGE}-git$$( make --no-print-directory gitversion GITDATE="${GITDATE}" ) \
 	 && echo $${clonedir}
 .PHONY: envcode
 envcode :
