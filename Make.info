@@ -20,7 +20,7 @@ info ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && export srcdir=$$( make --no-print-directory srcdir \
 	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
-	        PACKAGEBASENAME=${PACKAGEBASENAME} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} GITDATE=${GITDATE} \
 	        DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
 	        ) \
 	 && if [ ! -d "$$srcdir" ] ; then \
@@ -66,7 +66,7 @@ version packageversion :
 	 && echo $$packageversion
 moreinfo ::
 	@echo "make homedir, srcdir, builddir, prefixdir : dir names"
-.PHONY: homedir srcdir builddir prefixdir
+.PHONY: homedir srcdir builddir prefixdir clonedir
 homedir :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && if [ -z "${TACC_SYSTEM}" ] ; then \
@@ -74,7 +74,7 @@ homedir :
 	 && if [ -z "${TACC_FAMILY_COMPILER}" ] ; then \
 	      echo "WARNING: variable TACC_FAMILY_COMPILER not set" ; fi \
 	 && echo "The  -no-print-directory has to be skipped here" >/dev/null \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && if [ -z "${PACKAGEROOT}" ] ; then \
 	      echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
 	 && if [ -z "${HOMEDIR}" ] ; then \
@@ -97,13 +97,24 @@ srcdir :
 	    ; else \
 	      downloaddir=$$homedir \
 	    ; fi \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && if [ ! -z "${SRCPATH}" ] ; then \
 	      srcdir="${SRCPATH}" \
 	    ; else \
 	      srcdir=$${downloaddir}/$${packagebasename}-$${packageversion} \
 	    ; fi \
 	 && echo $$srcdir
+gitversion :
+	@if [ -z "${GITDATE}" ] ; then \
+	      echo "" \
+	    ; elif [ "${GITDATE}" = "today" ] ; then \
+	      echo "$$( date +%Y%m%d )" \
+	    ; else \
+	      echo "${GITDATE}" \
+	    ; fi
+clonedir :
+	@clonedir=${PACKAGE}-git$$( make --no-print-directory gitversion GITDATE="${GITDATE}" ) \
+	 && echo $${clonedir}
 .PHONY: envcode
 envcode :
 	@source ${MAKEINCLUDES}/names.sh \
@@ -114,10 +125,11 @@ envcode :
 .PHONY: installext
 installext :
 	@source ${MAKEINCLUDES}/names.sh \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && systemnames && compilernames \
 	 && envcode=$$( make --no-print-directory envcode ) \
 	 && requirenonzero envcode \
-	 && installext=${PACKAGEVERSION}-$${envcode} \
+	 && installext=$${packageversion}-$${envcode} \
 	 && if [ ! -z "${INSTALLEXT}" -a ! "${INSTALLEXT}" = "keep" ] ; then \
 	       installext=$${installext}-${INSTALLEXT} \
 	    ; fi \
@@ -138,7 +150,7 @@ builddir :
 	        HOMEDIR=${HOMEDIR} \
 	        ) \
 	 && installext=$$( make --no-print-directory installext \
-	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
+	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} GITDATE="${GITDATE}" \
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
 	        ) \
 	 && requirenonzero installext \
@@ -157,7 +169,7 @@ prefixdir :
 	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	        HOMEDIR=${HOMEDIR} \
 	        ) \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && echo "$$package / $$PACKAGE / $$packageversion" >/dev/null \
 	 && if [ ! -z "${INSTALLPATH}" ] ; then \
 	      prefixdir=${INSTALLPATH} \
@@ -316,7 +328,7 @@ info ::
 .PHONY: ziplog
 ziplog :
 	@source ${MAKEINCLUDES}/names.sh \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && installext=$$( make --no-print-directory installext \
 	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \

@@ -30,22 +30,15 @@ clone newclone oneclone ::
 	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=git \
 	        HOMEDIR=${HOMEDIR} \
 	        ) \
-	 && reportnonzero homedir && echo "Making clone in" \
+	 && reportnonzero homedir && echo "Making clone in $${homedir}" \
 	 && packagenames "${PACKAGE}" "git" "${PACKAGEBASENAME}" \
-	 && echo " .. rm previous $${homedir}/$${package}-git if present" \
-	 && rm -rf $${homedir}/$${package}-git \
+	 && clonedir=$$( make --no-print-directory clonedir PACKAGE=$${package} GITDATE=${GITDATE} ) \
+	 && echo " .. rm previous $${homedir}/$${package}-git* if present" \
+	 && rm -rf $${homedir}/$${package}-git* \
 	 && echo "Establishing package=${PACKAGE}, version=git into $${package}" \
 	 \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
-	 && clonedir=$${package}-git \
-	 && if [ -z "${GITDATE}" ] ; then \
-	      clonedir=$${clonedir} \
-	    ; elif [ "${GITDATE}" = "today" ] ; then \
-	      clonedir=$${clonedir}$$( date +%Y%m%d ) \
-	    ; else \
-	      clonedir=$${clonedir}${GITDATE} \
-	    ; fi \
 	 && echo " .. cloning in $$( pwd ) into $${clonedir}" \
 	 && if [ ! -d $${package} ] ; then \
 	      git clone ${CLONEARGS} ${GITREPO} $${clonedir} ; fi \
