@@ -55,10 +55,10 @@ function setmpicompilers () {
      && if [ ! -z "${TACC_MPIFC}" ]; then \
           export fc="${TACC_MPIFC}" \
 	; else \
-	  export fC=mpif90 \
+	  export fc=mpif90 \
 	; fi \
      && export cxx=mpicxx \
-     && export CC=$cc && export CXX=$cxx && export FC=$fc \
+     && export CC=${cc} && export CXX=${cxx} && export FC=${fc} \
      && if [ "${MODE}" = "hybrid" ] ; then
 	  export CFLAGS="${ompflag}" && export CXXFLAGS="${ompflag}" \
 	   && export FFLAGS="${ompflag}" \
