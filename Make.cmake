@@ -46,6 +46,7 @@ configure : modules
 	            ) \
 	     && reportnonzero prefixdir \
 	     \
+	     && echo "Modules loaded: $$( module -t list 2>&1 | tr '\n' ' ' )" 2>/dev/null \
 	     && source ${MAKEINCLUDES}/compilers.sh \
 	     && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
 	          setmpicompilers ; else setcompilers ; fi \

@@ -71,12 +71,9 @@ homedir :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && if [ -z "${TACC_SYSTEM}" ] ; then \
 	      echo "WARNING: variable TACC_SYSTEM not set" ; fi \
-	 && if [ -z "${TACC_FAMILY_COMPILER}" ] ; then \
-	      echo "WARNING: variable TACC_FAMILY_COMPILER not set" ; fi \
-	 && echo "The  -no-print-directory has to be skipped here" >/dev/null \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && if [ -z "${PACKAGEROOT}" ] ; then \
 	      echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && if [ -z "${HOMEDIR}" ] ; then \
 	      export homedir=${PACKAGEROOT}/$${package} \
 	    ; else \
@@ -106,14 +103,14 @@ srcdir :
 	 && echo $$srcdir
 gitversion :
 	@if [ -z "${GITDATE}" ] ; then \
-	      echo "" \
+	      echo "git" \
 	    ; elif [ "${GITDATE}" = "today" ] ; then \
-	      echo "$$( date +%Y%m%d )" \
+	      echo "git$$( date +%Y%m%d )" \
 	    ; else \
-	      echo "${GITDATE}" \
+	      echo "git${GITDATE}" \
 	    ; fi
 clonedir :
-	@clonedir=${PACKAGE}-git$$( make --no-print-directory gitversion GITDATE="${GITDATE}" ) \
+	@clonedir=${PACKAGE}-$$( make --no-print-directory gitversion GITDATE="${GITDATE}" ) \
 	 && echo $${clonedir}
 .PHONY: envcode
 envcode :
@@ -245,7 +242,7 @@ info ::
 moduleversion :
 	@if [ ! -z "${BASH_ENV}" ] ; then \
 	source ${BASH_ENV} \
-	 && loaded=$$( for m in $$( module list 2>&1 | awk 'p==1 {print} /Currently/ {p=1}' ) ; do echo $$m ; done | awk '/\// {print}' | cut -d '/' -f 1 ) \
+	 && loaded="$$( module -t list 2>&1 )" \
 	 && for l in $$loaded ; do \
 	      versionname=MODULE_MINIMUM_VERSION_$$l \
 	       && minversion=$$( make -p | \grep $$versionname | tr -d ' ' | cut -d '=' -f 2 ) \

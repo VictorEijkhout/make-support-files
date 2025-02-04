@@ -30,22 +30,31 @@ clone newclone oneclone ::
 	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=git \
 	        HOMEDIR=${HOMEDIR} \
 	        ) \
-	 && reportnonzero homedir && echo "Making clone in $${homedir}" \
+	 && reportnonzero homedir \
 	 && packagenames "${PACKAGE}" "git" "${PACKAGEBASENAME}" \
-	 && clonedir=$$( make --no-print-directory clonedir PACKAGE=$${package} GITDATE=${GITDATE} ) \
+         && echo "Cloning $${package}" \
+	 && clonedir=$$( make --no-print-directory clonedir \
+	        PACKAGE=$${package} GITDATE=${GITDATE} ) \
+         && echo " .. into $${clonedir}" \
 	 && echo " .. rm previous $${homedir}/$${package}-git* if present" \
 	 && rm -rf $${homedir}/$${package}-git* \
-	 && echo "Establishing package=${PACKAGE}, version=git into $${package}" \
 	 \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
-	 && echo " .. cloning in $$( pwd ) into $${clonedir}" \
+	 && echo " .. cloning in $$( pwd )" \
 	 && if [ ! -d $${package} ] ; then \
-	      git clone ${CLONEARGS} ${GITREPO} $${clonedir} ; fi \
+	      cmdline="git clone ${CLONEARGS} ${GITREPO} $${clonedir}" \
+	       && echo "cmdline=$$cmdline" && eval $$cmdline \
+	    ; fi \
 	 && if [ ! -z "${BRANCH}" ] ; then \
 	            echo ".. switching to branch ${BRANCH}" \
 	             && ( cd $${clonedir} && git checkout ${BRANCH} ) \
 	    ; fi \
+	 && if [ ! -z "${GITTAG}" ] ; then \
+	        echo " .. checking out gittag: ${GITTAG}" \
+	         && ( cd $${clonedir} && git checkout ${GITTAG} ) \
+	        ; \
+	    fi \
 	 && if [ ! -z "${SUBMODULE}" ] ; then \
 	            echo ".. loading submodules" \
 	             && ( cd $${clonedir} \
@@ -70,6 +79,11 @@ pull ::
 	@if [ -z "${GITREPO}" ] ; then \
 	    echo "Set variable GITREPO" && exit 1 ; fi
 	@source ${MAKEINCLUDES}/names.sh \
+	 && homedir=$$( make --no-print-directory homedir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && requirenonzeropath homedir \
 	 && setnames \
 	    "${PACKAGE}"  "${PACKAGEVERSION}"  "${PACKAGEBASENAME}" \
 	    "${DOWNLOADPATH}" "${SRCPATH}" \
@@ -84,6 +98,11 @@ pull ::
 	 && if [ ! -z "${BRANCH}" ] ; then \
 	        echo "Checking out branch: ${BRANCH}" \
 	         && git checkout ${BRANCH} \
+	        ; \
+	    fi \
+	 && if [ ! -z "${GITTAG}" ] ; then \
+	        echo "Checking out gittag: ${GITTAG}" \
+	         && git checkout ${GITTAG} \
 	        ; \
 	    fi \
 	 && if [ ! -z "${PULLAFTERACTIONS}" ] ; then \
@@ -121,20 +140,23 @@ info ::
 betar :
 	@\
 	source ${MAKEINCLUDES}/names.sh \
-	    && setnames \
-	   "${PACKAGE}"  "${PACKAGEVERSION}"  "${PACKAGEBASENAME}" \
-	   "${DOWNLOADPATH}" "${SRCPATH}" \
-	   "${INSTALLPATH}"  "${INSTALLROOT}"  "${INSTALLEXT}"  "${INSTALLVARIANT}" \
-	   "${HOMEDIR}"  "${BUILDDIRROOT}"  "${MODE}" \
-	   "${PREFIXOPTION}"  "${PREFIXEXTRA}" \
-	 && requirenonzeropath downloaddir \
-	 && echo "Repacking tar file for $${package}-${PACKAGEVERSION}" \
-	 && if [ ! -d "$${downloaddir}" ] ; then \
-	        echo "Invalid download dir: $$downloaddir" && exit 1 ; fi \
-	 && cd "$${downloaddir}" \
-	 && srcname=$${packagebasename}-$${packageversion} \
+	 && homedir=$$( make --no-print-directory homedir \
+	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        PACKAGEBASENAME=${PACKAGEBASENAME} HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && requirenonzeropath homedir \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
+	 && srcname=$$( make --no-print-directory clonedir \
+	                PACKAGE=$${packagebasename} GITDATE=${GITDATE} ) \
+	 && cd "$${homedir}" \
+	 && echo "Making repacked tar file from $${srcname}" \
 	 && if [ ! -d "$$srcname" ] ; then \
-	        echo "Error: download dir $$downloaddir does not contain: $$srcname" \
+	        echo "Error: download dir $${homedir} does not contain: $${srcname}" \
 	         && exit 1 ; fi \
-	 && tgzname=$${srcname}.tgz \
+	 && if [ ! -z "${GITTAG}" ] ; then \
+	      tgzname=$${packagebasename}-${GITTAG}.tgz \
+	    ; else \
+	      tgzname=$${srcname}.tgz \
+	    ; fi \
+	 && echo " .. repacking to <<$${tgzname}>>" \
 	 && tar fcz $${tgzname} $${srcname}
