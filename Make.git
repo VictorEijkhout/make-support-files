@@ -158,7 +158,7 @@ betar :
 	 && if [ -d "$${tgtname}" ] ; then \
 	        echo " .. rm old source dir <<$${tgtname}>>" \
 	         && rm -rf "$${tgtname}" ; fi \
-	 && ln -s $${srcname} $${tgtname} \
+	 && cp -r "$${srcname}" "$${tgtname}" \
 	 && if [ ! -z "${GITTAG}" ] ; then \
 	      tgzname=$${packagebasename}-${GITTAG}.tgz \
 	    ; else \
