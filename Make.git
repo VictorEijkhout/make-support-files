@@ -150,6 +150,7 @@ betar :
 	                PACKAGE=$${packagebasename} GITDATE=${GITDATE} ) \
 	 && tgtname=$$( make --no-print-directory srcdir \
 	                PACKAGE=$${packagebasename} ) \
+	 && tgtname=$${tgtname##*/} \
 	 && cd "$${homedir}" \
 	 && echo "Making repacked tar file from $${srcname}" \
 	 && if [ ! -d "$$srcname" ] ; then \
@@ -164,5 +165,6 @@ betar :
 	    ; else \
 	      tgzname=$${srcname}.tgz \
 	    ; fi \
-	 && echo " .. repacking to <<$${tgzname}>>" \
-	 && tar fcz "$${tgzname}" "$${tgtname}"
+	 && echo " .. repacking <<$${tgtname}>> to <<$${tgzname}>>" \
+	 && tar fcz "$${tgzname}" "$${tgtname}" \
+	 && tar ftz "$${tgzname}" | head -n 1
