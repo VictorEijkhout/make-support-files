@@ -148,15 +148,21 @@ betar :
 	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && srcname=$$( make --no-print-directory clonedir \
 	                PACKAGE=$${packagebasename} GITDATE=${GITDATE} ) \
+	 && tgtname=$$( make --no-print-directory srcdir \
+	                PACKAGE=$${packagebasename} ) \
 	 && cd "$${homedir}" \
 	 && echo "Making repacked tar file from $${srcname}" \
 	 && if [ ! -d "$$srcname" ] ; then \
 	        echo "Error: download dir $${homedir} does not contain: $${srcname}" \
 	         && exit 1 ; fi \
+	 && if [ -d "$${tgtname}" ] ; then \
+	        echo " .. rm old source dir <<$${tgtname}>>" \
+	         && rm -rf "$${tgtname}" ; fi \
+	 && ln -s $${srcname} $${tgtname} \
 	 && if [ ! -z "${GITTAG}" ] ; then \
 	      tgzname=$${packagebasename}-${GITTAG}.tgz \
 	    ; else \
 	      tgzname=$${srcname}.tgz \
 	    ; fi \
 	 && echo " .. repacking to <<$${tgzname}>>" \
-	 && tar fcz $${tgzname} $${srcname}
+	 && tar fcz "$${tgzname}" "$${tgtname}"
