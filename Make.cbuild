@@ -63,7 +63,7 @@ build ::
 	        ; fi \
 	     && echo "................................ VLE done build" \
 	     && echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start install" \
-	     && echo "Installing in $${prefixdir}" \
+	     && echo "Installing in $$(pwd) into $${prefixdir}" \
 	     && if [ -z "${NOINSTALL}" ] ; then \
 	            ${SUDO} make --no-print-directory install \
 	        ; fi \
