@@ -96,7 +96,8 @@ configure : modules
 	           && echo "Using cmake=$$(cmake)" \
 	        ; fi \
 	     && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
-	            $$( if [ ! -z "${COLORDIAGNOSTICSOFF}" ] ; then echo "-D CMAKE_COLOR_DIAGNOSTICS=OFF" ; fi ) \
+	            $$( if [ ! -z "${COLORDIAGNOSTICSOFF}" ] ; then echo -DCMAKE_COLOR_DIAGNOSTICS=OFF ; fi ) \
+	            $$( if [ -z '' ] ; then echo -DCMAKE_COMPILE_WARNING_AS_ERROR=OFF ; fi ) \
 	            -D CMAKE_VERBOSE_MAKEFILE=ON \
 	            -D BUILD_SHARED_LIBS=$$( if [ -z "${BUILDSTATICLIBS}" ] ; then echo ON; else echo OFF ; fi ) \
 	            -D CMAKE_BUILD_TYPE=$$( if [ ! -z "${CMAKEBUILDDEBUG}" ] ; then echo Debug ; else echo RelWithDebInfo ; fi ) \
