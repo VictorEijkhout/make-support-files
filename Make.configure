@@ -61,10 +61,6 @@ configure :: modules
 	            echo " .. before configure: <<${BEFORECONFIGURECMDS}>>" \
 	             && eval ${BEFORECONFIGURECMDS} \
 	        ; fi \
-	     && if [ ! -z "${CONFIGURESUBDIR}" ] ; then \
-	          echo " .. configure in subdir: ${CONFIGURESUBDIR}" \
-	           && cd "${CONFIGURESUBDIR}" ; fi \
-	     && echo " .. configuring in $$(pwd)" \
 	     && if [ ! -z "${DEFUNPROGFC}" ] ; then \
 	          echo " .. patch configure.ac" \
 	           && sed -i configure.ac \
@@ -74,9 +70,7 @@ configure :: modules
 	            echo "First autogen" \
 	             && ./autogen.sh ; fi \
 	     && if [ ! -f "configure" -o ! -z "${FORCERECONF}" ] ; then \
-	          if [ ! -f configure.ac ] ; then \
-	            echo "ERROR missing configure.ac" && exit 1 \
-	          ; else \
+	          if [ -f configure.ac ] ; then \
 	            echo " .. auto reconf" \
 	             && if [ ! -z "${AUTORECONF}" ] ; then \
 	                  cmdline="${AUTORECONF} -i" \
@@ -86,8 +80,19 @@ configure :: modules
 	                ; fi \
 	             && echo " .. auto conf/reconf: $$cmdline" \
 	             && eval $$cmdline \
+	          ; else \
+	            echo "ERROR missing configure.ac" && exit 1 \
 	          ; fi \
 	        ; fi \
+	     \
+	     && if [ ! -z "${CONFIGINBUILDDIR}" ] ; then \
+	          echo " .. configure in build dir" \
+	           && cd "$${builddir}" \
+	        ; elif [ ! -z "${CONFIGURESUBDIR}" ] ; then \
+	          echo " .. configure in subdir: ${CONFIGURESUBDIR}" \
+	           && cd "${CONFIGURESUBDIR}" \
+	        ; fi \
+	     && echo " .. configuring in $$(pwd)" \
 	     && if [ ! -z "${CFLAGS}" ] ; then \
 	            export CFLAGS="${CFLAGS}" ; fi \
 	     && if [ ! -z "${CXXFLAGS}" ] ; then \
@@ -104,8 +109,13 @@ configure :: modules
 	     && for e in ${CONFIGUREENV} ; do \
 	          echo "set environment: $$e" && eval "export $$e" \
 	        ; done \
+	     && if [ -z "${CONFIGINBUILDDIR}" ] ; then \
+	          configureline="./configure" \
+	        ; else \
+	          configureline="$${srcdir}/configure" \
+	        ; fi \
 	     && configureline="\
-	            ./configure \
+	            $${configureline} \
 	                $${prefixoption}=$$prefixdir --libdir=$${prefixdir}/lib \
 	                ${CONFIGUREFLAGS} \
 	            " \
