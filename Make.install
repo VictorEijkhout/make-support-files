@@ -47,7 +47,7 @@ build ::
 	          ; fi \
 	       && if [ ! -z "${SUDO}" ] ; then echo "Installing with sudo" \
 	          ; else echo "Installing...." ; fi \
-	       && ${SUDO} make --no-print-directory install \
+	       && ${SUDO} make --no-print-directory install ${EXTRAINSTALLTARGET} \
 	            $$( if [ ! -z "${INSTALL_USE_DESTDIR}" ] ; then \
 	                echo DESTDIR=$$prefixdir ; fi ) \
 	       && if [ ! -z "${CPTOINSTALLDIR}" ] ; then \
