@@ -95,12 +95,17 @@ configure : modules
 	        ; else cmake=${CMAKENAME} \
 	           && echo "Using cmake=$$(cmake)" \
 	        ; fi \
+	     && if [ ! -z "${BUILDTYPE}" ] ; then \
+	          cmakebuildtype=${BUILDTYPE} \
+	        ; elif [ ! -z "${CMAKEBUILDDEBUG}" ] ; then \
+	          cmakebuildtype=Debug ; else cmakebuildtype=RelWithDebInfo \
+	        ; fi \
 	     && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
 	            $$( if [ ! -z "${COLORDIAGNOSTICSOFF}" ] ; then echo -DCMAKE_COLOR_DIAGNOSTICS=OFF ; fi ) \
 	            $$( if [ -z '' ] ; then echo -DCMAKE_COMPILE_WARNING_AS_ERROR=OFF ; fi ) \
 	            -D CMAKE_VERBOSE_MAKEFILE=ON \
 	            -D BUILD_SHARED_LIBS=$$( if [ -z "${BUILDSTATICLIBS}" ] ; then echo ON; else echo OFF ; fi ) \
-	            -D CMAKE_BUILD_TYPE=$$( if [ ! -z "${CMAKEBUILDDEBUG}" ] ; then echo Debug ; else echo RelWithDebInfo ; fi ) \
+	            -D CMAKE_BUILD_TYPE=$${cmakebuildtype} \
 	            ${CMAKEFLAGS} $${CMAKEFLAGSPLATFORM} $$cppstandard" \
 	     && if [ ! -z "${CMAKESOURCE}" ] ; then \
 	            cmdline="$${cmdline} -S $${srcdir}/${CMAKESOURCE} -B $$builddir" \

@@ -64,8 +64,15 @@ build ::
 	     && echo "................................ VLE done build" \
 	     && echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start install" \
 	     && echo "Installing in $$(pwd) into $${prefixdir}" \
+	     && echo " .. first python virtualenv in $${prefixdir}" \
+	     && python3 -m venv $${prefixdir} && source $${prefixdir}/bin/activate \
 	     && if [ -z "${NOINSTALL}" ] ; then \
-	          ${SUDO} make --no-print-directory install ${EXTRAINSTALLTARGET} \
+	          echo " .. make install" \
+	           && ${SUDO} make --no-print-directory install  \
+	           && if [ ! -z "${EXTRAINSTALLTARGET}" ] ; then \
+	                echo " .. extra install <<${EXTRAINSTALLTARGET}>>" \
+	                 && ${SUDO} make --no-print-directory ${EXTRAINSTALLTARGET} \
+	              ; fi \
 	        ; fi \
 	     && if [ ! -z "${POSTINSTALLinLIB}" ] ; then  \
 	          echo " .. Post install: <<${POSTINSTALLinLIB}>>" \
