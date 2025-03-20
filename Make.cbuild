@@ -64,8 +64,10 @@ build ::
 	     && echo "................................ VLE done build" \
 	     && echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> VLE start install" \
 	     && echo "Installing in $$(pwd) into $${prefixdir}" \
-	     && echo " .. first python virtualenv in $${prefixdir}" \
-	     && python3 -m venv $${prefixdir} && source $${prefixdir}/bin/activate \
+	     && if [ ! -v "${VIRTUALENV}" ] ; then \
+	          echo " .. first python virtualenv in $${prefixdir}" \
+	           && echo "python3 -m venv $${prefixdir} source $${prefixdir}/bin/activate" \
+	        ; fi \
 	     && if [ -z "${NOINSTALL}" ] ; then \
 	          echo " .. make install" \
 	           && ${SUDO} make --no-print-directory install  \
