@@ -62,7 +62,7 @@ version packageversion :
 	@if [ -z "${PACKAGEVERSION}" ] ; then \
 	      echo "WARNING: variable PACKAGEVERSION null in homedir rule" && exit 1 ; fi \
 	 && packageversion=${PACKAGEVERSION} \
-	 && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
+	 && export packageversion=$$( echo $${packageversion} | tr A-Z a-z ) \
 	 && echo $$packageversion
 moreinfo ::
 	@echo "make homedir, srcdir, builddir, prefixdir : dir names"
@@ -271,7 +271,7 @@ moduleprint ::
 	         ; done \
 	 ; fi
 
-.PHONY: ls less findfile findstring sourcestring installext
+.PHONY: ls less findfile findstring sourcestring 
 info ::
 	@echo "================ utility stuff"
 	@echo "    make ls [ LSPATH=.... relative to src ] [ PATTERN=... ( ls in src dir ) ]"
@@ -323,15 +323,16 @@ sourcestring :
 info ::
 	@echo "    make ziplog"
 .PHONY: ziplog
-ziplog :
-	@source ${MAKEINCLUDES}/names.sh \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
+ziplog ::
+	@export MODE=${MODE} \
+	 && source ${MAKEINCLUDES}/names.sh \
 	 && installext=$$( make --no-print-directory installext \
 	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
 	        ) \
 	 && requirenonzero installext \
 	 && lognames $$installext \
+	 && requirenonzero configurelog \
 	 && cmdline="zip $${packagebasename}_logs.zip $${configurelog} $${installlog}" \
 	 && echo $$cmdline \
 	 && eval $$cmdline
