@@ -326,6 +326,7 @@ info ::
 ziplog ::
 	@export MODE=${MODE} \
 	 && source ${MAKEINCLUDES}/names.sh \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && installext=$$( make --no-print-directory installext \
 	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
 	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
