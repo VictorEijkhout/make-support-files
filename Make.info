@@ -219,19 +219,26 @@ moduletest :
 	@if [ -z "${MODULE}" ] ; then \
 	    echo "Please specify MODULE=..." && exit 1 ; fi 
 	@m=${MODULE} \
-	 && v=$${m##*/} && m=$${m%%/*} \
+	 && v=$$( echo $$m | cut -s -d '/' -f 2 ) && m=$${m%%/*} \
+	 && ml=$$( module -t list $${m} 2>&1 | cat ) \
+	 && mv=$$( echo $${ml} | cut -d '/' -f 2 ) \
+	 && if [ "$${m}" != "mkl" ] ; then \
+	      if [ -z "$${ml}" ] ; then \
+	        echo "Please load module $${m}" && exit 1 \
+	      ; elif [ ! -z "$${v}" -a "$${v}" != "$${mv}" ] ; then \
+	        echo "Please load correct version $${m}/$${v}; current $${mv}" \
+	         && exit 1 \
+	      ; fi \
+	    ; else \
+	      echo "Confirming module loaded: $${m}/$${v}" \
+	    ; fi \
+	 \
 	 && M=$$( echo $$m | tr a-z A-Z | tr -d '-' ) \
 	 && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
 	 && vt=`env | grep $${tmd} | cut -d = -f 2` \
 	 && if [ "${MODULE}" = "mkl" ] ; then \
 	      vt="$${vt}$$( env | grep TACC_NVPL_DIR | cut -d = -f 2 )" ; fi \
 	 && vl=`env | grep $${lmd} | cut -d = -f 2` \
-	 && if [ ! -z "${ECHO}" ] ; then \
-	        echo "Testing module: $$M; has $$tmd=<<$$vt>>" \
-	    ; fi \
-	 && if [ -z "$${vl}" -a -z "$${vt}" ] ; then \
-	        echo "Please load module: $$m (from: ${MODULES})" && exit 1 \
-	    ; fi \
 	 && tmdir=$${vt} \
 	 && if [ ! -d "$${tmdir}" ] ; then \
 	        echo "Module <<$$m>> loaded but directory not found: $${tmdir}" && exit 1 \
@@ -321,20 +328,21 @@ sourcestring :
 ## zip up logs for github tickets
 ##
 info ::
-	@echo "    make ziplog"
+	@echo "    make ziplog [ EXTRALOGFILES=... ]"
 .PHONY: ziplog
 ziplog ::
 	@export MODE=${MODE} \
 	 && source ${MAKEINCLUDES}/names.sh \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
-	 && installext=$$( make --no-print-directory installext \
-	        PACKAGEVERSION=${PACKAGEVERSION} MODE=${MODE} \
-	        INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
-	        ) \
+	 && setnames \
+	    "${PACKAGE}"  "${PACKAGEVERSION}"  "${PACKAGEBASENAME}" \
+	    "${DOWNLOADPATH}" "${SRCPATH}" \
+	    "${INSTALLPATH}"  "${INSTALLROOT}"  "${INSTALLEXT}"  "${INSTALLVARIANT}" \
+	    "${HOMEDIR}"  "${BUILDDIRROOT}"  "${MODE}" \
+	    "${PREFIXOPTION}"  "${PREFIXEXTRA}" \
 	 && requirenonzero installext \
 	 && lognames $$installext \
 	 && requirenonzero configurelog \
-	 && cmdline="zip $${packagebasename}_logs.zip $${configurelog} $${installlog}" \
+	 && cmdline="zip $${packagebasename}_logs.zip $${configurelog} $${installlog} ${EXTRALOGFILES}" \
 	 && echo $$cmdline \
 	 && eval $$cmdline
 clean ::
