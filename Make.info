@@ -72,7 +72,8 @@ homedir :
 	 && if [ -z "${TACC_SYSTEM}" ] ; then \
 	      echo "WARNING: variable TACC_SYSTEM not set" ; fi \
 	 && if [ -z "${PACKAGEROOT}" ] ; then \
-	      echo "ERROR: variable PACKAGEROOT not set" && exit 1 ; fi \
+	      error "variable PACKAGEROOT not set" && exit 1 ; fi \
+	 && trace "homedir based on PACKAGEROOT=${PACKAGEROOT}" \
 	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && if [ -z "${HOMEDIR}" ] ; then \
 	      export homedir=${PACKAGEROOT}/$${package} \
@@ -102,12 +103,13 @@ srcdir :
 	    ; fi \
 	 && echo $$srcdir
 gitversion :
-	@if [ -z "${GITDATE}" ] ; then \
-	      echo "git" \
+	@source ${MAKEINCLUDES}/names.sh \
+	 && if [ -z "${GITDATE}" ] ; then \
+	      trace "default git extension" && echo "git" \
 	    ; elif [ "${GITDATE}" = "today" ] ; then \
-	      echo "git$$( date +%Y%m%d )" \
+	      trace "git date today" && echo "git$$( date +%Y%m%d )" \
 	    ; else \
-	      echo "git${GITDATE}" \
+	      trace "git date explicit ${GITDATE}" && echo "git${GITDATE}" \
 	    ; fi
 clonedir :
 	@clonedir=${PACKAGE}-$$( make --no-print-directory gitversion GITDATE="${GITDATE}" ) \

@@ -38,13 +38,14 @@ function compilernames () {
 function packagenames () {
     PACKAGE=$1 && GITDATE=$4 \
      && if [ -z "${PACKAGE}" ] ; then \
-          echo "packagenames called with null package" && exit 1 ; fi \
+          error "packagenames called with null package" && exit 1 ; fi \
      && export package=$( echo ${PACKAGE} | tr A-Z a-z ) \
      && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
      && PACKAGEVERSION=$2 \
      && export packageversion=$( echo ${PACKAGEVERSION} | tr A-Z a-z ) \
      && if [ "${packageversion}" = "git" -a ! -z "${GITDATE}" ] ; then \
-	  packageversion=${packageversion}$( make --no-print-directory gitversion GITDATE="${GITDATE}" ) ; fi \
+	  packageversion=$( make --no-print-directory gitversion GITDATE="${GITDATE}" ) ; fi \
+     && trace "testing packageversion=${packageversion}" \
      && requirenonzero packageversion \
      && if [ ! -z "$3" ] ; then \
           export packagebasename=$3 \
@@ -181,16 +182,16 @@ function requirenonzeropath () {
 	requirenonzero "$1" \
 	 && eval r=\${$1} \
 	 && if [ ! -d "$r" ] ; then \
-	      echo "Non-existing path: $1=$r" && exit 1 ; fi
+	      error "Non-existing path: $1=$r" && exit 1 ; fi
 }
 
 function reportnonzeropath () {
 	requirenonzero "$1" \
 	 && eval r=\${$1} \
 	 && if [ -d "$r" ] ; then \
-	      echo "Using $1=$r" \
+	      trace "Using $1=$r" \
 	    ; else \
-	      echo "Non-existing path: $1=$r" && exit 1 ; fi
+	      error "Non-existing path: $1=$r" && exit 1 ; fi
 }
 
 function reportnames () {
@@ -200,6 +201,14 @@ function reportnames () {
 	 && echo "    builddir=${builddir}" \
 	 && echo "    prefixdir=${prefixdir}" \
 	 && echo "    logfiles: ${configurelog} ${installlog}"
+}
+
+function trace () {
+	/bin/true echo "$1" 1>&2
+}
+
+function error () {
+	echo "ERROR: $1" 1>&2
 }
 
 ##
