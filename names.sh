@@ -160,7 +160,7 @@ function requirenonzero () {
 	 && if [ -z "$r" ] ; then \
 	      echo "Internal Error: zero variable <<$1>>" && exit 1 \
 	    ; fi \
-	 && if [ $( echo $1 | grep ":" | wc -l ) -gt 0 ] ; then \
+	 && if [ $( echo "$1" | grep ":" | wc -l ) -gt 0 ] ; then \
 	      echo "Please no colons in paths / directory names" && exit 1 \
 	    ; fi 
 }

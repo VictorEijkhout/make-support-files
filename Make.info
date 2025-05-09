@@ -252,7 +252,8 @@ moduleversion :
 	 && loaded="$$( module -t list 2>&1 )" \
 	 && for l in $$loaded ; do \
 	      versionname=MODULE_MINIMUM_VERSION_$$l \
-	       && minversion=$$( make -p | \grep $$versionname | tr -d ' ' | cut -d '=' -f 2 ) \
+	       && continue \
+	       && minversion=$$( make -p | \grep "$$versionname" | tr -d ' ' | cut -d '=' -f 2 ) \
 	       && if [ ! -z "$$minversion" ] ; then \
 	            loadversion=$$( \
 	                for m in $$( module list $$l 2>&1 ) ; do echo $$m ; done \
