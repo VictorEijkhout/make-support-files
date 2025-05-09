@@ -55,20 +55,6 @@ configure : modules
 	     && rm -rf $$builddir && mkdir -p $$builddir \
 	     && find $$builddir -name CMakeCache.txt -exec rm {} \; \
 	     \
-	     && export PKGCONFIGPATH=${PKG_CONFIG_PATH} \
-	     && export PKGCONFIGPATH=${PKG_CONFIG_ADDS}$${PKGCONFIGPATH} \
-	     && export PKG_CONFIG_PATH=$${PKGCONFIGPATH} \
-	     && if [ ! -z "$${PKG_CONFIG_PATH}" ] ; then \
-	          echo "Using PKG_CONFIG_PATH = $${PKG_CONFIG_PATH}" ; fi \
-	     \
-	     && export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_ADDS}${CMAKE_PREFIX_PATH} \
-	     && if [ ! -z "$${CMAKE_PREFIX_PATH}" ] ; then \
-	          echo "Using CMAKE_PREFIX_PATH = $${CMAKE_PREFIX_PATH}" ; fi \
-	     \
-	     && export CMAKE_MODULE_PATH=${CMAKE_MODULE_ADDS}${CMAKE_MODULE_PATH} \
-	     && if [ ! -z "$${CMAKE_MODULE_PATH}" ] ; then \
-	          echo "Using CMAKE_MODULE_PATH = $${CMAKE_MODULE_PATH}" ; fi \
-	     \
 	     && if [ ! -z "${CPPSTANDARD}" ] ; then \
 	            cppstandard="-D CMAKE_CXX_FLAGS=-std=c++${CPPSTANDARD}" ; fi \
 	     && if [ $$( uname ) = Darwin ] ; then \

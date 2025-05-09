@@ -97,5 +97,22 @@ function reportcompilers () {
 	     && echo "    show:  ${testcompiler}" \
 	     && basecompiler=$( echo ${testcompiler} | cut -f 1 -d " " ) \
 	     && echo "    where ${basecompiler}=$( which ${basecompiler} )" \
-        ; fi
+        ; fi \
+	     \
+	&& export PKGCONFIGPATH=${PKG_CONFIG_PATH} \
+	&& export PKGCONFIGPATH=${PKG_CONFIG_ADDS}${PKGCONFIGPATH} \
+	&& export PKG_CONFIG_PATH=${PKGCONFIGPATH} \
+	&& if [ ! -z "${PKG_CONFIG_PATH}" ] ; then \
+	      echo "Using PKG_CONFIG_PATH = $( echo ${PKG_CONFIG_PATH} | tr ':' '\n' )" \
+	   ; fi \
+	\
+	&& export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_ADDS}${CMAKE_PREFIX_PATH} \
+	&& if [ ! -z "${CMAKE_PREFIX_PATH}" ] ; then \
+	      echo "Using CMAKE_PREFIX_PATH = $( echo ${CMAKE_PREFIX_PATH} | tr ':' '\n' )" \
+	   ; fi \
+	\
+	&& export CMAKE_MODULE_PATH=${CMAKE_MODULE_ADDS}${CMAKE_MODULE_PATH} \
+	&& if [ ! -z "${CMAKE_MODULE_PATH}" ] ; then \
+	      echo "Using CMAKE_MODULE_PATH = $( echo ${CMAKE_MODULE_PATH} | tr ':' '\n' )" \
+	   ; fi
 }
