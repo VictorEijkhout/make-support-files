@@ -102,8 +102,8 @@ unpack untar ::
 	        ; \
 	    fi \
 	 && if [ ! -z "${BOOTSTRAP}" ] ; then \
-	        echo ".. bootstrapping" \
-	         && ( cd $${srcdir} && eval ${BOOTSTRAP} ) \
+	        echo " .. bootstrapping: <<${BOOTSTRAP}>>" \
+	         && ( cd $${srcdir} && eval "${BOOTSTRAP}" ) \
 	    ; fi \
 	 && echo "unpacked: $${srcdir}" \
 	) 2>&1 | tee untar.log

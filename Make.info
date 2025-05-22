@@ -66,6 +66,7 @@ version packageversion :
 	 && echo $$packageversion
 moreinfo ::
 	@echo "make homedir, srcdir, builddir, prefixdir : dir names"
+	@echo "make upstream : anti-dependencies"
 .PHONY: homedir srcdir builddir prefixdir clonedir
 homedir :
 	@source ${MAKEINCLUDES}/names.sh \
@@ -198,6 +199,16 @@ prefixdir :
 	        prefixdir=$${prefixdir}/${INSTALLVARIANT} \
 	    ; fi \
 	 && echo $${prefixdir}
+.PHONY: upstreams
+upstreams :
+	@source ${MAKEINCLUDES}/names.sh \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
+	 && for pdir in $$( grep -il "modules.*$${package}" ../*/Makefile ) ; do \
+	      pm=$${pdir##../} && p=$${pm%%/M*} \
+	       && echo $${p} \
+	    ; done \
+	    | sort \
+	    | awk '{v=v" "$$1} END {print v}'
 
 .PHONY: modules moduletest moduleversion moduleprint
 info ::
