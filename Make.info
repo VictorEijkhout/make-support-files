@@ -210,13 +210,14 @@ upstreams :
 	    | sort \
 	    | awk '{v=v" "$$1} END {print v}'
 
-.PHONY: modules moduletest moduleversion moduleprint
 info ::
 	@echo "================ module stuff"
 	@echo "    make modules : check if prereq modules are loaded"
+	@echo "    make moduletest MODULE=..."
+.PHONY: modules moduleprint
 modules ::
 	@for m in ${MODULES} ; do \
-	    make --no-print-directory moduletest MODULE=$$m \
+	    ${MAKE} --no-print-directory moduletest MODULE=$$m \
 	 ; done
 	@for m in ${NONMODULES} ; do \
 	    v=$${m##*/} && m=$${m%%/*} \
@@ -228,6 +229,7 @@ modules ::
 	        ; fi \
 	 ; done
 	@make --no-print-directory moduleversion
+.PHONY: moduletest
 moduletest :
 	@if [ -z "${MODULE}" ] ; then \
 	    echo "Please specify MODULE=..." && exit 1 ; fi 
@@ -241,24 +243,32 @@ moduletest :
 	      ; elif [ ! -z "$${v}" -a "$${v}" != "$${mv}" ] ; then \
 	        echo "Please load correct version $${m}/$${v}; current $${mv}" \
 	         && exit 1 \
+	      ; else \
+	        if [ "${ECHO}" = "1" ] ; then echo "Confirming module loaded: $${m}/$${v}" ; fi \
 	      ; fi \
-	    ; else \
-	      echo "Confirming module loaded: $${m}/$${v}" \
 	    ; fi \
 	 \
 	 && M=$$( echo $$m | tr a-z A-Z | tr -d '-' ) \
-	 && lmd=LMOD_$${M}_DIR && tmd=TACC_$${M}_DIR \
-	 && vt=`env | grep $${tmd} | cut -d = -f 2` \
-	 && if [ "${MODULE}" = "mkl" ] ; then \
-	      vt="$${vt}$$( env | grep TACC_NVPL_DIR | cut -d = -f 2 )" ; fi \
+	 && lmd=LMOD_$${M}_DIR \
 	 && vl=`env | grep $${lmd} | cut -d = -f 2` \
+	 && tmd=TACC_$${M}_DIR \
+	 && if [ "${MODULE}" = "mkl" ] ; then \
+	      vt="$${vt}$$( env | grep TACC_MKL_DIR | cut -d = -f 2 )" \
+	       && if [ -z "$${vt}" ] ; then \
+	            vt="$${vt}$$( env | grep TACC_NVPL_DIR | cut -d = -f 2 )" ; fi \
+	    ; else \
+	      vt="$$( env | grep $${tmd} | cut -d = -f 2 )" \
+	    ; fi \
 	 && tmdir=$${vt} \
+	 && if [ "${ECHO}" = "1" ] ; then echo "module test: $${tmd}=$${tmdir}" ; fi \
 	 && if [ ! -d "$${tmdir}" ] ; then \
-	        echo "Module <<$$m>> loaded but directory not found: $${tmdir}" && exit 1 \
+	        echo "Module <<$$m>> loaded but directory not found: $${tmd}=$${tmdir}" \
+	         && exit 1 \
 	    ; fi
 
 info ::
 	@echo "    make moduleversion : test if all loaded modules are new enough"
+.PHONY: moduleversion
 moduleversion :
 	@if [ ! -z "${BASH_ENV}" ] ; then \
 	source ${BASH_ENV} \
