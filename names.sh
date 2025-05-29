@@ -128,27 +128,27 @@ function setnames () {
             PACKAGEBASENAME=${PACKAGEBASENAME} GITDATE=${GITDATE} \
             DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
              ) \
-     && reportnonzero homedir \
+     && requirenonzero homedir \
      && export srcdir=$( make --no-print-directory srcdir \
             PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
             PACKAGEBASENAME=${PACKAGEBASENAME} GITDATE=${GITDATE} \
             DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
             ) \
-     && reportnonzero srcdir \
+     && requirenonzero srcdir \
      && export builddir=$( make --no-print-directory builddir \
             PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
             PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
             HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
             INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
             ) \
-     && reportnonzero builddir \
+     && requirenonzero builddir \
      && export prefixdir=$( make --no-print-directory prefixdir \
             PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
             PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
             INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
             INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
             ) \
-     && reportnonzero prefixdir \
+     && requirenonzero prefixdir \
      && if [ ! -z "${PREFIXEXTRA}" ] ; then \
             echo "prefix: attaching PREFIXEXTRA=${PREFIXEXTRA}" \
              && export prefixdir=${prefixdir}-${PREFIXEXTRA} ; fi

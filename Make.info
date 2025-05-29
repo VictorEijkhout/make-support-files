@@ -392,6 +392,3 @@ lognames :
 .PHONY: clean
 clean ::
 	@rm -f *.log *~
-
-#	 && setnames "${PACKAGEROOT}" "${PACKAGE}" "${PACKAGEVERSION}" "${INSTALLEXT}" \
-#	        "${PACKAGEBASENAME}" "${VARIANT}" "${MODULENAME}" "${MODE}" \
