@@ -30,6 +30,8 @@ download :: homedir
 	        url=${ZIPURL} \
 	    ; elif [ ! -z "${TXZURL}" ] ; then \
 	        url=${TXZURL} \
+	    ; elif [ ! -z "${BZ2URL}" ] ; then \
+	        url=${BZ2URL} \
 	    ; else \
 	        url=$$( echo ${TGZURL} | sed 's/ //g' ) \
 	    ; fi \
@@ -64,6 +66,8 @@ unpack untar ::
 	            tgz=${ZIPURL} \
 	        ; elif [ ! -z "${TXZURL}" ] ; then \
 	            tgz=${TXZURL} \
+	        ; elif [ ! -z "${BZ2URL}" ] ; then \
+	            tgz=${BZ2URL} \
 	        ; else tgz=${TGZURL} \
 	        ; fi \
 	         && tgz=$${tgz##*/} \
@@ -83,6 +87,14 @@ unpack untar ::
 	         && echo " .. xz file <<$$tgz>> contains: $$unpackdir; unpacking" \
 	         && rm -rf $$unpackdir $${unpackdir}.tar \
 	         && xz --decompress $$tgz && tar fx $${unpackdir}.tar \
+	    ; elif [ ! -z "${BZ2URL}" ] ; then \
+	        echo " .. un-bz2'ing $$tgz" \
+	         && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
+	         && unpackdir=$${unpackdir%%/*} \
+	         && unpackdir=$${unpackdir#./} \
+	         && echo " .. tar file <<$$tgz>> contains: $$unpackdir; unpacking" \
+	         && rm -rf $$unpackdir \
+	         && tar fxz $$tgz \
 	    ; else \
 	        echo " .. un-targz'ing $$tgz" \
 	         && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \

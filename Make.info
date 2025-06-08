@@ -348,6 +348,7 @@ sourcestring :
 	        PACKAGEBASENAME=${PACKAGEBASENAME} HOMEDIR=${HOMEDIR} \
 	        ) \
 	 && find $${srcdir} -type f -exec grep -i "${STRING}" {} \; -print
+
 ##
 ## zip up logs for github tickets
 ##

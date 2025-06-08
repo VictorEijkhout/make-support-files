@@ -32,7 +32,6 @@ function compilernames () {
 	     && export mpiversion="${TACC_FAMILY_MPI_VERSION}" \
 	; fi 
 }
-#${compilerversion%%.*}
 
 # $1 = package, $2 = packageversion, $3 = packagebasename, $4 = gitdate
 function packagenames () {
@@ -63,13 +62,16 @@ function lognames () {
 # This probably assumes that you have done 
 #     packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" 
 # then this only needs MODULENAME parameter
+#
+# $1 = mode, $2 = modulename, $3 not used, $4 something with module version
+#
 function modulenames () {
 	echo "Determining module file path and name" \
 	 && systemnames && compilernames \
 	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" "${GITDATE}" \
 	 && requirenonzero packageversion \
-	 && requirenonzero compilercode \
-	 && requirenonzero compilerversion \
+	 && reportnonzero compilercode \
+	 && reportnonzero compilerversion \
 	 && mode="$1" \
 	 && if [ ! -z "$2" ] ; then \
 	      export modulename=$2 ; else export modulename=${package} ; fi \
@@ -90,15 +92,13 @@ function modulenames () {
 	            ; elif [ ! -z "${mode}" ] ; then \
 	                echo "ERROR: unknown mode: ${mode}" && exit 1 \
 	            ; fi \
-	         && if [ ! -z "${modulename}" ] ; then \
-	                export moduledir=${modulepath}/${modulename} \
-	            ; else \
-	                export moduledir=${modulepath}/${package} \
-	            ; fi \
+	         && export moduledir=${modulepath}/${modulename} \
 	    ; fi \
+	 && echo " .. module version is packageversion: ${packageversion}" \
 	 && export moduleversion=${packageversion} \
 	 && if [ ! -z "${variant}" ] ; then \
-	      export moduleversion=${moduleversion}-${variant} ; fi \
+	      echo " .. add variant=${variant}" \
+	       && export moduleversion=${moduleversion}-${variant} ; fi \
 	 && if [ ! -z "$4" -a ! "$4" = "keep" ] ; then \
 	       export moduleversion=${moduleversion}-$4 \
 	   ; fi \
