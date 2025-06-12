@@ -53,7 +53,6 @@ configure :: modules
 	     && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
 	            setmpicompilers ; else setcompilers ; fi \
 	     && reportcompilers \
-	     && export LIBS=${LIBS} \
 	     \
 	     && requirenonzero srcdir \
 	     && cd $$srcdir \
@@ -99,6 +98,8 @@ configure :: modules
 	            export CXXFLAGS="${CXXFLAGS}" ; fi \
 	     && if [ ! -z "${BLAS_LIBS}" ] ; then \
 	            export BLAS_LIBS="${BLAS_LIBS}" ; fi \
+	     && if [ ! -z "${LIBS}" ] ; then \
+	            export LIBS="${LIBS}" ; fi \
 	     && if [ ! -z "${CONFIGURE_SOURCE_THIS}" ] ; then \
 	            echo "Sourcing: ${CONFIGURE_SOURCE_THIS}" \
 	             && source ${CONFIGURE_SOURCE_THIS} ; fi \
