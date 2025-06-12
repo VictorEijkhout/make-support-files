@@ -81,8 +81,8 @@ configure : modules
 	        ; else cmake=${CMAKENAME} \
 	           && echo "Using cmake=$$(cmake)" \
 	        ; fi \
-	     && if [ ! -z "${BUILDTYPE}" ] ; then \
-	          cmakebuildtype=${BUILDTYPE} \
+	     && if [ ! -z "${CMAKEBUILDTYPE}" ] ; then \
+	          cmakebuildtype=${CMAKEBUILDTYPE} \
 	        ; elif [ ! -z "${CMAKEBUILDDEBUG}" ] ; then \
 	          cmakebuildtype=Debug ; else cmakebuildtype=RelWithDebInfo \
 	        ; fi \
