@@ -246,6 +246,10 @@ in your makefile (or better: on your make commandline) to use 24 threads, et cet
 
 ## Customization
 
+The CMake build type is `RelWithDebInfo` by default.
+Set `CMAKEBUILDDEBUG` nonzero for `Debug`,
+or set `CMAKEBUILDTYPE` for any custom type.
+
 If the package does not generate a `lib` (or `lib64`) directory, set the variable `NOLIB` to anything nonzero.
 
 If the package generates a `bin` directory, set `HASBIN` to something non-null. If the bin directory is other than `TACC_PACKAGE_DIR/bin`, set `BINDIR` to the location relative to `TACC_PACKAGE_DIR`.
