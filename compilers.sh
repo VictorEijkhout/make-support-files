@@ -67,12 +67,15 @@ function setmpicompilers () {
 
 function reportcompilers () {
     echo "Using compilers for mode ${MODE}:" \
+     && echo " .. TACC_CC=${TACC_CC}" \
      && echo " .. CC=${CC}" \
      && echo "    where ${CC}=$( which ${CC} )" \
      && echo "    and CFLAGS=${CFLAGS}" \
+     && echo " .. TACC_CXX=${TACC_CXX}" \
      && echo " .. CXX=${CXX}" \
      && echo "    where ${CXX}=$( which ${CXX} )" \
      && echo "    and CXXFLAGS=${CXXFLAGS}" \
+     && echo " .. TACC_FC=${TACC_FC}" \
      && echo " .. FC=${FC}" \
      && if [ ! -z "${FC}" ] ; then \
 	 echo "    where ${FC}=$( which ${FC} )" \
@@ -99,6 +102,7 @@ function reportcompilers () {
 	     && echo "    where ${basecompiler}=$( which ${basecompiler} )" \
         ; fi \
 	     \
+	&& echo "Using LD_LIBRARY_PATH = $( echo ${LD_LIBRARY_PATH} | tr ':' '\n' )" \
 	&& export PKGCONFIGPATH=${PKG_CONFIG_PATH} \
 	&& export PKGCONFIGPATH=${PKG_CONFIG_ADDS}${PKGCONFIGPATH} \
 	&& export PKG_CONFIG_PATH=${PKGCONFIGPATH} \

@@ -261,7 +261,7 @@ moduletest :
 	    ; fi \
 	 && tmdir=$${vt} \
 	 && if [ "${ECHO}" = "1" ] ; then echo "module test: $${tmd}=$${tmdir}" ; fi \
-	 && if [ ! -d "$${tmdir}" ] ; then \
+	 && if [ ! -z "$${tmd}" -a ! -d "$${tmdir}" ] ; then \
 	        echo "Module <<$$m>> loaded but directory not found: $${tmd}=$${tmdir}" \
 	         && exit 1 \
 	    ; fi
