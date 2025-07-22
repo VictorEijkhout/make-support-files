@@ -212,9 +212,11 @@ upstreams :
 
 info ::
 	@echo "================ module stuff"
-	@echo "    make modules : check if prereq modules are loaded"
+	@echo "    make listmodules / modules : list prereqs / check loaded"
 	@echo "    make moduletest MODULE=..."
-.PHONY: modules moduleprint
+.PHONY: listmodules modules moduleprint
+listmodules ::
+	@echo ${MODULES}
 modules ::
 	@for m in ${MODULES} ; do \
 	    ${MAKE} --no-print-directory moduletest MODULE=$$m \
