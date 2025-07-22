@@ -22,6 +22,15 @@ configure : modules
 	 && requirenonzero installext \
 	 && lognames $$installext \
 	 && requirenonzero configurelog \
+	     && export builddir=$$( make --no-print-directory builddir \
+	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
+	            HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
+	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
+	            ) \
+	     && reportnonzero builddir \
+	     && export logfilesdir=$${builddir}/../logfiles && mkdir -p $${logfilesdir} \
+	 && requirenonzeropath logfilesdir \
 	 && ( \
 	    echo "CMake configure stage" \
 	     && export srcdir=$$( make --no-print-directory srcdir \
@@ -31,13 +40,6 @@ configure : modules
 	            DOWNLOADPATH=${DOWNLOADPATH} SRCPATH=${SRCPATH} \
 	            ) \
 	     && reportnonzero srcdir \
-	     && export builddir=$$( make --no-print-directory builddir \
-	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
-	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
-	            HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
-	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
-	            ) \
-	     && reportnonzero builddir \
 	     && export prefixdir=$$( make --no-print-directory prefixdir \
 	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
@@ -100,6 +102,8 @@ configure : modules
 	        ; fi \
 	     && echo "cmdline=$$cmdline" \
 	     && ( cd $$builddir && eval $$cmdline ) \
-	    ) 2>&1 | tee $$configurelog
+	    ) 2>&1 | tee $${configurelog} \
+	 && requirenonzero logfilesdir \
+	 && cp $${configurelog} $${logfilesdir}/
 	@echo && echo "CMake configuration ended: $$( date )" && echo 
 
