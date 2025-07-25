@@ -56,14 +56,20 @@ package :
 	 && export PACKAGE=$( echo ${PACKAGE} | tr a-z A-Z ) \
 	 && echo $${package}
 info :: 
-	@echo "make version packageversion : list current version"
-.PHONY: version packageversion
+	@echo "make version/packageversion, loadversion : list current version, module version"
+.PHONY: version packageversion loadversion
 version packageversion :
 	@if [ -z "${PACKAGEVERSION}" ] ; then \
 	      echo "WARNING: variable PACKAGEVERSION null in homedir rule" && exit 1 ; fi \
 	 && packageversion=${PACKAGEVERSION} \
 	 && export packageversion=$$( echo $${packageversion} | tr A-Z a-z ) \
 	 && echo $$packageversion
+loadversion :
+	@if [ ! -z "${LOADVERSION}" ] ; then \
+	    echo "${LOADVERSION}" \
+	 ; else \
+	    make --no-print-directory version \
+	 ; fi
 moreinfo ::
 	@echo "make homedir, srcdir, builddir, prefixdir : dir names"
 	@echo "make upstream : anti-dependencies"
@@ -215,8 +221,15 @@ info ::
 	@echo "    make listmodules / modules : list prereqs / check loaded"
 	@echo "    make moduletest MODULE=..."
 .PHONY: listmodules modules moduleprint
+TARGET =
 listmodules ::
-	@echo ${MODULES}
+	@tmodules="$$( echo ${MODULES_${TARGET}} )" \
+	 && echo "tmodules: <<$${tmodules}>>" >/dev/null \
+	 && if [ ! -z "$${tmodules}" ] ; then \
+	      echo $${tmodules} \
+	    ; else \
+	      echo ${MODULES} \
+	    ; fi
 modules ::
 	@for m in ${MODULES} ; do \
 	    ${MAKE} --no-print-directory moduletest MODULE=$$m \
