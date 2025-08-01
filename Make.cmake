@@ -83,14 +83,19 @@ configure : modules
 	        ; else cmake=${CMAKENAME} \
 	           && echo "Using cmake=$$(cmake)" \
 	        ; fi \
+	     && if [ ! -z "${CMAKEUSENINJA}" ] ; then \
+	          echo " .. using Ninja generator" \
+	           && cmake="$${cmake} -G Ninja" \
+	        ; fi \
 	     && if [ ! -z "${CMAKEBUILDTYPE}" ] ; then \
 	          cmakebuildtype=${CMAKEBUILDTYPE} \
 	        ; elif [ ! -z "${CMAKEBUILDDEBUG}" ] ; then \
 	          cmakebuildtype=Debug ; else cmakebuildtype=RelWithDebInfo \
 	        ; fi \
-	     && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir \
+	     && cmdline="$${cmake} -D CMAKE_INSTALL_PREFIX=$$prefixdir -Wno-dev \
 	            $$( if [ ! -z "${COLORDIAGNOSTICSOFF}" ] ; then echo -DCMAKE_COLOR_DIAGNOSTICS=OFF ; fi ) \
 	            $$( if [ -z '' ] ; then echo -DCMAKE_COMPILE_WARNING_AS_ERROR=OFF ; fi ) \
+	            -D CMAKE_POLICY_VERSION_MINIMUM=3.13 \
 	            -D CMAKE_VERBOSE_MAKEFILE=ON \
 	            -D BUILD_SHARED_LIBS=$$( if [ -z "${BUILDSTATICLIBS}" ] ; then echo ON; else echo OFF ; fi ) \
 	            -D CMAKE_BUILD_TYPE=$${cmakebuildtype} \
