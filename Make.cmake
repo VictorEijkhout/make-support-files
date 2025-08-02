@@ -32,7 +32,7 @@ configure : modules
 	     && export logfilesdir=$${builddir}/../logfiles && mkdir -p $${logfilesdir} \
 	 && requirenonzeropath logfilesdir \
 	 && ( \
-	    echo "CMake configure stage" \
+	    echo "CMake configure stage, started $$(date)" \
 	     && export srcdir=$$( make --no-print-directory srcdir \
 	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	            PACKAGEBASENAME=${PACKAGEBASENAME} \

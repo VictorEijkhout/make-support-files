@@ -24,7 +24,7 @@ configure :: modules
 	      export prefixoption=${PREFIXOPTION} \
 	    ; else export prefixoption=--prefix ; fi \
 	  && ( \
-	    echo "Start autotools-based configuration" \
+	    echo "Start autotools-based configuration, started $$(date)" \
 	     && export srcdir=$$( make --no-print-directory srcdir \
 	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	            PACKAGEBASENAME=${PACKAGEBASENAME} \
