@@ -22,14 +22,14 @@ configure : modules
 	 && requirenonzero installext \
 	 && lognames $$installext \
 	 && requirenonzero configurelog \
-	     && export builddir=$$( make --no-print-directory builddir \
+	 && export builddir=$$( make --no-print-directory builddir \
 	            PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	            PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
 	            HOMEDIR=${HOMEDIR} BUILDDIRROOT=${BUILDDIRROOT} \
 	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
 	            ) \
-	     && reportnonzero builddir \
-	     && export logfilesdir=$${builddir}/../logfiles && mkdir -p $${logfilesdir} \
+	 && reportnonzero builddir \
+	 && export logfilesdir=$${builddir}/../logfiles && mkdir -p $${logfilesdir} \
 	 && requirenonzeropath logfilesdir \
 	 && ( \
 	    echo "CMake configure stage, started $$(date)" \

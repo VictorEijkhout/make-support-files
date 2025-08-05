@@ -142,6 +142,7 @@ function setnames () {
             INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
             ) \
      && requirenonzero builddir \
+     && export logfilesdir=${builddir}/../logfiles \
      && export prefixdir=$( make --no-print-directory prefixdir \
             PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
             PACKAGEBASENAME=${PACKAGEBASENAME} MODE=${MODE} \
