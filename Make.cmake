@@ -46,7 +46,6 @@ configure : modules
 	            INSTALLPATH=${INSTALLPATH} INSTALLROOT=${INSTALLROOT} \
 	            INSTALLEXT=${INSTALLEXT} INSTALLVARIANT=${INSTALLVARIANT} \
 	            ) \
-	     && reportnonzero INSTALLROOT \
 	     && reportnonzero prefixdir \
 	     \
 	     && echo "Modules loaded: $$( module -t list 2>&1 | tr '\n' ' ' )" 2>/dev/null \
