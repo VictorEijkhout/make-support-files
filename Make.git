@@ -156,11 +156,14 @@ betar :
 	 && if [ ! -d "$$srcname" ] ; then \
 	        echo "Error: download dir $${homedir} does not contain: $${srcname}" \
 	         && exit 1 ; fi \
-	 && if [ -d "$${tgtname}" ] ; then \
-	        echo " .. rm old source dir <<$${tgtname}>>" \
-	         && rm -rf "$${tgtname}" ; fi \
-	 && echo " .. first copy <<$${srcname}>> to <<$${tgtname}>>" \
-	 && cp -r "$${srcname}" "$${tgtname}" \
+	 && if [ "$${srcname}" != "$${tgtname}" ] ; then \
+	      echo " .. first copy <<$${srcname}>> to <<$${tgtname}>>" \
+	       && if [ -d "$${tgtname}" ] ; then \
+	            echo " .. but first rm old source dir <<$${tgtname}>>" \
+	             && rm -rf "$${tgtname}" \
+	          ; fi \
+	       && mv "$${srcname}" "$${tgtname}" \
+	    ; fi \
 	 && if [ ! -z "${GITTAG}" ] ; then \
 	      tgzname=$${packagebasename}-${GITTAG}.tgz \
 	    ; else \
