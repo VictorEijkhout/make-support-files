@@ -29,12 +29,19 @@ info ::
 	        echo "  source : $$srcdir" \
 	    ; fi
 
-.PHONY: homepage url
+.PHONY: homepage url docurl urls
 homepage :
 	@open ${URL}
 url :
 	@if [ ! -z "${URL}" ] ; then \
 	    echo ${URL} ; else echo "No URL known" ; fi
+docurl :
+	@if [ ! -z "${DOCURL}" ] ; then \
+	    echo ${DOCURL} ; else echo "No DOCURL known" ; fi
+urls :
+	@if [ ! -z "${URL}" ] ;    then echo ${URL} ; fi
+	@if [ ! -z "${DOCURL}" ] ; then echo ${DOCURL} ; fi
+
 .PHONY: list_installations
 list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
