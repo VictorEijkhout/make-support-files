@@ -65,8 +65,8 @@ version packageversion :
 	 && export packageversion=$$( echo $${packageversion} | tr A-Z a-z ) \
 	 && echo $$packageversion
 loadversion :
-	@if [ ! -z "${LOADVERSION}" ] ; then \
-	    echo "${LOADVERSION}" \
+	@if [ ! -z "${PACKAGELOADVERSION}" ] ; then \
+	    echo "${PACKAGELOADVERSION}" \
 	 ; else \
 	    make --no-print-directory version \
 	 ; fi
