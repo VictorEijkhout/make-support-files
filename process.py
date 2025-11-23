@@ -1,0 +1,44 @@
+#!/bin/bash
+
+##
+## python modules
+##
+import re
+import subprocess
+import sys
+
+def echo_string( string,logfile=None,terminal=sys.stdout ):
+    if  terminal:
+        print( string,file=terminal )
+    if logfile is not None:
+        print( string,file=logfile )
+
+def process_execute( cmdline,process=None,logfile=None,terminal=sys.stdout ):
+    if logfile is None:
+        logfile = sys.stdout
+    if process is None:
+        process = subprocess.Popen\
+            (['/bin/bash', '-l'], 
+             stdin=subprocess.PIPE, 
+             stdout=subprocess.PIPE, 
+             stderr=subprocess.STDOUT,
+             text=True,
+             bufsize=1)
+    echo_string( f"Command line={cmdline}" )
+    process_input = process.stdin
+    process_input.write( cmdline+"\n" )
+    process_input.flush()
+    process_input.close()
+    echo_string( "Output:" )
+    lastline = ""
+    while True:
+        line = process.stdout.readline()
+        if not line:
+            break
+        line = re.sub( r'^[ \t]*','', re.sub( r'[ \t\n]*$','', line ) )
+        if line != "":
+            echo_string( line,terminal=None )
+            lastline = line
+    echo_string( " .. end of output" )
+    process.wait()
+    return lastline

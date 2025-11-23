@@ -35,9 +35,14 @@ download :: homedir
 	    ; else \
 	        url=$$( echo ${TGZURL} | sed 's/ //g' ) \
 	    ; fi \
+	 && set -x \
+	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "import download; download.download_from_url(\"$${url}\")" \
+	)
+old_download :
+	@echo \
 	 && requirenonzero url && cmdline="wget $${url}" \
 	 && echo " .. cmdline=$$cmdline" \
-	 && eval $$cmdline \
+	 && echo eval $$cmdline \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        echo " .. rename: ${TGZRENAME}" \
 	         && eval ${TGZRENAME}  ; fi \
@@ -73,6 +78,11 @@ unpack untar ::
 	         && tgz=$${tgz##*/} \
 	    ; fi \
 	 && echo " .. using compressed file: $${tgz}" \
+	 && export srcdir=$${packagebasename}-$${packageversion} \
+	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "import download; download.unpack_from_url( \"$${tgz}\", srcdir=\"$${srcdir}\" )" \
+	) 2>&1 | tee untar.log
+old_unpack :
+	echo \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
 	        echo " .. unzipping $$tgz" \
 	         && unpackdir=$$( unzip -l $$tgz | sed -n -e '5p' | awk '{print $$4}' ) \
