@@ -17,35 +17,7 @@ download :: homedir
 	 && echo "Dowload starting for $${package}-$${packageversion}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
-	 && echo " .. download in $$( pwd )" \
-	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
-	    ; else \
-	        export tgz="$$( echo ${TGZURL} | sed 's/ //g' )" \
-	         && export tgz="$${tgz##*/}" \
-	    ; fi \
-	 && cmdline="rm -rf $$tgz $${package}-${PACKAGEVERSION}" \
-	 && echo " .. cleanup: $${cmdline}" && eval $${cmdline} \
-	 && if [ ! -z "${ZIPURL}" ] ; then \
-	        url=${ZIPURL} \
-	    ; elif [ ! -z "${TXZURL}" ] ; then \
-	        url=${TXZURL} \
-	    ; elif [ ! -z "${BZ2URL}" ] ; then \
-	        url=${BZ2URL} \
-	    ; else \
-	        url=$$( echo ${TGZURL} | sed 's/ //g' ) \
-	    ; fi \
-	 && set -x \
-	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "import download; download.download_from_url(\"$${url}\")" \
-	)
-old_download :
-	@echo \
-	 && requirenonzero url && cmdline="wget $${url}" \
-	 && echo " .. cmdline=$$cmdline" \
-	 && echo eval $$cmdline \
-	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        echo " .. rename: ${TGZRENAME}" \
-	         && eval ${TGZRENAME}  ; fi \
+	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "import download; download.download_from_url( \"${DOWNLOADURL}\" )" \
 	)
 unpack untar :: 
 	@( \
@@ -63,24 +35,42 @@ unpack untar ::
 	       && requirenonzeropath downloadpath \
 	       && cd "$${downloadpath}" \
 	    ; else cd $$homedir ; fi \
-	 && echo " .. unpacking in downloadpath=$${downloadpath}" \
-	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
-	    ; else \
-	        if [ ! -z "${ZIPURL}" ] ; then \
-	            tgz=${ZIPURL} \
-	        ; elif [ ! -z "${TXZURL}" ] ; then \
-	            tgz=${TXZURL} \
-	        ; elif [ ! -z "${BZ2URL}" ] ; then \
-	            tgz=${BZ2URL} \
-	        ; else tgz=${TGZURL} \
-	        ; fi \
-	         && tgz=$${tgz##*/} \
-	    ; fi \
-	 && echo " .. using compressed file: $${tgz}" \
+	 && echo " .. unpacking in downloadpath=$$(pwd)" \
 	 && export srcdir=$${packagebasename}-$${packageversion} \
-	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "import download; download.unpack_from_url( \"$${tgz}\", srcdir=\"$${srcdir}\" )" \
+	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "import download; download.unpack_from_url( \"${DOWNLOADURL}\", srcdir=\"$${srcdir}\" )" \
 	) 2>&1 | tee untar.log
+##
+## TGZRENAME is only used in conquest which is a weird package anyway
+##
+old_download :
+	@echo \
+	 && echo " .. download in $$( pwd )" \
+	 && if [ ! -z "${TGZRENAME}" ] ; then \
+	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
+	    ; else \
+	        export tgz="$$( echo ${TGZURL} | sed 's/ //g' )" \
+	         && export tgz="$${tgz##*/}" \
+	    ; fi \
+	 && cmdline="rm -rf $$tgz $${package}-${PACKAGEVERSION}" \
+	 && echo " .. cleanup: $${cmdline}" && eval $${cmdline} \
+	 \
+	 && if [ ! -z "${ZIPURL}" ] ; then \
+	        url=${ZIPURL} \
+	    ; elif [ ! -z "${TXZURL}" ] ; then \
+	        url=${TXZURL} \
+	    ; elif [ ! -z "${BZ2URL}" ] ; then \
+	        url=${BZ2URL} \
+	    ; else \
+	        url=$$( echo ${TGZURL} | sed 's/ //g' ) \
+	    ; fi \
+	 \
+	 && requirenonzero url && cmdline="wget $${url}" \
+	 && echo " .. cmdline=$$cmdline" \
+	 && echo eval $$cmdline \
+	 && if [ ! -z "${TGZRENAME}" ] ; then \
+	        echo " .. rename: ${TGZRENAME}" \
+	         && eval ${TGZRENAME}  ; fi \
+	)
 old_unpack :
 	echo \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
@@ -128,6 +118,20 @@ old_unpack :
 	         && ( cd $${srcdir} && eval "${BOOTSTRAP}" ) \
 	    ; fi \
 	 && echo "unpacked: $${srcdir}" \
+	 \
+	 && if [ ! -z "${TGZRENAME}" ] ; then \
+	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
+	    ; else \
+	        if [ ! -z "${ZIPURL}" ] ; then \
+	            tgz=${ZIPURL} \
+	        ; elif [ ! -z "${TXZURL}" ] ; then \
+	            tgz=${TXZURL} \
+	        ; elif [ ! -z "${BZ2URL}" ] ; then \
+	            tgz=${BZ2URL} \
+	        ; else tgz=${TGZURL} \
+	        ; fi \
+	         && tgz=$${tgz##*/} \
+	    ; fi \
 	) 2>&1 | tee untar.log
 
 retar :
