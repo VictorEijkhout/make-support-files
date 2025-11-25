@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
 ##
 ## python modules
@@ -12,6 +12,20 @@ def echo_string( string,logfile=None,terminal=sys.stdout ):
         print( string,file=terminal )
     if logfile is not None:
         print( string,file=logfile )
+
+def requirenonzero( var ):
+    try:
+        val = locals()[var]
+        if val == "":
+            raise Exception( f"variable is zero: {var}" )
+    except:
+        pass
+
+def unimplemented( var ):
+    try:
+        val = locals()[var]
+    except:
+        pass
 
 def process_execute( cmdline,process=None,logfile=None,terminal=sys.stdout ):
     if logfile is None:

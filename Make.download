@@ -21,23 +21,23 @@ download :: homedir
 	)
 unpack untar :: 
 	@( \
-	source ${MAKEINCLUDES}/names.sh \
-	 && homedir=$$( make --no-print-directory homedir \
-	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
-	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
-	        HOMEDIR=${HOMEDIR} \
-	        ) \
-	 && requirenonzeropath homedir \
-	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
-	 && echo "Unpacking file for $${package}-${PACKAGEVERSION}" \
-	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-	      downloadpath="${DOWNLOADPATH}" \
-	       && requirenonzeropath downloadpath \
-	       && cd "$${downloadpath}" \
-	    ; else cd $$homedir ; fi \
-	 && echo " .. unpacking in downloadpath=$$(pwd)" \
-	 && export srcdir=$${packagebasename}-$${packageversion} \
-	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "import download; download.unpack_from_url( \"${DOWNLOADURL}\", srcdir=\"$${srcdir}\" )" \
+	 echo \
+	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c \
+"\
+import process; \
+process.unimplemented( \"DOWNLOADPATH\" ); \
+import names; \
+homedir = names.create_homedir( \
+    system=\"${TACC_SYSTEM}\",compiler=\"${TACC_FAMILY_COMPILER}\",\
+    root=\"${PACKAGEROOT}\",package=\"${PACKAGE}\",version=\"${PACKAGEVERSION}\", \
+    ); \
+import os; \
+os.chdir(homedir); \
+packagebasename,packageversion = names.packagenames( \"${PACKAGE}\",\"${PACKAGEVERSION}\" ); \
+srcdir=f\"{packagebasename}-{packageversion}\"; \
+import download; \
+download.unpack_from_url( \"${DOWNLOADURL}\", srcdir=srcdir ) \
+" \
 	) 2>&1 | tee untar.log
 ##
 ## TGZRENAME is only used in conquest which is a weird package anyway
@@ -73,6 +73,20 @@ old_download :
 	)
 old_unpack :
 	echo \
+	source ${MAKEINCLUDES}/names.sh \
+	 && homedir=$$( make --no-print-directory homedir \
+	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
+	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
+	        HOMEDIR=${HOMEDIR} \
+	        ) \
+	 && requirenonzeropath homedir \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	      downloadpath="${DOWNLOADPATH}" \
+	       && requirenonzeropath downloadpath \
+	       && cd "$${downloadpath}" \
+	    ; else cd $$homedir ; fi \
+	 && echo " .. unpacking in downloadpath=$$(pwd)" \
+	 \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
 	        echo " .. unzipping $$tgz" \
 	         && unpackdir=$$( unzip -l $$tgz | sed -n -e '5p' | awk '{print $$4}' ) \
