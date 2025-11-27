@@ -9,11 +9,30 @@ import re
 #
 # my own modules
 #
+import os
 import process
 from process import echo_string
 
-def download_from_url( url ):
-    " assume with are in the right download directory "
+def cd_download_path( **kwargs ):
+    system   = kwargs.get("system",None)
+    compiler = kwargs.get("compiler",None)
+    root     = kwargs.get("root",None)
+    package  = kwargs.get("package","nullpackage")
+    version  = kwargs.get("version","0.0.0")
+    downloadpath = kwargs.get("downloadpath","")
+    if not re.match( r'[ \t\n]*$',downloadpath ):
+        echo_string( f"Change dir to downloadpath: {downloadpath}" )
+        os.chdir( downloadpath )
+    else:
+        homedir = names.create_homedir\
+            ( \
+              system=system,compiler=compiler,
+              root=root,package=package,version=version,
+             )
+        os.chdir(homedir)
+
+def download_from_url( url,**kwargs, ):
+    cd_download_path( **kwargs)
     if url == "":
         raise Exception("No URL given to download")
     echo_string( f"In download dir: {os.getcwd()} downloading {url}" )
@@ -21,9 +40,10 @@ def download_from_url( url ):
     process.process_execute( f"rm -f {tgz}" )
     cmdline=f"wget {url}"
     with open( "download.log", "w" ) as downloadlog:
-        process.process_execute( cmdline,logfile=downloadlog )
+        process.process_execute( cmdline,logfile=downloadlog,terminal=None )
 
-def unpack_from_url( url,srcdir=None ):
+def unpack_from_url( url,srcdir=None,**kwargs ):
+    cd_download_path( **kwargs )
     echo_string( f"Unpacking in {os.getcwd()}" )
     file = re.sub( r'.*/','',url )
     if re.match( file,r'^[ \t]*$' ):
@@ -51,6 +71,8 @@ def unpack_from_url( url,srcdir=None ):
         process.process_execute( f"tar fx {unpackdir}.tar" )
     else: raise Exception(f"Cannot unpack {file}")
     if srcdir:
-        echo_string( f"Moving unpacked dir to srcdir: {srcdir}" )
-        process.process_execute( f"mv {unpackdir} {srcdir}" )
-
+        if unpackdir != srcdir:
+            echo_string( f"Moving unpacked dir to srcdir: {srcdir}" )
+            process.process_execute( f"mv {unpackdir} {srcdir}" )
+        else:
+            echo_string( f"Unpacked dir is at final name: {srcdir}" )

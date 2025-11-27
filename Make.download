@@ -16,27 +16,33 @@ download :: homedir
 	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
 	 && echo "Dowload starting for $${package}-$${packageversion}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
-	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "import download; download.download_from_url( \"${DOWNLOADURL}\" )" \
+	    downloadpath="${DOWNLOADPATH}" ; else downloadpath="$$homedir" ; fi \
+	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
+import download; \
+download.download_from_url( \
+    \"${DOWNLOADURL}\",\
+    system=\"${TACC_SYSTEM}\",compiler=\"${TACC_FAMILY_COMPILER}\",\
+    root=\"${PACKAGEROOT}\",package=\"${PACKAGE}\",version=\"${PACKAGEVERSION}\", \
+    downloadpath=\"$${downloadpath}\" \
+    )" \
 	)
 unpack untar :: 
 	@( \
 	 echo \
+	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
+	    downloadpath="${DOWNLOADPATH}" ; else downloadpath="$$homedir" ; fi \
 	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c \
 "\
-import process; \
-process.unimplemented( \"DOWNLOADPATH\" ); \
 import names; \
-homedir = names.create_homedir( \
-    system=\"${TACC_SYSTEM}\",compiler=\"${TACC_FAMILY_COMPILER}\",\
-    root=\"${PACKAGEROOT}\",package=\"${PACKAGE}\",version=\"${PACKAGEVERSION}\", \
-    ); \
-import os; \
-os.chdir(homedir); \
 packagebasename,packageversion = names.packagenames( \"${PACKAGE}\",\"${PACKAGEVERSION}\" ); \
 srcdir=f\"{packagebasename}-{packageversion}\"; \
 import download; \
-download.unpack_from_url( \"${DOWNLOADURL}\", srcdir=srcdir ) \
+download.unpack_from_url( \
+    \"${DOWNLOADURL}\", srcdir=srcdir, \
+    system=\"${TACC_SYSTEM}\",compiler=\"${TACC_FAMILY_COMPILER}\",\
+    root=\"${PACKAGEROOT}\",package=\"${PACKAGE}\",version=\"${PACKAGEVERSION}\", \
+    downloadpath=\"$${downloadpath}\" \
+    ) \
 " \
 	) 2>&1 | tee untar.log
 ##

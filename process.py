@@ -27,7 +27,10 @@ def unimplemented( var ):
     except:
         pass
 
-def process_execute( cmdline,process=None,logfile=None,terminal=sys.stdout ):
+def process_execute( cmdline,**kwargs ):
+    process = kwargs.get("process",None)
+    logfile = kwargs.get("logfile",None)
+    terminal = kwargs.get( "terminal",sys.stdout )
     if logfile is None:
         logfile = sys.stdout
     if process is None:
@@ -51,7 +54,7 @@ def process_execute( cmdline,process=None,logfile=None,terminal=sys.stdout ):
             break
         line = re.sub( r'^[ \t]*','', re.sub( r'[ \t\n]*$','', line ) )
         if line != "":
-            echo_string( line,terminal=None )
+            echo_string( line,terminal=terminal )
             lastline = line
     echo_string( " .. end of output" )
     process.wait()
