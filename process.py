@@ -13,6 +13,9 @@ def echo_string( string,logfile=None,terminal=sys.stdout ):
     if logfile is not None:
         print( string,file=logfile )
 
+def nonnull( val ):
+    return not re.match( r'^[ \t\n]*$',val )
+
 def requirenonzero( var ):
     try:
         val = locals()[var]

@@ -44,6 +44,14 @@ urls :
 
 .PHONY: list_installations
 list_installations ::
+	@PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
+import info; \
+info.list_installations( \
+    root=\"${PACKAGEROOT}\",package=\"${PACKAGE}\",version=\"${PACKAGEVERSION}\", \
+    ) \
+"
+
+old_list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && homedir=$$( make --no-print-directory homedir \
 	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
@@ -174,6 +182,17 @@ builddir :
             ; fi \
 	 && echo $${builddir}
 prefixdir :
+	@PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
+import names; \
+prefixdir = names.prefixdir_name( \
+    package=\"${PACKAGE}\", packageversion=\"${PACKAGEVERSION}\", \
+    noinstall=\"${NOINSTALL}\",  installpath=\"${INSTALLPATH}\", installroot=\"${INSTALLROOT}\", \
+    mode=\"${MODE}\", modulename=\"${MODULENAME}\", \
+    installvariant=\"${INSTALLVARIANT}\", installext=\"${INSTALLEXT}\", \
+    terminal=None ); \
+print(prefixdir); \
+"
+old_prefixdir :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && echo 'if [ ! -z "${PREFIXPATH}" ] ; then' >/dev/null \
 	 && echo "The  -no-print-directory has to be skipped here" >/dev/null \

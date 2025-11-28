@@ -9,7 +9,6 @@ import re
 #
 # my own modules
 #
-import os
 import process
 from process import echo_string
 
