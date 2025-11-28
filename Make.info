@@ -270,6 +270,14 @@ listmodules ::
 	      echo ${MODULES} \
 	    ; fi
 modules ::
+	@PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
+import modules; \
+modules.test_modules( \
+    modules=\"${MODULES}\", \
+    ) \
+"
+
+old_modules :
 	@for m in ${MODULES} ; do \
 	    ${MAKE} --no-print-directory moduletest MODULE=$$m \
 	 ; done

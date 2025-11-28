@@ -12,8 +12,13 @@ import sys
 #
 import process
 from process import echo_string,requirenonzero,nonnull
-# requirenonzeropath
 
+##
+## Deescription: compute package name and version,
+## both lowercase
+## in the future we will handle the case of git pulls
+## Result: pair package,version
+##
 def packagenames( **kwargs ):
     package = kwargs.get("package").lower()
     version = kwargs.get("packageversion").lower()
@@ -24,6 +29,9 @@ def packagenames( **kwargs ):
                  terminal=terminal )
     return package,version
 
+##
+## Description: create a directory for either building or install
+##
 def create_homedir( **kwargs ):
     root     = kwargs.get( "root",None )
     package  = kwargs.get( "package","nullpackage" )
@@ -47,6 +55,12 @@ def create_homedir( **kwargs ):
             sys.exit(1)
     return homedir
 
+##
+## Description: compute compiler & mpi name & version
+## Result: quadruple cname,cversion,mname,mversion
+## Notes:
+## this is fully based on Lmod environment variables as in use at TACC
+##
 def compiler_names():
     compiler = os.environ['TACC_FAMILY_COMPILER']
     cversion = os.environ['TACC_FAMILY_COMPILER_VERSION']
@@ -55,6 +69,9 @@ def compiler_names():
     mversion = os.environ['TACC_FAMILY_MPI_VERSION']
     return compiler,cversion,cshortv,mpi,mversion
 
+##
+## Description: compute single system/compiler/mpi identifier
+##
 def environment_code( mode ):
     systemcode = os.environ['TACC_SYSTEM'] # systemnames
     compilercode,compilerversion,compilershortversion,mpicode,mpiversion = compiler_names()
@@ -69,8 +86,6 @@ def systemnames():
 
 def install_extension( **kwargs ):
     package,packageversion = packagenames( **kwargs )
-        # ( kwargs.get("package"),kwargs.get("packageversion"),
-        #   terminal=kwargs.get("terminal",None) )
     envcode = environment_code( kwargs.get("mode") )
     installext = f"{packageversion}-{envcode}"
     if nonnull( iext := kwargs.get( "installext","" ) ):
@@ -81,8 +96,6 @@ def install_extension( **kwargs ):
 
 def builddir_name( **kwargs ):
     package,packageversion = packagenames( **kwargs )
-        # ( kwargs.get("package"),kwargs.get("packageversion"),
-        #   terminal=kwargs.get("terminal",None) )
     installext = install_extension( **kwargs )
     if nonnull( bdir := kwargs.get("root","") ):
         builddir = f"{bdir}/build-{installext}"
@@ -93,8 +106,6 @@ def builddir_name( **kwargs ):
 
 def prefixdir_name( **kwargs ):
     package,packageversion = packagenames( **kwargs )
-        # ( kwargs.get("package"),kwargs.get("packageversion"),
-        #   terminal=kwargs.get("terminal",None) )
     if nonnull( pdir:=kwargs.get("installpath","") ):
         echo_string( f"Using external prefixdir: {pdir}" )
         prefixdir = pdir
