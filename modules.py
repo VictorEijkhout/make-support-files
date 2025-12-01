@@ -29,15 +29,10 @@ def test_modules( **kwargs ):
         if not os.path.isdir(dir):
             error = True
             echo_string( f"Module {mod} loaded but directory not found: {dir}" )
-        loadedversion = os.environ[ "TACC_"+mod.upper()+"_VERSION" ]
-        if nonnull(ver):
-            load_mjr,load_mnr,load_mcr = f"{loadedversion}.0.0".split(".",maxsplit=2)
-            load_mnr = load_mnr.strip(".0")
-            load_mcr = load_mcr.strip(".0")
-            want_mjr,want_mnr,want_mcr = f"{ver}.99.99".split(".",maxsplit=2)
-            for l,w in zip( [load_mjr,load_mnr,load_mcr],[want_mjr,want_mnr,want_mcr] ):
-                if l==w or w=="99":
-                    echo_string( f"module version match load={l} want={w}" )
-                else:
-                    echo_string( f"module version mismatch load={l} want={w}" )
+        try:
+            loadedversion = os.environ[ "TACC_"+mod.upper()+"_VERSION" ]
+            if nonnull(ver):
+                if not process.version_satisfies(loadedversion,ver,terminal=None):
+                    echo_string( f"loaded version: {loadedversion} does not match version {ver}" )
+        except: continue
     if error: sys.exit(1)

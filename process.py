@@ -62,3 +62,36 @@ def process_execute( cmdline,**kwargs ):
     echo_string( " .. end of output" )
     process.wait()
     return lastline
+
+def number_satisfies( l,w,**kwargs ):
+    if False:
+        return False
+    elif re.match( r'<=',w ):
+        w = w.lstrip('<=')
+        return int(l)<=int(w)
+    elif re.match( r'<',w ):
+        w = w.lstrip('<')
+        return int(l)<int(w)
+    elif re.match( r'>=',w ):
+        w = w.lstrip('>=')
+        return int(l)>=int(w)
+    elif re.match( r'>',w ):
+        w = w.lstrip('>')
+        return int(l)>int(w)
+    elif l==w:
+       return True
+    else: return False
+
+def version_satisfies( loaded,tomatch,**kwargs ):
+    load_mjr,load_mnr,load_mcr = f"{loaded}.0.0".split(".",maxsplit=2)
+    load_mnr = load_mnr.strip(".0")
+    load_mcr = load_mcr.strip(".0")
+    want_mjr,want_mnr,want_mcr = f"{tomatch}.99.99".split(".",maxsplit=2)
+    for l,w in zip( [load_mjr,load_mnr,load_mcr],[want_mjr,want_mnr,want_mcr] ):
+        if number_satisfies(l,w,**kwargs) or w=="99":
+            echo_string( f"module version match load={l} want={w}",**kwargs )
+            return True
+        else:
+            echo_string( f"module version mismatch load={l} want={w}",**kwargs )
+            return False
+
