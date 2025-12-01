@@ -7,11 +7,29 @@ import re
 import subprocess
 import sys
 
-def echo_string( string,logfile=None,terminal=sys.stdout ):
-    if  terminal:
+def echo_string( string,**kwargs ):
+    if  terminal:= kwargs.get( "terminal",sys.stdout ):
         print( string,file=terminal )
-    if logfile is not None:
+    if logfile := kwargs.get( "logfile",None ):
         print( string,file=logfile )
+
+def error_abort( string,**kwargs ):
+    echo_string( f"ERROR {string}" )
+    sys.exit(1)
+
+def abort_on_zero_env( envvar ):
+    try:
+        moduleroot = os.environ[envvar]
+    except:
+        error_abort( f"Environment variable can not be null: {envvar}",**kwargs )
+
+def abort_on_nonzero_env( envvar ):
+    try:
+        os.environ[envvar]
+        pass
+    except:
+        error_abort( f"Can not handle nonzero environment variable {envvar}" )
+
 
 def nonnull( val ):
     return not re.match( r'^[ \t\n]*$',val )

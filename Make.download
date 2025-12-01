@@ -34,7 +34,8 @@ unpack untar ::
 	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c \
 "\
 import names; \
-packagebasename,packageversion = names.packagenames( \"${PACKAGE}\",\"${PACKAGEVERSION}\" ); \
+packagebasename,packageversion = names.packagenames\
+    ( package=\"${PACKAGE}\",packageversion=\"${PACKAGEVERSION}\" ); \
 srcdir=f\"{packagebasename}-{packageversion}\"; \
 import download; \
 download.unpack_from_url( \

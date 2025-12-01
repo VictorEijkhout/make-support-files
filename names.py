@@ -11,7 +11,8 @@ import sys
 # my own modules
 #
 import process
-from process import echo_string,requirenonzero,nonnull
+from process import echo_string,error_abort,abort_on_nonzero_env,abort_on_zero_env
+from process import requirenonzero,nonnull
 
 ##
 ## Deescription: compute package name and version,
@@ -125,13 +126,40 @@ def prefixdir_name( **kwargs ):
             prefixdir = f"{prefixdir}-{package}"
         # install extension
         installext = install_extension( **kwargs )
-            # ( package=package,packageversion=packageversion,
-            #   installext=kwargs.get("installext",""),installvariant=kwargs.get("installvariant",""),
-            #   mode=kwargs.get("mode"),
-            # )
         prefixdir = f"{prefixdir}-{installext}"
     if not nonnull( prefixdir ):
         raise Exception( "failed to set prefixdir" )
     if nonnull( var := kwargs.get("installvariant","") ):
         prefixdir = f"{prefixdir}/{var}"
     return prefixdir
+
+def module_file_full_name( **kwargs ):
+    abort_on_zero_env( "MODULEROOT" )
+    abort_on_nonzero_env( "MODULEDIRSET" )
+    #
+    # construct module path
+    #
+    modulepath = os.environ[ "MODULEROOT" ]
+    if ( mode := kwargs.get("mode","mode_not_found") ) in [ "mpi","hybrid", ]:
+        modulepath += f"/MPI/{compilercode}/{compilerversion}/{mpicode}/{mpiversion}"
+    elif mode in [ "seq","omp", ]:
+        modulepath += f"/Compiler/{compilercode}/{compilerversion}"
+    elif mode == "core":
+        modulepath += f"/Core"
+    else: error_abort( f"Unknown mode: {mode}" )
+    #
+    # attach package name
+    #
+    package,packageversion = packagenames( **kwargs )
+    modulename = kwargs.get( "MODULENAME",package )
+    moduledir = f"{modulepath}/{modulename}"
+    #
+    # attach module version
+    #
+    moduleversion = packageversion
+    if nonnull( vt := kwargs.get("INSTALLVARIANT") ):
+        moduleversion += f"-{vt}"
+    if nonnull( mx := kwargs.get("MODULEVERSIONEXTRA") ):
+        moduleversion += f"-{mx}"
+
+    return f"{moduledir}/{moduleversion}.lua"

@@ -11,6 +11,7 @@ import re
 #
 import process
 from process import echo_string
+import names
 
 def cd_download_path( **kwargs ):
     system   = kwargs.get("system",None)
@@ -20,7 +21,7 @@ def cd_download_path( **kwargs ):
     version  = kwargs.get("version","0.0.0")
     downloadpath = kwargs.get("downloadpath","")
     if not re.match( r'[ \t\n]*$',downloadpath ):
-        echo_string( f"Change dir to downloadpath: {downloadpath}" )
+        echo_string( f"Change dir to downloadpath: {downloadpath}",**kwargs )
         os.chdir( downloadpath )
     else:
         homedir = names.create_homedir\
@@ -31,26 +32,27 @@ def cd_download_path( **kwargs ):
         os.chdir(homedir)
 
 def download_from_url( url,**kwargs, ):
-    cd_download_path( **kwargs)
+    downloadlog  = kwargs.pop( "logfile",open( f"{os.getcwd()}/download.log","w" ) )
+    cd_download_path( **kwargs,logfile=downloadlog )
     if url == "":
         raise Exception("No URL given to download")
-    echo_string( f"In download dir: {os.getcwd()} downloading {url}" )
+    echo_string( f"In download dir: {os.getcwd()} downloading {url}",logfile=downloadlog )
     tgz = re.sub( r'.*/','',url )
     process.process_execute( f"rm -f {tgz}" )
     cmdline=f"wget {url}"
-    with open( "download.log", "w" ) as downloadlog:
-        process.process_execute( cmdline,logfile=downloadlog,terminal=None )
+    process.process_execute( cmdline,logfile=downloadlog,terminal=None )
 
 def unpack_from_url( url,srcdir=None,**kwargs ):
-    cd_download_path( **kwargs )
-    echo_string( f"Unpacking in {os.getcwd()}" )
+    downloadlog  = kwargs.pop( "logfile",open( f"{os.getcwd()}/unpack.log","w" ) )
+    cd_download_path( **kwargs,logfile=downloadlog )
+    echo_string( f"Unpacking in {os.getcwd()}",logfile=downloadlog )
     file = re.sub( r'.*/','',url )
     if re.match( file,r'^[ \t]*$' ):
         raise Exception( f"Unpack {url} gives empty file name" )
     if not os.path.isfile( f"./{file}" ):
         raise Exception( f"No such file {file} in directory {os.getcwd()}" )
     ext = re.sub( r'.*\.','',file )
-    echo_string( f"Unpacking file: {file} ext: {ext}" )
+    echo_string( f"Unpacking file: {file} ext: {ext}",logfile=downloadlog )
     if ext in [ "gz","tgz", ]:
         unpackdir = process.process_execute( f"tar ftz {file} | head -n 1" )
         unpackdir = re.sub( r'/$','',unpackdir )

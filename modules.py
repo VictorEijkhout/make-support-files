@@ -11,7 +11,7 @@ import sys
 # my own modules
 #
 import process
-from process import echo_string,requirenonzero,nonnull
+from process import echo_string,error_abort,requirenonzero,nonnull
 
 def test_modules( **kwargs ):
     modules = kwargs.get( "modules","" )
@@ -34,5 +34,7 @@ def test_modules( **kwargs ):
             if nonnull(ver):
                 if not process.version_satisfies(loadedversion,ver,terminal=None):
                     echo_string( f"loaded version: {loadedversion} does not match version {ver}" )
+                    error = True
         except: continue
     if error: sys.exit(1)
+
