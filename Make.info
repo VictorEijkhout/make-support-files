@@ -169,7 +169,6 @@ builddir = names.builddir_name( \
     package=\"${PACKAGE}\", packageversion=\"${PACKAGEVERSION}\", \
     root=\"${BUILDDIRROOT}\", homedir=\"${PACKAGEROOT}\", \
     mode=\"${MODE}\", modulename=\"${MODULENAME}\", \
-    terminal=None, \
     ); \
 print(builddir); \
 "

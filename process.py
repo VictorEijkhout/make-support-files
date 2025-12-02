@@ -17,22 +17,28 @@ def error_abort( string,**kwargs ):
     echo_string( f"ERROR {string}" )
     sys.exit(1)
 
-def abort_on_zero_env( envvar ):
+def abort_on_zero_env( envvar,**kwargs ):
     try:
-        moduleroot = os.environ[envvar]
+        val = os.environ[envvar]
+        return val
     except:
         error_abort( f"Environment variable can not be null: {envvar}",**kwargs )
 
-def abort_on_nonzero_env( envvar ):
+def abort_on_nonzero_env( envvar,**kwargs ):
     try:
-        os.environ[envvar]
-        pass
+        val = os.environ[envvar]
+        if nonnull( val ) :
+            error_abort( f"Can not handle nonzero environment variable {envvar}={val}" )
     except:
-        error_abort( f"Can not handle nonzero environment variable {envvar}" )
+        pass
 
+def abort_on_zero_keyword( keyword,**kwargs ):
+    if not ( val := kwargs.get(keyword) ):
+        error_abort( f"must have non-null keyword: {keyword}",**kwargs )
+    else: return val
 
 def nonnull( val ):
-    return not re.match( r'^[ \t\n]*$',val )
+    return ( val is not None ) and ( val is not False ) and ( not re.match( r'^[ \t\n]*$',val ) )
 
 def requirenonzero( var ):
     try:

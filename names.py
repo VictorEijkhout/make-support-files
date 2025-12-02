@@ -11,7 +11,7 @@ import sys
 # my own modules
 #
 import process
-from process import echo_string,error_abort,abort_on_nonzero_env,abort_on_zero_env
+from process import echo_string,error_abort,abort_on_nonzero_env,abort_on_zero_env,abort_on_zero_keyword
 from process import requirenonzero,nonnull
 
 ##
@@ -38,7 +38,6 @@ def create_homedir( **kwargs ):
     package  = kwargs.get( "package","nullpackage" )
     homedir  = kwargs.get( "homedir",None )
     terminal = kwargs.get( "terminal",None )
-    requirenonzero(root)
     package,_ = packagenames(package=package,packageversion="0.0",termminal=terminal)
     if root:
         echo_string( f"creating homedir value based on root: {root}",terminal=terminal )
@@ -134,13 +133,16 @@ def prefixdir_name( **kwargs ):
     return prefixdir
 
 def module_file_full_name( **kwargs ):
-    abort_on_zero_env( "MODULEROOT" )
     abort_on_nonzero_env( "MODULEDIRSET" )
     #
     # construct module path
     #
-    modulepath = os.environ[ "MODULEROOT" ]
+    modulepath = abort_on_zero_keyword( "moduleroot",**kwargs )
+    compilercode = abort_on_zero_keyword( "compiler",**kwargs )
+    compilerversion = abort_on_zero_keyword( "compilerversion",**kwargs )
     if ( mode := kwargs.get("mode","mode_not_found") ) in [ "mpi","hybrid", ]:
+        mpicode = abort_on_zero_keyword( "mpi",**kwargs )
+        mpiversion = abort_on_zero_keyword( "mpiversion",**kwargs )
         modulepath += f"/MPI/{compilercode}/{compilerversion}/{mpicode}/{mpiversion}"
     elif mode in [ "seq","omp", ]:
         modulepath += f"/Compiler/{compilercode}/{compilerversion}"
@@ -157,9 +159,9 @@ def module_file_full_name( **kwargs ):
     # attach module version
     #
     moduleversion = packageversion
-    if nonnull( vt := kwargs.get("INSTALLVARIANT") ):
+    if nonnull( vt := kwargs.get("installvariant") ):
         moduleversion += f"-{vt}"
-    if nonnull( mx := kwargs.get("MODULEVERSIONEXTRA") ):
+    if nonnull( mx := kwargs.get("moduleversionextra") ):
         moduleversion += f"-{mx}"
 
     return f"{moduledir}/{moduleversion}.lua"
