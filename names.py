@@ -62,12 +62,16 @@ def create_homedir( **kwargs ):
 ## this is fully based on Lmod environment variables as in use at TACC
 ##
 def compiler_names():
-    compiler = os.environ['TACC_FAMILY_COMPILER']
-    cversion = os.environ['TACC_FAMILY_COMPILER_VERSION']
-    cshortv = re.sub( r'^([^\.]*)\.([^\.]*)(\.*)?$',r'\1\2',cversion ) # DOESN'T WORK
-    mpi = os.environ['TACC_FAMILY_MPI']
-    mversion = os.environ['TACC_FAMILY_MPI_VERSION']
-    return compiler,cversion,cshortv,mpi,mversion
+    try:
+        # in jail we can run without compiler loaded
+        compiler = os.environ['TACC_FAMILY_COMPILER']
+        cversion = os.environ['TACC_FAMILY_COMPILER_VERSION']
+        cshortv = re.sub( r'^([^\.]*)\.([^\.]*)(\.*)?$',r'\1\2',cversion ) # DOESN'T WORK
+        mpi = os.environ['TACC_FAMILY_MPI']
+        mversion = os.environ['TACC_FAMILY_MPI_VERSION']
+        return compiler,cversion,cshortv,mpi,mversion
+    except:
+        return None,None,None,None,None
 
 ##
 ## Description: compute single system/compiler/mpi identifier
@@ -75,10 +79,14 @@ def compiler_names():
 def environment_code( mode ):
     systemcode = os.environ['TACC_SYSTEM'] # systemnames
     compilercode,compilerversion,compilershortversion,mpicode,mpiversion = compiler_names()
-    envcode = f"{systemcode}-{compilercode}{compilerversion}"
-    if mode in ["mpi","hybrid",]:
-        envcode = f"{envcode}-{mpicode}{mpiversion}"
-    return envcode
+    if compilercode is None:
+        # we are running in jail with only system compilers
+        return systemcode
+    else:
+        envcode = f"{systemcode}-{compilercode}{compilerversion}"
+        if mode in ["mpi","hybrid",]:
+            envcode = f"{envcode}-{mpicode}{mpiversion}"
+        return envcode
 
 def systemnames():
     compilercode,compilerversion,compilershortversion,mpicode,mpiversion = compiler_names()
