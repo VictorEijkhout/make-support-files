@@ -145,19 +145,24 @@ def module_file_full_name( **kwargs ):
     #
     # construct module path
     #
-    modulepath = abort_on_zero_keyword( "moduleroot",**kwargs )
-    if ( mode := kwargs.get("mode","mode_not_found") ) == "core":
-        modulepath += f"/Core"
+    if nonnull( dirset := kwargs.get("moduledirset") ):
+        # in jail we get an explicit path
+        modulepath = dirset
     else:
-        compilercode = abort_on_zero_keyword( "compiler",**kwargs )
-        compilerversion = abort_on_zero_keyword( "compilerversion",**kwargs )
-        if mode in [ "mpi","hybrid", ]:
-            mpicode = abort_on_zero_keyword( "mpi",**kwargs )
-            mpiversion = abort_on_zero_keyword( "mpiversion",**kwargs )
-            modulepath += f"/MPI/{compilercode}/{compilerversion}/{mpicode}/{mpiversion}"
-        elif mode in [ "seq","omp", ]:
-            modulepath += f"/Compiler/{compilercode}/{compilerversion}"
-        else: error_abort( f"Unknown mode: {mode}" )
+        # otherwise we build the path from system & compiler info
+        modulepath = abort_on_zero_keyword( "moduleroot",**kwargs )
+        if ( mode := kwargs.get("mode","mode_not_found") ) == "core":
+            modulepath += f"/Core"
+        else:
+            compilercode = abort_on_zero_keyword( "compiler",**kwargs )
+            compilerversion = abort_on_zero_keyword( "compilerversion",**kwargs )
+            if mode in [ "mpi","hybrid", ]:
+                mpicode = abort_on_zero_keyword( "mpi",**kwargs )
+                mpiversion = abort_on_zero_keyword( "mpiversion",**kwargs )
+                modulepath += f"/MPI/{compilercode}/{compilerversion}/{mpicode}/{mpiversion}"
+            elif mode in [ "seq","omp", ]:
+                modulepath += f"/Compiler/{compilercode}/{compilerversion}"
+            else: error_abort( f"Unknown mode: {mode}" )
     #
     # attach package name
     #
