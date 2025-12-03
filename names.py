@@ -115,7 +115,7 @@ def builddir_name( **kwargs ):
 def prefixdir_name( **kwargs ):
     package,packageversion = packagenames( **kwargs )
     if nonnull( pdir:=kwargs.get("installpath","") ):
-        echo_string( f"Using external prefixdir: {pdir}" )
+        echo_string( f"Using external prefixdir: {pdir}",terminal=None )
         prefixdir = pdir
     elif nonnull( kwargs.get("noinstall","") ):
         raise Exception( f"use of NOINSTALL not implemented" )
