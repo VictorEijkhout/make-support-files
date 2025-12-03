@@ -146,17 +146,18 @@ def module_file_full_name( **kwargs ):
     # construct module path
     #
     modulepath = abort_on_zero_keyword( "moduleroot",**kwargs )
-    compilercode = abort_on_zero_keyword( "compiler",**kwargs )
-    compilerversion = abort_on_zero_keyword( "compilerversion",**kwargs )
-    if ( mode := kwargs.get("mode","mode_not_found") ) in [ "mpi","hybrid", ]:
-        mpicode = abort_on_zero_keyword( "mpi",**kwargs )
-        mpiversion = abort_on_zero_keyword( "mpiversion",**kwargs )
-        modulepath += f"/MPI/{compilercode}/{compilerversion}/{mpicode}/{mpiversion}"
-    elif mode in [ "seq","omp", ]:
-        modulepath += f"/Compiler/{compilercode}/{compilerversion}"
-    elif mode == "core":
+    if ( mode := kwargs.get("mode","mode_not_found") ) == "core":
         modulepath += f"/Core"
-    else: error_abort( f"Unknown mode: {mode}" )
+    else:
+        compilercode = abort_on_zero_keyword( "compiler",**kwargs )
+        compilerversion = abort_on_zero_keyword( "compilerversion",**kwargs )
+        if mode in [ "mpi","hybrid", ]:
+            mpicode = abort_on_zero_keyword( "mpi",**kwargs )
+            mpiversion = abort_on_zero_keyword( "mpiversion",**kwargs )
+            modulepath += f"/MPI/{compilercode}/{compilerversion}/{mpicode}/{mpiversion}"
+        elif mode in [ "seq","omp", ]:
+            modulepath += f"/Compiler/{compilercode}/{compilerversion}"
+        else: error_abort( f"Unknown mode: {mode}" )
     #
     # attach package name
     #

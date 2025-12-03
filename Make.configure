@@ -51,8 +51,11 @@ configure :: modules preconfigure
 	             && prefixdir=$${prefixdir}-${PREFIXEXTRA} ; fi \
 	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
-	     && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
-	            setmpicompilers ; else setcompilers ; fi \
+	     && if [ "${MODE}"  = "core" ] ; then \
+	          export CC=gcc && export FC=gfortran && export CXX=g++ \
+	        ; elif [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
+	            setmpicompilers \
+	        ; else setcompilers ; fi \
 	     && reportcompilers \
 	     \
 	     && requirenonzero srcdir \
