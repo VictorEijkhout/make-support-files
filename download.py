@@ -72,7 +72,7 @@ def unpack_from_url( url,srcdir=None,**kwargs ):
         process.process_execute( f"tar fx {unpackdir}.tar" )
     else: raise Exception(f"Cannot unpack {file}")
     if srcdir:
-        if unpackdir != srcdir:
+        if unpackdir.lstrip("./") != srcdir:
             echo_string( f"Moving unpacked dir to srcdir: {srcdir}" )
             process.process_execute( f"mv {unpackdir} {srcdir}" )
         else:
