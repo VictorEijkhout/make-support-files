@@ -67,8 +67,9 @@ def package_dir_names( **kwargs ):
 def module_help_string( **kwargs ):
     package       = abort_on_zero_keyword( "package",**kwargs )
     moduleversion = abort_on_zero_keyword( "moduleversion",**kwargs )
-    description   = kwargs.get( "description"," " )
-    ##abort_on_zero_keyword( "description",**kwargs )
+    about         = abort_on_zero_keyword( "about",**kwargs )
+    software      = kwargs.get( "softwareurl"," " )
+    
     vars = f"TACC_{package.upper()}_DIR"
     for sub in [ "inc", "lib", "bin", ]:
         if dir := kwargs.get( f"{sub}dir" ):
@@ -77,10 +78,11 @@ def module_help_string( **kwargs ):
 f"""
 local helpMsg = [[
 Package: {package}/{moduleversion}
-{description}
+
+{about}
 {software}
 
-The {package} modulefile defines the following variables:
+The {package.lower()} modulefile defines the following variables:
     {vars}.
 ]]
 """
