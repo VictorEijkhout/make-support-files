@@ -3,6 +3,7 @@
 #
 # standard python modules
 #
+import datetime
 import os
 import re
 import sys
@@ -65,15 +66,22 @@ def package_dir_names( **kwargs ):
     return prefixdir,libdir,incdir,bindir
 
 def module_help_string( **kwargs ):
-    package       = abort_on_zero_keyword( "package",**kwargs )
+    package       = abort_on_zero_keyword( "package",**kwargs ).lower()
     moduleversion = abort_on_zero_keyword( "moduleversion",**kwargs )
     about         = abort_on_zero_keyword( "about",**kwargs )
     software      = kwargs.get( "softwareurl"," " )
-    
+    cmake         = kwargs.get( "prefixpathset" )
+    pkgconfig     = kwargs.get( "pkgconfig" )
+
     vars = f"TACC_{package.upper()}_DIR"
     for sub in [ "inc", "lib", "bin", ]:
         if dir := kwargs.get( f"{sub}dir" ):
             vars += f", TACC_{package.upper()}_{sub.upper()}"
+    notes = ""
+    if cmake    : notes += "Discoverable by CMake through find_package.\n"
+    if pkgconfig: notes += "Discoverable by CMake through pkg-config.\n"
+    notes += f"(modulefile generated {datetime.date.today()})"
+
     return \
 f"""
 local helpMsg = [[
@@ -82,7 +90,41 @@ Package: {package}/{moduleversion}
 {about}
 {software}
 
-The {package.lower()} modulefile defines the following variables:
+The {package} modulefile defines the following variables:
     {vars}.
+
+{notes}
 ]]
+"""
+
+def package_info( **kwargs ):
+    package       = abort_on_zero_keyword( "package",**kwargs ).lower()
+    moduleversion = abort_on_zero_keyword( "moduleversion",**kwargs )
+    return \
+f"""
+whatis( "Name:",   {package} )
+whatis( "Version", {moduleversion} )
+"""
+
+def path_settings( **kwargs ):
+    package       = abort_on_zero_keyword( "package",**kwargs ).lower()
+    moduleversion = abort_on_zero_keyword( "moduleversion",**kwargs )
+    prefixdir     = abort_on_zero_keyword( "prefixdir",**kwargs ).strip("/")
+
+    paths = ""
+    for sub in [ "inc", "lib", "bin", ]:
+        if dir := kwargs.get( f"{sub}dir" ):
+            ext = re.sub( f"{prefixdir}/","",dir ).lstrip("/") # why the lstrip?
+            for tgt in [ "TACC", "LMOD", ] :
+                paths += f"setenv( \"{tgt}_{package.upper()}_{sub.upper()}\", \
+pathJoin( prefixdir,{ext} ) )\n"
+
+    return \
+f"""
+local prefixdir = \"{prefixdir}\"
+setenv( \"TACC_{package.upper()}_VERSION, {moduleversion} )
+setenv( \"TACC_{package.upper()}_DIR", prefixdir )
+setenv( \"LMOD_{package.upper()}_VERSION, {moduleversion} )
+setenv( \"LMOD_{package.upper()}_DIR", prefixdir )
+{paths}
 """
