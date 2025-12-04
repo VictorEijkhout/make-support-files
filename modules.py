@@ -10,8 +10,10 @@ import sys
 #
 # my own modules
 #
+import names
 import process
-from process import echo_string,error_abort,requirenonzero,nonnull
+from process import echo_string,error_abort,abort_on_zero_keyword
+from process import nonnull,zero_keyword,nonzero_keyword
 
 def test_modules( **kwargs ):
     modules = kwargs.get( "modules","" )
@@ -38,3 +40,46 @@ def test_modules( **kwargs ):
         except: continue
     if error: sys.exit(1)
 
+def package_dir_names( **kwargs ):
+    prefixdir = kwargs.get("prefixdir")
+    # lib
+    if zero_keyword( "nolib",**kwargs ):
+        libdir = f"{prefixdir}/lib64"
+        if not os.path.isdir( libdir ):
+            libdir = f"{prefixdir}/lib"
+            if not os.path.isdir( libdir ):
+                raise Exception( "Could not find lib or lib64 dir" )
+    else: libdir = ""
+    # inc
+    if zero_keyword( "noinc",**kwargs ):
+        incdir = f"{prefixdir}/include"
+        if not os.path.isdir( incdir ):
+            raise Exception( "Could not find include dir" )
+    else: incdir = ""
+    # bin
+    if nonzero_keyword( "hasbin",**kwargs ):
+        bindir = f"{prefixdir}/bin"
+        if not os.path.isdir( bindir ):
+            raise Exception( "Could not find bin dir" )
+    else: bindir = ""
+    return prefixdir,libdir,incdir,bindir
+
+def module_help_string( **kwargs ):
+    package       = abort_on_zero_keyword( "package",**kwargs )
+    moduleversion = abort_on_zero_keyword( "moduleversion",**kwargs )
+    description   = abort_on_zero_keyword( "description",**kwargs )
+    vars = f"TACC_{package.upper()}_DIR"
+    for sub in [ "inc", "lib", "bin", ]:
+        if dir := kwargs.get( f"{sub}dir" ):
+            vars += f", TACC_{package.upper()}_{sub.upper()}"
+    return \
+f"""
+local helpMsg = [[
+Package: {package}/{moduleversion}
+{description}
+{software}
+
+The {package} modulefile defines the following variables:
+    {vars}.
+]]
+"""

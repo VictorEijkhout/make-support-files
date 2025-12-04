@@ -40,6 +40,11 @@ def abort_on_zero_keyword( keyword,**kwargs ):
 def nonnull( val ):
     return ( val is not None ) and ( val is not False ) and ( not re.match( r'^[ \t\n]*$',val ) )
 
+def zero_keyword( var,**kwargs ):
+    return not nonzero_keyword( var,**kwargs )
+def nonzero_keyword( var,**kwargs ):
+    return nonnull( kwargs.get(var) )
+
 def requirenonzero( var ):
     try:
         val = locals()[var]
