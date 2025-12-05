@@ -151,24 +151,34 @@ def system_paths( **kwargs ):
                 envs += f"prepend_path( \"LD_LIBRARY_PATH\", {path} )\n"
             elif sub=="bin":
                 envs += f"prepend_path( \"PATH\", {path} )\n"
-    for env in [ "bindir", "pkgconfig", "pkgconfiglib", "cmakeprefix", ]:
+    for env,var in [ ["bindir","PATH"],
+                 ["pkgconfig","PKG_CONFIG_PATH"], ["pkgconfiglib","PKG_CONFIG_PATH"],
+                 [ "cmakeprefix","CMAKE_PREFIX_PATH"],
+                 ["pythonpathabs","PYTHONPATH"], ["pythonpathrel","PYTHONPATH"],
+                ]:
         if val := nonzero_keyword( env,**kwargs ):
-            if env=="bindir":
-                bindir = val
-                ext = re.sub( f"{prefixdir}/","",bindir ).lstrip("/") # why the lstrip?
-                path = f"pathJoin( prefixdir,\"{ext}\" )"
-                envs += f"prepend_path( \"PATH\",   {val} )\n"
-            elif env=="pkgconfig":
+            if env in [ "bindir", "pkgconfig", "pkgconfiglib", "pythonpathrel",
+                       ]:
+                #
+                # add path relative to prefix
+                #
+                if env in [ "bindir", "pkgconfiglib", ]:
+                    # relative to prefix & standard extension
+                    val = re.sub( f"{prefixdir}/","",val ).lstrip("/") # why the lstrip?
+                    # else relative to prefix & custom path
                 path = f"pathJoin( prefixdir,\"{val}\" )"
-                envs += f"prepend_path( \"PKG_CONFIG_PATH\",   {path} )\n"
-            elif env=="pkgconfiglib":
-                libdir = nonzero_keyword( "libdir",**kwargs )
-                ext = re.sub( f"{prefixdir}/","",libdir ).lstrip("/") # why the lstrip?
-                path = f"pathJoin( prefixdir,\"{ext}\" )"
-                envs += f"prepend_path( \"PKG_CONFIG_PATH\",   {path} )\n"
-            elif env=="cmakeprefix":
-                envs += f"prepend_path( \"CMAKE_PREFIX_PATH\", prefixdir )\n"
-            else: raise Exception( "Unhandled case" )
+                envs += f"prepend_path( \"{var}\", {path} )\n"
+            elif env in [ "cmakeprefix",
+                         ]:
+                #
+                # add prefix path itself
+                #
+                envs += f"prepend_path( \"{var}\", prefixdir )\n"
+            elif env in [ "pythonpathabs", ]:
+                #
+                # add absolute path
+                #
+                envs += f"prepend_path( \"{var}\", \"{val}\" )\n"
 
     return \
 f"""\
