@@ -42,8 +42,21 @@ def nonnull( val ):
 
 def zero_keyword( var,**kwargs ):
     return not nonzero_keyword( var,**kwargs )
+
+# return value or false
 def nonzero_keyword( var,**kwargs ):
-    return nonnull( kwargs.get(var) )
+    #print( f"test {var}: {kwargs.get(var)}" )
+    if nonnull( val := kwargs.get(var) ):
+        return val
+    return False
+
+def nonzero_keyword_or_default( var,**kwargs ):
+    if nonnull( val := kwargs.get(var) ):
+        return val
+    elif val := kwargs.get("default"):
+        return val
+    else:
+        raise Exception( f"Keyword not given or defaulted: {var}" )
 
 def requirenonzero( var ):
     try:

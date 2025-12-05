@@ -14,7 +14,7 @@ import sys
 import names
 import process
 from process import echo_string,error_abort,abort_on_zero_keyword
-from process import nonnull,zero_keyword,nonzero_keyword
+from process import nonnull,zero_keyword,nonzero_keyword,nonzero_keyword_or_default
 
 def test_modules( **kwargs ):
     modules = kwargs.get( "modules","" )
@@ -80,10 +80,10 @@ def module_help_string( **kwargs ):
     notes = ""
     if cmake    : notes += "Discoverable by CMake through find_package.\n"
     if pkgconfig: notes += "Discoverable by CMake through pkg-config.\n"
-    notes += f"(modulefile generated {datetime.date.today()})"
+    notes += f"\n(modulefile generated {datetime.date.today()})"
 
     return \
-f"""
+f"""\
 local helpMsg = [[
 Package: {package}/{moduleversion}
 
@@ -95,19 +95,20 @@ The {package} modulefile defines the following variables:
 
 {notes}
 ]]
-"""
+""".strip()
 
 def package_info( **kwargs ):
     package       = abort_on_zero_keyword( "package",**kwargs ).lower()
     moduleversion = abort_on_zero_keyword( "moduleversion",**kwargs )
     return \
-f"""
-whatis( "Name:",   {package} )
-whatis( "Version", {moduleversion} )
-"""
+f"""\
+whatis( "Name:",   \"{package}\" )
+whatis( "Version", \"{moduleversion}\" )
+""".strip()
 
 def path_settings( **kwargs ):
-    modulename    = abort_on_zero_keyword( "modulename",**kwargs ).lower()
+    packagename   = abort_on_zero_keyword( "package",**kwargs ).lower()
+    modulename    = nonzero_keyword_or_default( "modulename",default=packagename ).lower()
     modulenamealt = kwargs.get("modulenamealt","").lower()
     moduleversion = abort_on_zero_keyword( "moduleversion",**kwargs )
     prefixdir     = abort_on_zero_keyword( "prefixdir",**kwargs ).strip("/")
@@ -127,7 +128,49 @@ def path_settings( **kwargs ):
 pathJoin( prefixdir,\"{ext}\" ) )\n"
 
     return \
-f"""
+f"""\
 local prefixdir = \"{prefixdir}\"
 {info}{paths}
-"""
+""".strip()
+
+def system_paths( **kwargs ):
+    packagename   = abort_on_zero_keyword( "package",**kwargs ).lower()
+    modulename    = nonzero_keyword_or_default( "modulename",default=packagename ).lower()
+    modulenamealt = kwargs.get("modulenamealt","").lower()
+    moduleversion = abort_on_zero_keyword( "moduleversion",**kwargs )
+    prefixdir     = abort_on_zero_keyword( "prefixdir",**kwargs ).strip("/")
+
+    envs = ""
+    for sub in [ "inc", "lib", "bin", ]:
+        if dir := kwargs.get( f"{sub}dir" ):
+            ext = re.sub( f"{prefixdir}/","",dir ).lstrip("/") # why the lstrip?
+            path = f"pathJoin( prefixdir,\"{ext}\" )"
+            if sub=="inc":
+                envs += f"prepend_path( \"INCLUDE\", {path} )\n"
+            elif sub=="lib":
+                envs += f"prepend_path( \"LD_LIBRARY_PATH\", {path} )\n"
+            elif sub=="bin":
+                envs += f"prepend_path( \"PATH\", {path} )\n"
+    for env in [ "bindir", "pkgconfig", "pkgconfiglib", "cmakeprefix", ]:
+        if val := nonzero_keyword( env,**kwargs ):
+            if env=="bindir":
+                bindir = val
+                ext = re.sub( f"{prefixdir}/","",bindir ).lstrip("/") # why the lstrip?
+                path = f"pathJoin( prefixdir,\"{ext}\" )"
+                envs += f"prepend_path( \"PATH\",   {val} )\n"
+            elif env=="pkgconfig":
+                path = f"pathJoin( prefixdir,\"{val}\" )"
+                envs += f"prepend_path( \"PKG_CONFIG_PATH\",   {path} )\n"
+            elif env=="pkgconfiglib":
+                libdir = nonzero_keyword( "libdir",**kwargs )
+                ext = re.sub( f"{prefixdir}/","",libdir ).lstrip("/") # why the lstrip?
+                path = f"pathJoin( prefixdir,\"{ext}\" )"
+                envs += f"prepend_path( \"PKG_CONFIG_PATH\",   {path} )\n"
+            elif env=="cmakeprefix":
+                envs += f"prepend_path( \"CMAKE_PREFIX_PATH\", prefixdir )\n"
+            else: raise Exception( "Unhandled case" )
+
+    return \
+f"""\
+{envs}
+""".strip()
