@@ -3,6 +3,7 @@
 #
 # standard python modules
 #
+import datetime
 import os
 import re
 import sys
@@ -25,7 +26,9 @@ def packagenames( **kwargs ):
     version = kwargs.get("packageversion").lower()
     terminal = kwargs.get("terminal")
     if version == "git":
-        raise Exception( "gitdate not yet implemented" )
+        # raise Exception( "gitdate not yet implemented" )
+        today = re.sub( '-','',str(datetime.date.today()) )
+        version = f"git{today}"
     echo_string( f"setting internal variables packagebasename={package} packageversion={version}",
                  terminal=terminal )
     return package,version

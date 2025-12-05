@@ -31,7 +31,8 @@ def cd_download_path( **kwargs ):
              )
         os.chdir(homedir)
 
-def download_from_url( url,**kwargs, ):
+def download_from_url( **kwargs, ):
+    url = kwargs.get( "download" )
     downloadlog  = kwargs.pop( "logfile",open( f"{os.getcwd()}/download.log","w" ) )
     cd_download_path( **kwargs,logfile=downloadlog )
     if url == "":
@@ -43,6 +44,7 @@ def download_from_url( url,**kwargs, ):
     process.process_execute( cmdline,logfile=downloadlog,terminal=None )
 
 def unpack_from_url( url,srcdir=None,**kwargs ):
+    url = kwargs.get( "download" )
     downloadlog  = kwargs.pop( "logfile",open( f"{os.getcwd()}/unpack.log","w" ) )
     cd_download_path( **kwargs,logfile=downloadlog )
     echo_string( f"Unpacking in {os.getcwd()}",logfile=downloadlog )

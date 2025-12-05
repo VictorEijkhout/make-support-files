@@ -107,24 +107,27 @@ whatis( "Version", {moduleversion} )
 """
 
 def path_settings( **kwargs ):
-    package       = abort_on_zero_keyword( "package",**kwargs ).lower()
+    modulename    = abort_on_zero_keyword( "modulename",**kwargs ).lower()
+    modulenamealt = kwargs.get("modulenamealt","").lower()
     moduleversion = abort_on_zero_keyword( "moduleversion",**kwargs )
     prefixdir     = abort_on_zero_keyword( "prefixdir",**kwargs ).strip("/")
 
     paths = ""
-    for sub in [ "inc", "lib", "bin", ]:
-        if dir := kwargs.get( f"{sub}dir" ):
-            ext = re.sub( f"{prefixdir}/","",dir ).lstrip("/") # why the lstrip?
+    info  = ""
+    for name in [ modulename, modulenamealt, ]:
+        if name=="": continue
+        for sub,val in [ ["VERSION",f"\"{moduleversion}\""], ["DIR","prefixdir"], ]:
             for tgt in [ "TACC", "LMOD", ] :
-                paths += f"setenv( \"{tgt}_{package.upper()}_{sub.upper()}\", \
-pathJoin( prefixdir,{ext} ) )\n"
+                info += f"setenv( \"{tgt}_{name.upper()}_{sub.upper()}\", {val} )\n"
+        for sub in [ "inc", "lib", "bin", ]:
+            if dir := kwargs.get( f"{sub}dir" ):
+                ext = re.sub( f"{prefixdir}/","",dir ).lstrip("/") # why the lstrip?
+                for tgt in [ "TACC", "LMOD", ] :
+                    paths += f"setenv( \"{tgt}_{name.upper()}_{sub.upper()}\", \
+pathJoin( prefixdir,\"{ext}\" ) )\n"
 
     return \
 f"""
 local prefixdir = \"{prefixdir}\"
-setenv( \"TACC_{package.upper()}_VERSION, {moduleversion} )
-setenv( \"TACC_{package.upper()}_DIR", prefixdir )
-setenv( \"LMOD_{package.upper()}_VERSION, {moduleversion} )
-setenv( \"LMOD_{package.upper()}_DIR", prefixdir )
-{paths}
+{info}{paths}
 """

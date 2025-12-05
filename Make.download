@@ -18,13 +18,15 @@ download :: homedir
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    downloadpath="${DOWNLOADPATH}" ; else downloadpath="$$homedir" ; fi \
 	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
+download_dict = { \
+    'download':\"${DOWNLOADURL}\", gitrepo:\"${GITREPO}\", gitdate:\"${GITDATE}\", \
+    'system':\"${TACC_SYSTEM}\",'compiler':\"${TACC_FAMILY_COMPILER}\",\
+    'root':\"${PACKAGEROOT}\",'package':\"${PACKAGE}\",'version':\"${PACKAGEVERSION}\", \
+    'downloadpath':\"$${downloadpath}\" \
+    }; \
 import download; \
-download.download_from_url( \
-    \"${DOWNLOADURL}\",\
-    system=\"${TACC_SYSTEM}\",compiler=\"${TACC_FAMILY_COMPILER}\",\
-    root=\"${PACKAGEROOT}\",package=\"${PACKAGE}\",version=\"${PACKAGEVERSION}\", \
-    downloadpath=\"$${downloadpath}\" \
-    )" \
+download.download_from_url( **download_dict ); \
+" \
 	)
 unpack untar :: 
 	@( \
