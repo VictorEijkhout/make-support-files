@@ -44,7 +44,8 @@ build ::
 	     && cd $$builddir \
 	     && echo "Building in $${builddir} with ${JCOUNT} threads" \
 	     && if [ ! -z "${CPTOSOURCE}" ] ; then \
-	            sourcetgt=${CPTOSOURCE} && sourcetgt=$${sourcetgt%%,*} \
+	            echo "only for peridigm" >/dev/null \
+	             && sourcetgt=${CPTOSOURCE} && sourcetgt=$${sourcetgt%%,*} \
 	             && sourcesrc=${CPTOSOURCE} && sourcesrc=$${sourcesrc##*,} \
 	             && cmdline="cp $$sourcesrc $${srcdir}/$${sourcetgt}" \
 	             && if [ "${ECHO}" = "1" ] ; then \
