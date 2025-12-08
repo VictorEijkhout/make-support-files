@@ -17,36 +17,12 @@ download :: homedir
 	 && echo "Dowload starting for $${package}-$${packageversion}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    downloadpath="${DOWNLOADPATH}" ; else downloadpath="$$homedir" ; fi \
-	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
-download_dict = { \
-    'download':\"${DOWNLOADURL}\", gitrepo:\"${GITREPO}\", gitdate:\"${GITDATE}\", \
-    'system':\"${TACC_SYSTEM}\",'compiler':\"${TACC_FAMILY_COMPILER}\",\
-    'root':\"${PACKAGEROOT}\",'package':\"${PACKAGE}\",'version':\"${PACKAGEVERSION}\", \
-    'downloadpath':\"$${downloadpath}\" \
-    }; \
-import download; \
-download.download_from_url( **download_dict ); \
-" \
 	)
 unpack untar :: 
 	@( \
 	 echo \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	    downloadpath="${DOWNLOADPATH}" ; else downloadpath="$$homedir" ; fi \
-	 && PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c \
-"\
-import names; \
-packagebasename,packageversion = names.packagenames\
-    ( package=\"${PACKAGE}\",packageversion=\"${PACKAGEVERSION}\" ); \
-srcdir=f\"{packagebasename}-{packageversion}\"; \
-import download; \
-download.unpack_from_url( \
-    \"${DOWNLOADURL}\", srcdir=srcdir, \
-    system=\"${TACC_SYSTEM}\",compiler=\"${TACC_FAMILY_COMPILER}\",\
-    root=\"${PACKAGEROOT}\",package=\"${PACKAGE}\",version=\"${PACKAGEVERSION}\", \
-    downloadpath=\"$${downloadpath}\" \
-    ) \
-" \
 	) 2>&1 | tee untar.log
 ##
 ## TGZRENAME is only used in conquest which is a weird package anyway

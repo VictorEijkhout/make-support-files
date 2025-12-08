@@ -44,14 +44,6 @@ urls :
 
 .PHONY: list_installations
 list_installations ::
-	@PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
-import info; \
-info.list_installations( \
-    root=\"${PACKAGEROOT}\",package=\"${PACKAGE}\",version=\"${PACKAGEVERSION}\", \
-    ) \
-"
-
-old_list_installations ::
 	@source ${MAKEINCLUDES}/names.sh \
 	 && homedir=$$( make --no-print-directory homedir \
 	        PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
@@ -163,16 +155,6 @@ installext :
 	      installext=$${installext}-${INSTALLVARIANT} ; fi \
 	 && echo $${installext}
 builddir :
-	@PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
-import names; \
-builddir = names.builddir_name( \
-    package=\"${PACKAGE}\", packageversion=\"${PACKAGEVERSION}\", \
-    root=\"${BUILDDIRROOT}\", homedir=\"${PACKAGEROOT}\", \
-    mode=\"${MODE}\", modulename=\"${MODULENAME}\", \
-    ); \
-print(builddir); \
-"
-old_builddir :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && echo "The  -no-print-directory has to be skipped here" >/dev/null \
 	 && homedir=$$( make --no-print-directory homedir \
@@ -192,19 +174,6 @@ old_builddir :
             ; fi \
 	 && echo $${builddir}
 prefixdir :
-	@PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
-import names; \
-prefixdir = names.prefixdir_name( \
-    package=\"${PACKAGE}\", packageversion=\"${PACKAGEVERSION}\", \
-    root=\"${INSTALLROOT}\", homedir=\"${HOMEDIR}\", \
-    noinstall=\"${NOINSTALL}\",  installpath=\"${INSTALLPATH}\", \
-    mode=\"${MODE}\", modulename=\"${MODULENAME}\", \
-    installvariant=\"${INSTALLVARIANT}\", installext=\"${INSTALLEXT}\", \
-    terminal=None, \
-    ); \
-print(prefixdir); \
-"
-old_prefixdir :
 	@source ${MAKEINCLUDES}/names.sh \
 	 && echo 'if [ ! -z "${PREFIXPATH}" ] ; then' >/dev/null \
 	 && echo "The  -no-print-directory has to be skipped here" >/dev/null \
@@ -269,14 +238,6 @@ listmodules ::
 	      echo ${MODULES} \
 	    ; fi
 modules ::
-	@PYTHONPATH=${MAKEINCLUDES}:${PYTHONPATH} python3 -c "\
-import modules; \
-modules.test_modules( \
-    modules=\"${MODULES}\", \
-    ) \
-"
-
-old_modules :
 	@for m in ${MODULES} ; do \
 	    ${MAKE} --no-print-directory moduletest MODULE=$$m \
 	 ; done
