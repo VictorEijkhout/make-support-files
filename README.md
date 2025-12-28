@@ -1,3 +1,5 @@
+(This package is superseded by https://github.com/VictorEijkhout/MrPackMod)
+
 - [Make support files](#Makesupportfiles)
 - [Configure and install](#Configureinstall)
 - [Module file](#Modulefile)
