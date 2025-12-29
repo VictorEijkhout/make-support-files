@@ -22,8 +22,7 @@ configure :: modules preconfigure
 	 && lognames $$installext \
 	 && requirenonzero configurelog \
 	 && if [ ! -z "${PREFIXOPTION}" ] ; then \
-	      echo "for pdtoolkit" \
-	       && export prefixoption=${PREFIXOPTION} \
+	      export prefixoption=${PREFIXOPTION} \
 	    ; else export prefixoption=--prefix ; fi \
 	  && ( \
 	    echo "Start autotools-based configuration, started $$(date)" \
@@ -48,16 +47,12 @@ configure :: modules preconfigure
 	            ) \
 	     && reportnonzero prefixdir \
 	     && if [ ! -z "${PREFIXEXTRA}" ] ; then \
-	            echo "This is never used" >/dev/null \
-	             && echo "prefix: attaching PREFIXEXTRA=${PREFIXEXTRA}" \
+	            echo "prefix: attaching PREFIXEXTRA=${PREFIXEXTRA}" \
 	             && prefixdir=$${prefixdir}-${PREFIXEXTRA} ; fi \
 	     \
 	     && source ${MAKEINCLUDES}/compilers.sh \
-	     && if [ "${MODE}"  = "core" ] ; then \
-	          export CC=gcc && export FC=gfortran && export CXX=g++ \
-	        ; elif [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
-	            setmpicompilers \
-	        ; else setcompilers ; fi \
+	     && if [ "${MODE}" = "mpi" -o "${MODE}" = "hybrid" ] ; then \
+	            setmpicompilers ; else setcompilers ; fi \
 	     && reportcompilers \
 	     \
 	     && requirenonzero srcdir \

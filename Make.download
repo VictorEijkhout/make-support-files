@@ -2,7 +2,7 @@
 info ::
 	@echo
 	@echo "================ tar/zip file download:"
-	@echo "make download untar/unpack [ DOWNLOADURL=... ] [ ZIPURL=... ]"
+	@echo "make download untar/unpack [ TGZURL=... ] [ ZIPURL=... ]"
 .PHONY: download untar unpack retar
 download :: homedir
 	@( \
@@ -13,21 +13,19 @@ download :: homedir
 	        HOMEDIR=${HOMEDIR} \
 	        ) \
 	 && reportnonzero homedir "Start downloading in" \
-	 && cd $${homedir} \
 	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
-	 && echo "Download starting for $${package}-$${packageversion}" \
+	 && echo "Dowload starting for $${package}-$${packageversion}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-	    downloadpath="${DOWNLOADPATH}" ; else downloadpath="$$homedir" ; fi \
+	    cd "${DOWNLOADPATH}" ; else cd $$homedir ; fi \
 	 && echo " .. download in $$( pwd )" \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
 	    ; else \
-	        export tgz="$$( echo ${DOWNLOADURL} | sed 's/ //g' )" \
+	        export tgz="$$( echo ${TGZURL} | sed 's/ //g' )" \
 	         && export tgz="$${tgz##*/}" \
 	    ; fi \
 	 && cmdline="rm -rf $$tgz $${package}-${PACKAGEVERSION}" \
 	 && echo " .. cleanup: $${cmdline}" && eval $${cmdline} \
-	 \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
 	        url=${ZIPURL} \
 	    ; elif [ ! -z "${TXZURL}" ] ; then \
@@ -35,10 +33,8 @@ download :: homedir
 	    ; elif [ ! -z "${BZ2URL}" ] ; then \
 	        url=${BZ2URL} \
 	    ; else \
-	        url=$$( echo ${DOWNLOADURL} | sed 's/ //g' ) \
+	        url=$$( echo ${TGZURL} | sed 's/ //g' ) \
 	    ; fi \
-	 && url=${DOWNLOADURL} \
-	 \
 	 && requirenonzero url && cmdline="wget $${url}" \
 	 && echo " .. cmdline=$$cmdline" \
 	 && eval $$cmdline \
@@ -49,28 +45,34 @@ download :: homedir
 unpack untar :: 
 	@( \
 	source ${MAKEINCLUDES}/names.sh \
-	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-	    downloadpath="${DOWNLOADPATH}" ; else downloadpath="$$homedir" ; fi \
 	 && homedir=$$( make --no-print-directory homedir \
 	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
 	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
 	        HOMEDIR=${HOMEDIR} \
 	        ) \
 	 && requirenonzeropath homedir \
+	 && packagenames "${PACKAGE}" "${PACKAGEVERSION}" "${PACKAGEBASENAME}" \
+	 && echo "Unpacking file for $${package}-${PACKAGEVERSION}" \
 	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
 	      downloadpath="${DOWNLOADPATH}" \
 	       && requirenonzeropath downloadpath \
 	       && cd "$${downloadpath}" \
 	    ; else cd $$homedir ; fi \
-	 && echo " .. unpacking in downloadpath=$$(pwd)" \
-	 \
+	 && echo " .. unpacking in downloadpath=$${downloadpath}" \
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
+	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
 	    ; else \
-	        export tgz="$$( echo ${DOWNLOADURL} | sed 's/ //g' )" \
-	         && export tgz="$${tgz##*/}" \
+	        if [ ! -z "${ZIPURL}" ] ; then \
+	            tgz=${ZIPURL} \
+	        ; elif [ ! -z "${TXZURL}" ] ; then \
+	            tgz=${TXZURL} \
+	        ; elif [ ! -z "${BZ2URL}" ] ; then \
+	            tgz=${BZ2URL} \
+	        ; else tgz=${TGZURL} \
+	        ; fi \
+	         && tgz=$${tgz##*/} \
 	    ; fi \
-	 \
+	 && echo " .. using compressed file: $${tgz}" \
 	 && if [ ! -z "${ZIPURL}" ] ; then \
 	        echo " .. unzipping $$tgz" \
 	         && unpackdir=$$( unzip -l $$tgz | sed -n -e '5p' | awk '{print $$4}' ) \
@@ -116,135 +118,6 @@ unpack untar ::
 	         && ( cd $${srcdir} && eval "${BOOTSTRAP}" ) \
 	    ; fi \
 	 && echo "unpacked: $${srcdir}" \
-	 \
-	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
-	    ; else \
-	        if [ ! -z "${ZIPURL}" ] ; then \
-	            tgz=${ZIPURL} \
-	        ; elif [ ! -z "${TXZURL}" ] ; then \
-	            tgz=${TXZURL} \
-	        ; elif [ ! -z "${BZ2URL}" ] ; then \
-	            tgz=${BZ2URL} \
-	        ; else tgz=${DOWNLOADURL} \
-	        ; fi \
-	         && tgz=$${tgz##*/} \
-	    ; fi \
-	) 2>&1 | tee untar.log
-##
-## TGZRENAME is only used in conquest which is a weird package anyway
-##
-old_download :
-	@echo \
-	 && echo " .. download in $$( pwd )" \
-	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
-	    ; else \
-	        export tgz="$$( echo ${DOWNLOADURL} | sed 's/ //g' )" \
-	         && export tgz="$${tgz##*/}" \
-	    ; fi \
-	 && cmdline="rm -rf $$tgz $${package}-${PACKAGEVERSION}" \
-	 && echo " .. cleanup: $${cmdline}" && eval $${cmdline} \
-	 \
-	 && if [ ! -z "${ZIPURL}" ] ; then \
-	        url=${ZIPURL} \
-	    ; elif [ ! -z "${TXZURL}" ] ; then \
-	        url=${TXZURL} \
-	    ; elif [ ! -z "${BZ2URL}" ] ; then \
-	        url=${BZ2URL} \
-	    ; else \
-	        url=$$( echo ${DOWNLOADURL} | sed 's/ //g' ) \
-	    ; fi \
-	 \
-	 && requirenonzero url && cmdline="wget $${url}" \
-	 && echo " .. cmdline=$$cmdline" \
-	 && echo eval $$cmdline \
-	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        echo " .. rename: ${TGZRENAME}" \
-	         && eval ${TGZRENAME}  ; fi \
-	)
-old_unpack :
-	echo \
-	source ${MAKEINCLUDES}/names.sh \
-	 && homedir=$$( make --no-print-directory homedir \
-	        TACC_SYSTEM=${TACC_SYSTEM} TACC_FAMILY_COMPILER=${TACC_FAMILY_COMPILER} \
-	        PACKAGEROOT=${PACKAGEROOT} PACKAGE=${PACKAGE} PACKAGEVERSION=${PACKAGEVERSION} \
-	        HOMEDIR=${HOMEDIR} \
-	        ) \
-	 && requirenonzeropath homedir \
-	 && if [ ! -z "${DOWNLOADPATH}" ] ; then \
-	      downloadpath="${DOWNLOADPATH}" \
-	       && requirenonzeropath downloadpath \
-	       && cd "$${downloadpath}" \
-	    ; else cd $$homedir ; fi \
-	 && echo " .. unpacking in downloadpath=$$(pwd)" \
-	 \
-	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
-	    ; else \
-	        export tgz="$$( echo ${DOWNLOADURL} | sed 's/ //g' )" \
-	         && export tgz="$${tgz##*/}" \
-	    ; fi \
-	 \
-	 && if [ ! -z "${ZIPURL}" ] ; then \
-	        echo " .. unzipping $$tgz" \
-	         && unpackdir=$$( unzip -l $$tgz | sed -n -e '5p' | awk '{print $$4}' ) \
-	         && unpackdir=$${unpackdir%%/*} \
-	         && echo " .. zip file <<$$tgz>> contains: $$unpackdir; unpacking" \
-	         && rm -rf $$unpackdir \
-	         && unzip $$tgz \
-	    ; elif [ ! -z "${TXZURL}" ] ; then \
-	        echo " .. un-xzip'ing $$tgz" \
-	         && unpackdir=$$( xzcat $$tgz | head -n 1 | sed -e 's?/.*??' ) \
-	         && unpackdir=$${unpackdir%%/*} \
-	         && echo " .. xz file <<$$tgz>> contains: $$unpackdir; unpacking" \
-	         && rm -rf $$unpackdir $${unpackdir}.tar \
-	         && xz --decompress $$tgz && tar fx $${unpackdir}.tar \
-	    ; elif [ ! -z "${BZ2URL}" ] ; then \
-	        echo " .. un-bz2'ing $$tgz" \
-	         && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
-	         && unpackdir=$${unpackdir%%/*} \
-	         && unpackdir=$${unpackdir#./} \
-	         && echo " .. tar file <<$$tgz>> contains: $$unpackdir; unpacking" \
-	         && rm -rf $$unpackdir \
-	         && tar fxz $$tgz \
-	    ; else \
-	        echo " .. un-targz'ing $$tgz" \
-	         && unpackdir=$$( tar ftz $$tgz | head -n 1 ) \
-	         && unpackdir=$${unpackdir%%/*} \
-	         && unpackdir=$${unpackdir#./} \
-	         && echo " .. tar file <<$$tgz>> contains: $$unpackdir; unpacking" \
-	         && rm -rf $$unpackdir \
-	         && tar fxz $$tgz \
-	    ; fi \
-	 && echo " .. done unpacking" \
-	 && export srcdir=$${packagebasename}-$${packageversion} \
-	 && if [ ! "$${unpackdir}" = "$${srcdir}" ] ; then \
-	        echo " .. move to $${srcdir}" \
-	         && mv $${unpackdir} unpacked \
-	         && rm -rf $${srcdir} \
-	         && mv unpacked $${srcdir} \
-	        ; \
-	    fi \
-	 && if [ ! -z "${BOOTSTRAP}" ] ; then \
-	        echo " .. bootstrapping: <<${BOOTSTRAP}>>" \
-	         && ( cd $${srcdir} && eval "${BOOTSTRAP}" ) \
-	    ; fi \
-	 && echo "unpacked: $${srcdir}" \
-	 \
-	 && if [ ! -z "${TGZRENAME}" ] ; then \
-	        tgz=` echo "${TGZRENAME}"  | cut -d' ' -f 3` \
-	    ; else \
-	        if [ ! -z "${ZIPURL}" ] ; then \
-	            tgz=${ZIPURL} \
-	        ; elif [ ! -z "${TXZURL}" ] ; then \
-	            tgz=${TXZURL} \
-	        ; elif [ ! -z "${BZ2URL}" ] ; then \
-	            tgz=${BZ2URL} \
-	        ; else tgz=${DOWNLOADURL} \
-	        ; fi \
-	         && tgz=$${tgz##*/} \
-	    ; fi \
 	) 2>&1 | tee untar.log
 
 retar :
@@ -264,7 +137,7 @@ retar :
 	    ; elif [ ! -z "${TXZURL}" ] ; then \
 	      tgz=${TXZURL} \
 	    ; else \
-	      tgz=${DOWNLOADURL} \
+	      tgz=${TGZURL} \
 	    ; fi \
 	 && tgz=$${tgz##*/} \
 	 && export srcdir=$${packagebasename}-$${packageversion} \
