@@ -2,7 +2,7 @@
 info ::
 	@echo
 	@echo "================ tar/zip file download:"
-	@echo "make download untar/unpack [ TGZURL=... ] [ ZIPURL=... ]"
+	@echo "make download untar/unpack [ DOWNLOADURL=... ] [ ZIPURL=... ]"
 .PHONY: download untar unpack retar
 download :: homedir
 	@( \
@@ -21,7 +21,7 @@ download :: homedir
 	 && if [ ! -z "${TGZRENAME}" ] ; then \
 	        export tgz=$$( echo "${TGZRENAME}"  | cut -d' ' -f 3 ) \
 	    ; else \
-	        export tgz="$$( echo ${TGZURL} | sed 's/ //g' )" \
+	        export tgz="$$( echo ${DOWNLOADURL} | sed 's/ //g' )" \
 	         && export tgz="$${tgz##*/}" \
 	    ; fi \
 	 && cmdline="rm -rf $$tgz $${package}-${PACKAGEVERSION}" \
@@ -33,7 +33,7 @@ download :: homedir
 	    ; elif [ ! -z "${BZ2URL}" ] ; then \
 	        url=${BZ2URL} \
 	    ; else \
-	        url=$$( echo ${TGZURL} | sed 's/ //g' ) \
+	        url=$$( echo ${DOWNLOADURL} | sed 's/ //g' ) \
 	    ; fi \
 	 && requirenonzero url && cmdline="wget $${url}" \
 	 && echo " .. cmdline=$$cmdline" \
@@ -68,7 +68,7 @@ unpack untar ::
 	            tgz=${TXZURL} \
 	        ; elif [ ! -z "${BZ2URL}" ] ; then \
 	            tgz=${BZ2URL} \
-	        ; else tgz=${TGZURL} \
+	        ; else tgz=${DOWNLOADURL} \
 	        ; fi \
 	         && tgz=$${tgz##*/} \
 	    ; fi \
@@ -137,7 +137,7 @@ retar :
 	    ; elif [ ! -z "${TXZURL}" ] ; then \
 	      tgz=${TXZURL} \
 	    ; else \
-	      tgz=${TGZURL} \
+	      tgz=${DOWNLOADURL} \
 	    ; fi \
 	 && tgz=$${tgz##*/} \
 	 && export srcdir=$${packagebasename}-$${packageversion} \
