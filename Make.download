@@ -32,8 +32,10 @@ download :: homedir
 	        url=${TXZURL} \
 	    ; elif [ ! -z "${BZ2URL}" ] ; then \
 	        url=${BZ2URL} \
-	    ; else \
+	    ; elif [ ! -z "${TGZURL}" ] ; then \
 	        url=$$( echo ${TGZURL} | sed 's/ //g' ) \
+	    ; else \
+	        url=$$( echo ${DOWNLOADURL} | sed 's/ //g' ) \
 	    ; fi \
 	 && requirenonzero url && cmdline="wget $${url}" \
 	 && echo " .. cmdline=$$cmdline" \
@@ -68,7 +70,10 @@ unpack untar ::
 	            tgz=${TXZURL} \
 	        ; elif [ ! -z "${BZ2URL}" ] ; then \
 	            tgz=${BZ2URL} \
-	        ; else tgz=${TGZURL} \
+	        ; elif [ ! -z "${TGZURL}" ] ; then \
+	            tgz=${TGZURL} \
+	        ; else \
+	            tgz=${DOWNLOADURL} \
 	        ; fi \
 	         && tgz=$${tgz##*/} \
 	    ; fi \
