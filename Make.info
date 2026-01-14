@@ -259,7 +259,7 @@ moduletest :
 	 && v=$$( echo $$m | cut -s -d '/' -f 2 ) && m=$${m%%/*} \
 	 && ml=$$( module -t list $${m} 2>&1 | cat ) \
 	 && mv=$$( echo $${ml} | cut -d '/' -f 2 ) \
-	 && if [ "$${m}" != "mkl" ] ; then \
+	 && if [ "$${m}" != "mkl" -a "$${m}" != "blaslapack" ] ; then \
 	      if [ -z "$${ml}" ] ; then \
 	        echo "Please load module $${m}" && exit 1 \
 	      ; elif [ ! -z "$${v}" -a "$${v}" != "$${mv}" ] ; then \
@@ -274,7 +274,7 @@ moduletest :
 	 && lmd=LMOD_$${M}_DIR \
 	 && vl=`env | grep $${lmd} | cut -d = -f 2` \
 	 && tmd=TACC_$${M}_DIR \
-	 && if [ "${MODULE}" = "mkl" ] ; then \
+	 && if [ "${MODULE}" = "mkl" -o "${MODULE}" = "blaslapack" ] ; then \
 	      vt="$${vt}$$( env | grep TACC_MKL_DIR | cut -d = -f 2 )" \
 	       && if [ -z "$${vt}" ] ; then \
 	            vt="$${vt}$$( env | grep TACC_NVPL_DIR | cut -d = -f 2 )" ; fi \
